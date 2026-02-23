@@ -212,9 +212,9 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
         st.rerun()
     else:
         try:
-            # 1. Get routing decision from Batman
+            # 1. Get routing decision from Batman - CHANGED MODEL HERE
             headers = {"Authorization": f"Bearer {live_groq_key}", "Content-Type": "application/json"}
-            payload = {"model": "llama3-70b-8192", "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": msg_content}]}
+            payload = {"model": "llama-3.3-70b-versatile", "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": msg_content}]}
             
             api_response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload).json()
             
