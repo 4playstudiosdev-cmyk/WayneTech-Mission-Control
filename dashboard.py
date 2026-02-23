@@ -132,7 +132,6 @@ with st.sidebar:
     st.markdown("### 🔗 INTEGRATIONS")
     with st.expander("⚙️ Connect APIs (REQUIRED)", expanded=True):
         st.caption("Add your AI and Social API Keys here.")
-        # UI fetches key directly. It will persist as long as session is active.
         live_groq_key = st.text_input("Groq API Key (For AI Brain)", type="password", value=INITIAL_GROQ_KEY)
         tw_api = st.text_input("Twitter API Key", type="password")
         li_tok = st.text_input("LinkedIn Access Token", type="password")
@@ -140,10 +139,23 @@ with st.sidebar:
     st.markdown("---")
     if st.button("🔄 Refresh System"): st.rerun()
 
-# Apply Groq Key globally for CrewAI agents
+# --- THE MASTER OVERRIDE (Fixes Localhost error in all agents) ---
 if live_groq_key:
     os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
     os.environ["OPENAI_API_KEY"] = live_groq_key
+    
+    import langchain_openai
+    if not hasattr(langchain_openai.ChatOpenAI, "_original_init"):
+        langchain_openai.ChatOpenAI._original_init = langchain_openai.ChatOpenAI.__init__
+
+    def patched_init(self, *args, **kwargs):
+        # Force Groq Cloud settings regardless of what the Agent file says
+        kwargs["model"] = "llama-3.3-70b-versatile"
+        kwargs["base_url"] = "https://api.groq.com/openai/v1"
+        kwargs["api_key"] = live_groq_key
+        langchain_openai.ChatOpenAI._original_init(self, *args, **kwargs)
+
+    langchain_openai.ChatOpenAI.__init__ = patched_init
 else:
     st.warning("⚠️ Cloud Brain Offline! Open 'Connect APIs' in the sidebar and paste your Groq API Key.")
 
@@ -218,13 +230,11 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
             
             api_response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload).json()
             
-            # Robust Error Handling
             if 'choices' in api_response:
                 full_response = api_response['choices'][0]['message']['content']
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
                 
-                # 2. 🔥 SERVERLESS EXECUTION: Run the Agent directly inside the dashboard!
-                # FIXED: Only execute if Batman actually assigned a task
+                # 2. 🔥 SERVERLESS EXECUTION
                 if "Task Assigned" in full_response or "Deploying" in full_response:
                     with st.spinner(f"Agents are working on it... This might take a minute."):
                         agent_result = "⚠️ Agent not fully integrated for cloud yet."
@@ -253,10 +263,8 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                                 agent_result = run_multiplier_crew(msg_content)
                             except: agent_result = "Multiplier dependencies (tweepy/youtube-transcript-api) missing on cloud."
                         
-                        # Show result in chat
                         st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
             else:
-                # Agar Groq ne error diya hai (jaise Invalid Key ya Rate Limit) toh wo screen par show hoga
                 error_details = api_response.get('error', {}).get('message', str(api_response))
                 st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Groq API Error: {error_details}"})
 
