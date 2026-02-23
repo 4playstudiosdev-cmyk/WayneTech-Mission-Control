@@ -4,7 +4,7 @@ from langchain_openai import ChatOpenAI
 from langchain_community.tools import DuckDuckGoSearchRun
 
 # Setup LLM
-llm = ChatOpenAI(model="llama3-70b-8192")
+llm = ChatOpenAI(model="llama-3.3-70b-versatile")
 search_tool = DuckDuckGoSearchRun()
 
 def get_idea_agent():

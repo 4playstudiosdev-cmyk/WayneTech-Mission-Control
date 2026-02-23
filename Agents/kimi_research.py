@@ -9,7 +9,7 @@ os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
 os.environ["OPENAI_BASE_URL"] = "http://localhost:11434/v1"
 os.environ["OPENAI_API_KEY"] = "NA"
 
-llm = ChatOpenAI(model="llama3-70b-8192")
+llm = ChatOpenAI(model="llama-3.3-70b-versatile")
 # --- TOOLS (The Kimi Power) ---
 search_tool = DuckDuckGoSearchRun()
 

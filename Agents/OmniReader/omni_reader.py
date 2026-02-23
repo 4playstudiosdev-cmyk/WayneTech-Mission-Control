@@ -2,13 +2,21 @@ import os
 import datetime
 from crewai import Agent, Task, Crew
 from langchain_openai import ChatOpenAI
-from crewai_tools import YoutubeVideoSearchTool
+from youtube_transcript_api import YouTubeTranscriptApi
+import urllib.parse as urlparse
 
-os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
-os.environ["OPENAI_API_KEY"] = "NA"
-llm = ChatOpenAI(model="llama3-70b-8192")
-# This tool can read YouTube Transcripts automatically!
-yt_tool = YoutubeVideoSearchTool()
+# LLM setup (API Key and Base URL will be automatically injected by Dashboard)
+llm = ChatOpenAI(model="llama-3.3-70b-versatile")
+
+def get_youtube_video_id(url):
+    """YouTube URL se Video ID nikalne ka function"""
+    url_data = urlparse.urlparse(url)
+    query = urlparse.parse_qs(url_data.query)
+    if "v" in query:
+        return query["v"][0]
+    elif url_data.netloc == "youtu.be":
+        return url_data.path[1:]
+    return None
 
 def save_yt_report(topic, content):
     folder = "Deliverables/Omni_Reader"
@@ -21,25 +29,38 @@ def save_yt_report(topic, content):
 def run_omnireader_crew(youtube_link_or_query):
     print(f"\n🧠 BRAINIAC (OMNI-READER) ACTIVATED FOR: {youtube_link_or_query}\n")
 
+    # 1. Fetch Transcript Directly (No Embeddings API required!)
+    video_id = get_youtube_video_id(youtube_link_or_query)
+    if not video_id:
+        return "⚠️ **Error:** Invalid YouTube URL. Please provide a valid link."
+        
+    try:
+        transcript_data = YouTubeTranscriptApi.get_transcript(video_id)
+        transcript_text = " ".join([t['text'] for t in transcript_data])
+        # Limit to 20k characters to avoid overloading the LLM context window
+        transcript_text = transcript_text[:20000] 
+    except Exception as e:
+        return f"⚠️ **Error fetching captions:** {e} (Video might not have English subtitles enabled)."
+
+    # 2. Agent Initialization
     yt_summarizer = Agent(
         role='Knowledge Extraction Specialist',
-        goal='Extract actionable steps and key knowledge from YouTube videos.',
-        backstory='Aap ek aisi AI hain jo 2 ghante ki video 2 minute mein parh kar uski summary bana sakti hai.',
-        tools=[yt_tool],
+        goal='Extract actionable steps and key knowledge from the provided video transcript.',
+        backstory='Aap ek aisi AI hain jo 2 ghante ki video ka text 2 second mein parh kar uski summary bana sakti hai.',
         allow_delegation=False,
         llm=llm
     )
 
     task = Task(
-        description=f"Access this topic or YouTube link: '{youtube_link_or_query}'. Extract the top 5 most valuable lessons or steps mentioned in it.",
+        description=f"Here is the transcript of the video:\n\n{transcript_text}\n\nExtract the top 5 most valuable lessons, key takeaways, or actionable steps mentioned in it. Make it structured and easy to read.",
         agent=yt_summarizer,
-        expected_output="Top 5 lessons extracted from the video."
+        expected_output="Top 5 lessons extracted from the video formatted cleanly."
     )
 
     crew = Crew(agents=[yt_summarizer], tasks=[task], verbose=True)
     try:
         result = crew.kickoff()
+        saved_path = save_yt_report('YT', str(result))
+        return f"🧠 **KNOWLEDGE EXTRACTION COMPLETE**\n\n✅ Video summarized successfully.\n📂 **Notes Saved:** {saved_path}"
     except Exception as e:
-        result = f"Error extracting video (It might not have captions): {e}"
-        
-    return f"🧠 **KNOWLEDGE EXTRACTION COMPLETE**\n\n📂 **Notes Saved:** {save_yt_report('YT', str(result))}"
+        return f"⚠️ **Processing Error:** {e}"

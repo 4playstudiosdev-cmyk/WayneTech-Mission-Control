@@ -9,7 +9,7 @@ os.environ["OPENAI_BASE_URL"] = "http://localhost:11434/v1"
 os.environ["OPENAI_API_KEY"] = "NA"
 
 # Llama 3 is the Brain
-llm = ChatOpenAI(model="llama3-70b-8192")
+llm = ChatOpenAI(model="llama-3.3-70b-versatile")
 def save_leads(task_name, content):
     folder = "Deliverables/Sales_Leads"
     if not os.path.exists(folder): os.makedirs(folder)

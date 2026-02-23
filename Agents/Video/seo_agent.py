@@ -2,7 +2,7 @@ import os
 from crewai import Agent
 from langchain_openai import ChatOpenAI
 
-llm = ChatOpenAI(model="llama3-70b-8192")
+llm = ChatOpenAI(model="llama-3.3-70b-versatile")
 def get_seo_agent():
     return Agent(
         role='YouTube Growth & SEO Specialist',

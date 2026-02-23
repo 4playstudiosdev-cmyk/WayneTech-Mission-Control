@@ -6,7 +6,7 @@ from langchain_community.tools import DuckDuckGoSearchRun
 
 os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
 os.environ["OPENAI_API_KEY"] = "NA"
-llm = ChatOpenAI(model="llama3-70b-8192")
+llm = ChatOpenAI(model="llama-3.3-70b-versatile")
 search_tool = DuckDuckGoSearchRun()
 
 def save_finance_report(topic, content):
