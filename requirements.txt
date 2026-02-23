@@ -1,0 +1,10 @@
+streamlit
+crewai
+langchain-openai
+python-dotenv
+requests
+crewai-tools
+fpdf
+tweepy
+youtube-transcript-api
+duckduckgo-search

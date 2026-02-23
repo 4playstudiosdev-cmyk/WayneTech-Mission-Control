@@ -1,0 +1,18 @@
+
+.env
+
+Python Cache
+
+pycache/
+*.pyc
+
+Local Data aur Logs (Hum nahi chahte ke cloud par purana data jaye)
+
+memory_logs/
+Deliverables/
+uploads/
+global_memory.txt
+
+OS Files
+
+.DS_Store
