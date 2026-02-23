@@ -16,12 +16,7 @@ for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 
 
 # Load environment variables (API Keys)
 load_dotenv()
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-
-# FORCE GROQ FOR ALL CREWAI AGENTS
-if GROQ_API_KEY:
-    os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
-    os.environ["OPENAI_API_KEY"] = GROQ_API_KEY
+INITIAL_GROQ_KEY = os.getenv("GROQ_API_KEY", "")
 
 try:
     from fpdf import FPDF
@@ -121,9 +116,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-if not GROQ_API_KEY:
-    st.warning("⚠️ Cloud Brain Offline! Open 'Connect APIs' in the sidebar and add your Groq API Key.")
-
 with st.sidebar:
     st.markdown(f"### 🏢 SQUAD STATUS ({working_agents_count} Active)")
     agents_html = ""
@@ -138,23 +130,22 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("### 🔗 INTEGRATIONS")
-    with st.expander("⚙️ Connect APIs (REQUIRED)"):
+    with st.expander("⚙️ Connect APIs (REQUIRED)", expanded=True):
         st.caption("Add your AI and Social API Keys here.")
-        groq_key = st.text_input("Groq API Key (For AI Brain)", type="password", value=GROQ_API_KEY)
+        # UI fetches key directly. It will persist as long as session is active.
+        live_groq_key = st.text_input("Groq API Key (For AI Brain)", type="password", value=INITIAL_GROQ_KEY)
         tw_api = st.text_input("Twitter API Key", type="password")
         li_tok = st.text_input("LinkedIn Access Token", type="password")
-        
-        if st.button("Save API Credentials"):
-            with open(".env", "w") as f:
-                f.write(f"GROQ_API_KEY={groq_key}\n")
-                if tw_api: f.write(f"TWITTER_API_KEY={tw_api}\n")
-                if li_tok: f.write(f"LINKEDIN_ACCESS_TOKEN={li_tok}\n")
-            os.environ["GROQ_API_KEY"] = groq_key
-            st.success("✅ Cloud Keys secured!")
-            st.rerun()
 
     st.markdown("---")
     if st.button("🔄 Refresh System"): st.rerun()
+
+# Apply Groq Key globally for CrewAI agents
+if live_groq_key:
+    os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
+    os.environ["OPENAI_API_KEY"] = live_groq_key
+else:
+    st.warning("⚠️ Cloud Brain Offline! Open 'Connect APIs' in the sidebar and paste your Groq API Key.")
 
 col_kanban, col_feed = st.columns([2.5, 1.2])
 
@@ -214,54 +205,61 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
     If none match, reply: "Batman: I need more details to assign this task."
     """
     
-    if not GROQ_API_KEY:
-        full_response = "⚠️ Batman Error: Groq Cloud API Key missing! Please add it in the sidebar."
+    if not live_groq_key:
+        full_response = "⚠️ Batman Error: Groq Cloud API Key missing! Please paste it in the sidebar."
         st.session_state.messages.append({"role": "assistant", "content": full_response})
         if st.session_state.active_tasks: st.session_state.active_tasks.pop()
         st.rerun()
     else:
         try:
             # 1. Get routing decision from Batman
-            headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
+            headers = {"Authorization": f"Bearer {live_groq_key}", "Content-Type": "application/json"}
             payload = {"model": "llama3-70b-8192", "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": msg_content}]}
-            response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload).json()
-            full_response = response['choices'][0]['message']['content']
             
-            st.session_state.messages.append({"role": "assistant", "content": full_response})
+            api_response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload).json()
             
-            # 2. 🔥 SERVERLESS EXECUTION: Run the Agent directly inside the dashboard!
-            with st.spinner(f"Agents are working on it... This might take a minute."):
-                agent_result = "⚠️ Agent not fully integrated for cloud yet."
+            # Robust Error Handling
+            if 'choices' in api_response:
+                full_response = api_response['choices'][0]['message']['content']
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
                 
-                if "**Superman**" in full_response:
-                    from marketing import run_marketing_crew
-                    agent_result = run_marketing_crew(msg_content)
-                elif "**Oracle**" in full_response:
-                    from oracle_intel import run_oracle_crew
-                    agent_result = run_oracle_crew(msg_content)
-                elif "**Lucius**" in full_response:
-                    from Investment_Banker import run_finance_crew
-                    agent_result = run_finance_crew(msg_content)
-                elif "**Brainiac**" in full_response:
-                    from omni_reader import run_omnireader_crew
-                    agent_result = run_omnireader_crew(msg_content)
-                elif "**Cyborg**" in full_response:
-                    from tech import run_tech_crew
-                    agent_result = run_tech_crew(msg_content)
-                elif "**SEO Team**" in full_response:
-                    from seo_empire import run_mass_seo_campaign
-                    agent_result = run_mass_seo_campaign(msg_content)
-                elif "**Multiplier**" in full_response:
-                    try:
-                        from content_multiplier import run_multiplier_crew
-                        agent_result = run_multiplier_crew(msg_content)
-                    except: agent_result = "Multiplier dependencies (tweepy/youtube-transcript-api) missing on cloud."
-                
-                # Show result in chat
-                st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
+                # 2. 🔥 SERVERLESS EXECUTION: Run the Agent directly inside the dashboard!
+                with st.spinner(f"Agents are working on it... This might take a minute."):
+                    agent_result = "⚠️ Agent not fully integrated for cloud yet."
+                    
+                    if "**Superman**" in full_response:
+                        from marketing import run_marketing_crew
+                        agent_result = run_marketing_crew(msg_content)
+                    elif "**Oracle**" in full_response:
+                        from oracle_intel import run_oracle_crew
+                        agent_result = run_oracle_crew(msg_content)
+                    elif "**Lucius**" in full_response:
+                        from Investment_Banker import run_finance_crew
+                        agent_result = run_finance_crew(msg_content)
+                    elif "**Brainiac**" in full_response:
+                        from omni_reader import run_omnireader_crew
+                        agent_result = run_omnireader_crew(msg_content)
+                    elif "**Cyborg**" in full_response:
+                        from tech import run_tech_crew
+                        agent_result = run_tech_crew(msg_content)
+                    elif "**SEO Team**" in full_response:
+                        from seo_empire import run_mass_seo_campaign
+                        agent_result = run_mass_seo_campaign(msg_content)
+                    elif "**Multiplier**" in full_response:
+                        try:
+                            from content_multiplier import run_multiplier_crew
+                            agent_result = run_multiplier_crew(msg_content)
+                        except: agent_result = "Multiplier dependencies (tweepy/youtube-transcript-api) missing on cloud."
+                    
+                    # Show result in chat
+                    st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
+            else:
+                # Agar Groq ne error diya hai (jaise Invalid Key ya Rate Limit) toh wo screen par show hoga
+                error_details = api_response.get('error', {}).get('message', str(api_response))
+                st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Groq API Error: {error_details}"})
 
         except Exception as e: 
-            st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Cloud System Offline: {e}"})
+            st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Connection Error: {str(e)}"})
         
         if st.session_state.active_tasks: st.session_state.active_tasks.pop()
         st.rerun()
