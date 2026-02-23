@@ -212,7 +212,7 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
         st.rerun()
     else:
         try:
-            # 1. Get routing decision from Batman - CHANGED MODEL HERE
+            # 1. Get routing decision from Batman
             headers = {"Authorization": f"Bearer {live_groq_key}", "Content-Type": "application/json"}
             payload = {"model": "llama-3.3-70b-versatile", "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": msg_content}]}
             
@@ -224,35 +224,37 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
                 
                 # 2. 🔥 SERVERLESS EXECUTION: Run the Agent directly inside the dashboard!
-                with st.spinner(f"Agents are working on it... This might take a minute."):
-                    agent_result = "⚠️ Agent not fully integrated for cloud yet."
-                    
-                    if "**Superman**" in full_response:
-                        from marketing import run_marketing_crew
-                        agent_result = run_marketing_crew(msg_content)
-                    elif "**Oracle**" in full_response:
-                        from oracle_intel import run_oracle_crew
-                        agent_result = run_oracle_crew(msg_content)
-                    elif "**Lucius**" in full_response:
-                        from Investment_Banker import run_finance_crew
-                        agent_result = run_finance_crew(msg_content)
-                    elif "**Brainiac**" in full_response:
-                        from omni_reader import run_omnireader_crew
-                        agent_result = run_omnireader_crew(msg_content)
-                    elif "**Cyborg**" in full_response:
-                        from tech import run_tech_crew
-                        agent_result = run_tech_crew(msg_content)
-                    elif "**SEO Team**" in full_response:
-                        from seo_empire import run_mass_seo_campaign
-                        agent_result = run_mass_seo_campaign(msg_content)
-                    elif "**Multiplier**" in full_response:
-                        try:
-                            from content_multiplier import run_multiplier_crew
-                            agent_result = run_multiplier_crew(msg_content)
-                        except: agent_result = "Multiplier dependencies (tweepy/youtube-transcript-api) missing on cloud."
-                    
-                    # Show result in chat
-                    st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
+                # FIXED: Only execute if Batman actually assigned a task
+                if "Task Assigned" in full_response or "Deploying" in full_response:
+                    with st.spinner(f"Agents are working on it... This might take a minute."):
+                        agent_result = "⚠️ Agent not fully integrated for cloud yet."
+                        
+                        if "**Superman**" in full_response:
+                            from marketing import run_marketing_crew
+                            agent_result = run_marketing_crew(msg_content)
+                        elif "**Oracle**" in full_response:
+                            from oracle_intel import run_oracle_crew
+                            agent_result = run_oracle_crew(msg_content)
+                        elif "**Lucius**" in full_response:
+                            from Investment_Banker import run_finance_crew
+                            agent_result = run_finance_crew(msg_content)
+                        elif "**Brainiac**" in full_response:
+                            from omni_reader import run_omnireader_crew
+                            agent_result = run_omnireader_crew(msg_content)
+                        elif "**Cyborg**" in full_response:
+                            from tech import run_tech_crew
+                            agent_result = run_tech_crew(msg_content)
+                        elif "**SEO Team**" in full_response:
+                            from seo_empire import run_mass_seo_campaign
+                            agent_result = run_mass_seo_campaign(msg_content)
+                        elif "**Multiplier**" in full_response:
+                            try:
+                                from content_multiplier import run_multiplier_crew
+                                agent_result = run_multiplier_crew(msg_content)
+                            except: agent_result = "Multiplier dependencies (tweepy/youtube-transcript-api) missing on cloud."
+                        
+                        # Show result in chat
+                        st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
             else:
                 # Agar Groq ne error diya hai (jaise Invalid Key ya Rate Limit) toh wo screen par show hoga
                 error_details = api_response.get('error', {}).get('message', str(api_response))
