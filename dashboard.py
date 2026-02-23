@@ -1,16 +1,27 @@
 import streamlit as st
 import requests
-from PIL import Image
 import datetime
-import io
 import os
 import glob
 import time
+import sys
 from dotenv import load_dotenv
+
+# --- FOLDER PATHS FIX FOR CLOUD ---
+current_dir = os.path.dirname(os.path.abspath(__file__))
+agents_dir = os.path.join(current_dir, 'Agents')
+sys.path.append(agents_dir)
+for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 'OmniReader', 'Multiplier', 'sales']:
+    sys.path.append(os.path.join(agents_dir, dept))
 
 # Load environment variables (API Keys)
 load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
+
+# FORCE GROQ FOR ALL CREWAI AGENTS
+if GROQ_API_KEY:
+    os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
+    os.environ["OPENAI_API_KEY"] = GROQ_API_KEY
 
 try:
     from fpdf import FPDF
@@ -70,17 +81,6 @@ if "assigned_tasks" not in st.session_state: st.session_state.assigned_tasks = [
 if "review_tasks" not in st.session_state: st.session_state.review_tasks = []
 if "processed_files" not in st.session_state: st.session_state.processed_files = set()
 
-def sync_logs():
-    files = glob.glob(f"{MEMORY_FOLDER}/*.txt")
-    if not files: return
-    latest_file = max(files, key=os.path.getmtime)
-    with open(latest_file, "r", encoding="utf-8") as f: lines = f.readlines()
-    for line in lines[-15:]:
-        if "SYSTEM:" in line:
-            clean_msg = line.split("SYSTEM:", 1)[1].strip()
-            if not any(clean_msg[:30] in str(m['content']) for m in st.session_state.messages):
-                st.session_state.messages.append({"role": "assistant", "content": f"📡 **Update:**\n{clean_msg}"})
-
 def get_done_tasks():
     tasks = []
     for root, _, filenames in os.walk(DELIVERABLES_FOLDER):
@@ -100,7 +100,7 @@ agent_keywords_map = {
 }
 
 for msg in reversed(st.session_state.messages):
-    if msg["role"] == "assistant" and ("Task Assigned" in msg["content"] or "dispatched" in msg["content"].lower()):
+    if msg["role"] == "assistant" and ("Task Assigned" in msg["content"] or "Deploying" in msg["content"]):
         msg_lower = msg["content"].lower()
         for agent_name, keywords in agent_keywords_map.items():
             if any(kw in msg_lower for kw in keywords):
@@ -117,7 +117,7 @@ st.markdown(f"""
     <div class="stat-box"><div class="stat-value">{total_agents}</div><div class="stat-label">Total Agents</div></div>
     <div class="stat-box"><div class="stat-value">{tasks_in_queue}</div><div class="stat-label">Tasks in Queue</div></div>
     <div class="stat-box"><div class="stat-value" style="color:#38bdf8;">{current_active_agent}</div><div class="stat-label">Filtering By</div></div>
-    <div class="stat-box"><div class="stat-value" style="color:#10b981;">● CLOUD API</div><div class="stat-label">System Status</div></div>
+    <div class="stat-box"><div class="stat-value" style="color:#10b981;">● CLOUD HOSTED</div><div class="stat-label">System Status</div></div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -149,6 +149,7 @@ with st.sidebar:
                 f.write(f"GROQ_API_KEY={groq_key}\n")
                 if tw_api: f.write(f"TWITTER_API_KEY={tw_api}\n")
                 if li_tok: f.write(f"LINKEDIN_ACCESS_TOKEN={li_tok}\n")
+            os.environ["GROQ_API_KEY"] = groq_key
             st.success("✅ Cloud Keys secured!")
             st.rerun()
 
@@ -177,7 +178,6 @@ with col_kanban:
 with col_feed:
     st.markdown("<div class='feed-header'>🟢 LIVE FEED</div>", unsafe_allow_html=True)
     feed_container = st.container(height=500)
-    sync_logs()
     with feed_container:
         for message in st.session_state.messages:
             avatar = "🦇" if message["role"] == "assistant" else "🧑‍💼"
@@ -197,11 +197,6 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
     last_msg = st.session_state.messages[-1]
     msg_content = last_msg["content"]
     
-    files = glob.glob(f"{MEMORY_FOLDER}/*.txt")
-    log_file = max(files, key=os.path.getmtime) if files else os.path.join(MEMORY_FOLDER, f"chat_{datetime.datetime.now().strftime('%Y-%m-%d_%H-%M')}.txt")
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(log_file, "a", encoding="utf-8") as f: f.write(f"[{timestamp}] USER: {msg_content}\n")
-
     system_prompt = """
     You are BATMAN. The Master Strategist and Dispatcher of the AI Agency.
     Reply EXACTLY with ONE of these lines depending on the task:
@@ -221,16 +216,52 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
     
     if not GROQ_API_KEY:
         full_response = "⚠️ Batman Error: Groq Cloud API Key missing! Please add it in the sidebar."
+        st.session_state.messages.append({"role": "assistant", "content": full_response})
+        if st.session_state.active_tasks: st.session_state.active_tasks.pop()
+        st.rerun()
     else:
         try:
-            # Calling Groq Cloud API
+            # 1. Get routing decision from Batman
             headers = {"Authorization": f"Bearer {GROQ_API_KEY}", "Content-Type": "application/json"}
             payload = {"model": "llama3-70b-8192", "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": msg_content}]}
             response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload).json()
             full_response = response['choices'][0]['message']['content']
-            with open(log_file, "a", encoding="utf-8") as f: f.write(f"[{timestamp}] JARVIS: {full_response}\n")
-        except Exception as e: full_response = f"⚠️ Cloud System Offline: {e}"
+            
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
+            
+            # 2. 🔥 SERVERLESS EXECUTION: Run the Agent directly inside the dashboard!
+            with st.spinner(f"Agents are working on it... This might take a minute."):
+                agent_result = "⚠️ Agent not fully integrated for cloud yet."
+                
+                if "**Superman**" in full_response:
+                    from marketing import run_marketing_crew
+                    agent_result = run_marketing_crew(msg_content)
+                elif "**Oracle**" in full_response:
+                    from oracle_intel import run_oracle_crew
+                    agent_result = run_oracle_crew(msg_content)
+                elif "**Lucius**" in full_response:
+                    from Investment_Banker import run_finance_crew
+                    agent_result = run_finance_crew(msg_content)
+                elif "**Brainiac**" in full_response:
+                    from omni_reader import run_omnireader_crew
+                    agent_result = run_omnireader_crew(msg_content)
+                elif "**Cyborg**" in full_response:
+                    from tech import run_tech_crew
+                    agent_result = run_tech_crew(msg_content)
+                elif "**SEO Team**" in full_response:
+                    from seo_empire import run_mass_seo_campaign
+                    agent_result = run_mass_seo_campaign(msg_content)
+                elif "**Multiplier**" in full_response:
+                    try:
+                        from content_multiplier import run_multiplier_crew
+                        agent_result = run_multiplier_crew(msg_content)
+                    except: agent_result = "Multiplier dependencies (tweepy/youtube-transcript-api) missing on cloud."
+                
+                # Show result in chat
+                st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
+
+        except Exception as e: 
+            st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Cloud System Offline: {e}"})
         
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
-    if st.session_state.active_tasks: st.session_state.active_tasks.pop()
-    st.rerun()
+        if st.session_state.active_tasks: st.session_state.active_tasks.pop()
+        st.rerun()
