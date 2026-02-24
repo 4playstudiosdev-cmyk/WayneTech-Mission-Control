@@ -3,9 +3,7 @@ import datetime
 from crewai import Agent, Task, Crew, Process
 from langchain_openai import ChatOpenAI
 
-# --- Local AI Setup ---
-os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
-os.environ["OPENAI_API_KEY"] = "NA"
+# ☁️ CLOUD READY
 llm = ChatOpenAI(model="llama-3.3-70b-versatile")
 
 def save_legal_report(topic, content):
@@ -48,6 +46,8 @@ def run_legal_crew(contract_text_or_query):
     )
 
     crew = Crew(agents=[risk_assessor, summarizer], tasks=[task1, task2], verbose=True)
-    result = crew.kickoff()
-    
-    return f"⚖️ **LEGAL AUDIT COMPLETE**\n\n📂 **Report Saved:** {save_legal_report('Legal_Task', str(result))}"
+    try:
+        result = crew.kickoff()
+        return f"⚖️ **LEGAL AUDIT COMPLETE**\n\n📂 **Report Saved:** {save_legal_report('Legal_Task', str(result))}"
+    except Exception as e:
+        return f"⚠️ **Legal Crew Error:** {str(e)}"

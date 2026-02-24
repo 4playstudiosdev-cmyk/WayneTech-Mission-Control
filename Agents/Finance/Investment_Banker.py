@@ -4,8 +4,7 @@ from crewai import Agent, Task, Crew
 from langchain_openai import ChatOpenAI
 from langchain_community.tools import DuckDuckGoSearchRun
 
-os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
-os.environ["OPENAI_API_KEY"] = "NA"
+# ☁️ CLOUD READY
 llm = ChatOpenAI(model="llama-3.3-70b-versatile")
 search_tool = DuckDuckGoSearchRun()
 
@@ -36,6 +35,8 @@ def run_finance_crew(company_or_market):
     )
 
     crew = Crew(agents=[vc_analyst], tasks=[task], verbose=True)
-    result = crew.kickoff()
-    
-    return f"💰 **VC DUE DILIGENCE COMPLETE**\n\n📂 **Report Saved:** {save_finance_report('Finance', str(result))}"
+    try:
+        result = crew.kickoff()
+        return f"💰 **VC DUE DILIGENCE COMPLETE**\n\n📂 **Report Saved:** {save_finance_report('Finance', str(result))}"
+    except Exception as e:
+        return f"⚠️ **Finance Crew Error:** {str(e)}"

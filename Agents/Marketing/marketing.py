@@ -4,11 +4,7 @@ from crewai import Agent, Task, Crew, Process
 from langchain_openai import ChatOpenAI
 from langchain_community.tools import DuckDuckGoSearchRun
 
-# --- Setup Local AI ---
-os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
-os.environ["OPENAI_BASE_URL"] = "http://localhost:11434/v1"
-os.environ["OPENAI_API_KEY"] = "NA"
-
+# ☁️ CLOUD READY: No localhost, uses Groq directly
 llm = ChatOpenAI(model="llama-3.3-70b-versatile")
 search_tool = DuckDuckGoSearchRun()
 
@@ -27,7 +23,6 @@ def save_to_file(task_name, content):
 def run_marketing_crew(campaign_topic):
     print(f"\n🦸‍♂️ OPENCLAW MARKETING TEAM ACTIVATED: {campaign_topic}\n")
 
-    # --- 1. RESEARCH (Ads Analyst) ---
     ads_analyst = Agent(
         role='Ads & Competitor Analyst',
         goal='Study the full meta marketing strategy and ad creatives from competitors.',
@@ -37,7 +32,6 @@ def run_marketing_crew(campaign_topic):
         llm=llm
     )
 
-    # --- 2. STRATEGY (Head of Marketing) ---
     head_of_marketing = Agent(
         role='Head of Marketing',
         goal='Create brand guidelines and plan the overarching campaign strategy.',
@@ -46,7 +40,6 @@ def run_marketing_crew(campaign_topic):
         llm=llm
     )
 
-    # --- 3. CREATION (Creative Director) ---
     creative_director = Agent(
         role='Creative Director',
         goal='Create the actual ad assets including ad copy, image/carousel ideas, and video scripts.',
@@ -55,7 +48,6 @@ def run_marketing_crew(campaign_topic):
         llm=llm
     )
 
-    # --- 4. EXECUTION (Performance Marketer) ---
     performance_marketer = Agent(
         role='Performance Marketer',
         goal='Compile everything into a structured campaign ready to be deployed directly in Meta Ads Manager.',
@@ -64,7 +56,6 @@ def run_marketing_crew(campaign_topic):
         llm=llm
     )
 
-    # --- TASKS (Sequential Pipeline) ---
     task_research = Task(
         description=f"Research the market and competitors for: '{campaign_topic}'. Identify their current ad angles, target audiences, and landing page strategies.",
         agent=ads_analyst,
@@ -89,7 +80,6 @@ def run_marketing_crew(campaign_topic):
         expected_output="A complete, ready-to-publish Meta Ads Campaign blueprint."
     )
 
-    # Assemble the OpenClaw Pipeline
     marketing_crew = Crew(
         agents=[ads_analyst, head_of_marketing, creative_director, performance_marketer], 
         tasks=[task_research, task_strategy, task_creation, task_execution], 
@@ -97,7 +87,9 @@ def run_marketing_crew(campaign_topic):
         process=Process.sequential
     )
     
-    result = marketing_crew.kickoff()
-    
-    saved_path = save_to_file(campaign_topic, str(result))
-    return f"🚀 **OPENCLAW CAMPAIGN READY**\n\n✅ 4-Agent Pipeline executed. Campaign Assets generated.\n📂 **Saved at:** {saved_path}"
+    try:
+        result = marketing_crew.kickoff()
+        saved_path = save_to_file(campaign_topic, str(result))
+        return f"🚀 **OPENCLAW CAMPAIGN READY**\n\n✅ 4-Agent Pipeline executed. Campaign Assets generated.\n📂 **Saved at:** {saved_path}"
+    except Exception as e:
+        return f"⚠️ **Marketing Crew Error:** {str(e)}"

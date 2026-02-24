@@ -3,13 +3,9 @@ import datetime
 from crewai import Agent, Task, Crew, Process
 from langchain_openai import ChatOpenAI
 
-# --- Setup Local AI ---
-os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
-os.environ["OPENAI_BASE_URL"] = "http://localhost:11434/v1"
-os.environ["OPENAI_API_KEY"] = "NA"
-
-# Llama 3 is the Brain
+# ☁️ CLOUD READY
 llm = ChatOpenAI(model="llama-3.3-70b-versatile")
+
 def save_leads(task_name, content):
     folder = "Deliverables/Sales_Leads"
     if not os.path.exists(folder): os.makedirs(folder)
@@ -22,7 +18,6 @@ def save_leads(task_name, content):
 def run_sales_crew(product_or_niche):
     print(f"\n💰 SALES DEPARTMENT ACTIVATED FOR NICHE: {product_or_niche}\n")
 
-    # --- 1. THE SCOUTS (Data Gatherers) ---
     reddit_discord_scout = Agent(
         role='Community Lead Hunter (Reddit/Discord)',
         goal='Identify users asking questions or having problems related to the product.',
@@ -47,7 +42,6 @@ def run_sales_crew(product_or_niche):
         llm=llm
     )
 
-    # --- 2. THE CLOSERS (Outreach & Messaging) ---
     dm_specialist = Agent(
         role='Direct Message (DM) Copywriter',
         goal='Write highly personalized, non-spammy DMs that get a 50%+ reply rate.',
@@ -64,30 +58,24 @@ def run_sales_crew(product_or_niche):
         llm=llm
     )
 
-    # --- TASKS ---
-    
-    # Step 1: Find where the leads are hiding
     task_scout = Task(
         description=f"Analyze the niche: '{product_or_niche}'. Where do these customers hang out? Give specific examples of subreddits, Discord server types, Twitter keywords, and Facebook group names to target.",
         agent=reddit_discord_scout,
         expected_output="A list of specific platforms, groups, and keywords to scrape."
     )
 
-    # Step 2: Write the DMs
     task_dm = Task(
         description="Based on the target audience identified, write 3 variations of an initial Outreach DM (for Insta/Twitter/Reddit). The DM MUST NOT sound salesy. It must ask a relevant question to start a conversation.",
         agent=dm_specialist,
         expected_output="3 highly personalized DM templates."
     )
 
-    # Step 3: Write the Email Sequence
     task_email = Task(
         description="Write a 3-step Cold Email sequence (Initial, Follow-up 1, Follow-up 2) for these leads. Include subject lines.",
         agent=email_closer,
         expected_output="3-step cold email sequence."
     )
 
-    # --- ASSEMBLE THE SALES CREW ---
     crew = Crew(
         agents=[reddit_discord_scout, twitter_scout, meta_scout, dm_specialist, email_closer],
         tasks=[task_scout, task_dm, task_email],
@@ -95,7 +83,9 @@ def run_sales_crew(product_or_niche):
         process=Process.sequential 
     )
 
-    result = crew.kickoff()
-    
-    saved_path = save_leads(product_or_niche, str(result))
-    return f"💰 **SALES OUTREACH PLAN READY**\n\n✅ Target Groups Identified & Custom DMs/Emails Written.\n📂 **Check Deliverables:** {saved_path}"
+    try:
+        result = crew.kickoff()
+        saved_path = save_leads(product_or_niche, str(result))
+        return f"💰 **SALES OUTREACH PLAN READY**\n\n✅ Target Groups Identified & Custom DMs/Emails Written.\n📂 **Check Deliverables:** {saved_path}"
+    except Exception as e:
+        return f"⚠️ **Sales Crew Error:** {str(e)}"
