@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 current_dir = os.path.dirname(os.path.abspath(__file__))
 agents_dir = os.path.join(current_dir, 'Agents')
 sys.path.append(agents_dir)
-for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 'OmniReader', 'Multiplier', 'sales']:
+for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 'OmniReader', 'Multiplier', 'sales', 'ImageGen']:
     sys.path.append(os.path.join(agents_dir, dept))
 
 # Load environment variables (API Keys)
@@ -26,15 +26,18 @@ except ImportError:
 
 st.set_page_config(page_title="Lab AgentX | Anime HQ", page_icon="🧪", layout="wide", initial_sidebar_state="expanded")
 
+# 📱 CLOUD FIX: RESPONSIVE CSS ADDED
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     .stApp { background-color: #f8f9fa; font-family: 'Inter', sans-serif; color: #1e293b; }
-    .top-stats { display: flex; justify-content: space-around; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid #e2e8f0; }
-    .stat-box { text-align: center; } .stat-value { font-size: 24px; font-weight: 700; color: #0f172a; } .stat-label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
+    .top-stats { display: flex; justify-content: space-around; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.02); margin-bottom: 20px; border: 1px solid #e2e8f0; flex-wrap: wrap; gap: 10px;}
+    .stat-box { text-align: center; flex: 1; min-width: 120px;} 
+    .stat-value { font-size: 24px; font-weight: 700; color: #0f172a; } 
+    .stat-label { font-size: 12px; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
     .kanban-header { font-size: 14px; font-weight: 600; color: #475569; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 2px solid #e2e8f0; text-transform: uppercase; }
     .k-assigned { border-bottom-color: #f59e0b; } .k-progress { border-bottom-color: #3b82f6; } .k-review { border-bottom-color: #8b5cf6; } .k-done { border-bottom-color: #10b981; }
-    .k-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s; }
+    .k-card { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.2s; word-wrap: break-word;}
     .k-title { font-size: 14px; font-weight: 600; color: #1e293b; margin-bottom: 5px; } .k-agent { font-size: 11px; color: #64748b; display: flex; align-items: center; gap: 5px;} .k-tag { font-size: 10px; background: #f1f5f9; padding: 2px 6px; border-radius: 4px; color: #475569; display: inline-block; margin-top: 8px; }
     .feed-header { font-size: 16px; font-weight: 600; margin-bottom: 15px; color: #1e293b; }
     .agent-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 6px; border-radius: 8px; background: white; border: 1px solid #e2e8f0; position: relative; cursor: pointer; transition: all 0.2s ease; }
@@ -45,11 +48,20 @@ st.markdown("""
     .agent-row:hover .agent-id-card { visibility: visible; opacity: 1; transform: translateY(0); }
     .id-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; border-bottom: 1px solid #334155; padding-bottom: 6px; } .id-role { color: #38bdf8; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; } .id-desc { font-size: 12px; color: #94a3b8; line-height: 1.4; } .id-stat { display: inline-block; margin-top: 8px; background: #1e293b; padding: 2px 6px; border-radius: 4px; font-size: 10px; color: #cbd5e1; }
     #MainMenu {visibility: hidden;} footer {visibility: hidden;}
+    
+    /* MOBILE RESPONSIVENESS */
+    @media (max-width: 768px) {
+        .top-stats { flex-direction: column; }
+        .stat-box { width: 100%; border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+        .agent-row { flex-direction: column; align-items: flex-start; gap: 5px;}
+        .agent-id-card { display: none; } /* Disable hover cards on small mobile screens */
+    }
 </style>
 """, unsafe_allow_html=True)
 
 AGENTS_INFO = {
     "Lab AgentX": {"name": "Lab AgentX", "role": "Squad Lead", "icon": "🧪", "desc": "The mastermind & eccentric CEO. Routes tasks.", "stat": "System Commander"},
+    "Sai": {"name": "Sai", "role": "Chief Illustrator", "icon": "🖌️", "desc": "Draws high-quality images, thumbnails, and concept art.", "stat": "Visuals"},
     "Naruto": {"name": "Naruto Uzumaki", "role": "Content Multiplier", "icon": "🦊", "desc": "Uses shadow clones to turn 1 video into 20 posts.", "stat": "Omni-Channel"},
     "Light": {"name": "Light Yagami", "role": "Appointment Setter", "icon": "📓", "desc": "Writes leads' names, books meetings, sends cold DMs.", "stat": "Sales"},
     "Orihime": {"name": "Orihime Inoue", "role": "Client Savior", "icon": "🛡️", "desc": "Heals client relations and prevents churn.", "stat": "Support"},
@@ -70,6 +82,8 @@ DELIVERABLES_FOLDER = "Deliverables"
 for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER]:
     if not os.path.exists(folder): os.makedirs(folder)
 
+# 🧠 HIDDEN MEMORY SYSTEM ADDED
+if "full_memory" not in st.session_state: st.session_state.full_memory = []
 if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. Awaiting your command, Commander."}]
 if "active_tasks" not in st.session_state: st.session_state.active_tasks = []
 if "assigned_tasks" not in st.session_state: st.session_state.assigned_tasks = []
@@ -81,13 +95,14 @@ def get_done_tasks():
     for root, _, filenames in os.walk(DELIVERABLES_FOLDER):
         for fname in filenames:
             fpath = os.path.join(root, fname)
-            tasks.append({"name": fname.replace(".md", "").replace(".txt", "").replace("_", " "), "path": fpath, "time": os.path.getmtime(fpath)})
+            tasks.append({"name": fname.replace(".md", "").replace(".txt", "").replace(".jpg", "").replace("_", " "), "path": fpath, "time": os.path.getmtime(fpath)})
     return sorted(tasks, key=lambda x: x['time'], reverse=True)[:5]
 
 done_tasks_list = get_done_tasks()
 
 current_active_agent = "Lab AgentX"
 agent_keywords_map = {
+    "Sai": ["sai", "draw", "image", "illustrate", "thumbnail", "picture", "art", "generate image", "paint"],
     "Naruto": ["naruto", "multiplier", "omni-channel"],
     "Light": ["light", "leadbooker", "booking", "sales"],
     "Orihime": ["orihime", "retentionbot", "churn"],
@@ -125,6 +140,23 @@ st.markdown(f"""
 """, unsafe_allow_html=True)
 
 with st.sidebar:
+    # 🎛️ CONTROLS: NEW CHAT & CANCEL TASK
+    st.markdown("### 🎛️ AGENCY CONTROLS")
+    col_c1, col_c2 = st.columns(2)
+    with col_c1:
+        if st.button("💬 New Chat", use_container_width=True):
+            # Save visible chat to hidden memory before clearing
+            st.session_state.full_memory.extend(st.session_state.messages)
+            st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. New session started. Context retained."}]
+            st.rerun()
+    with col_c2:
+        if st.button("🛑 Cancel Task", use_container_width=True):
+            st.session_state.active_tasks = []
+            st.session_state.messages.append({"role": "assistant", "content": "🛑 **Task Cancelled by Commander.** Agents are standing down."})
+            st.rerun()
+            
+    st.markdown("---")
+    
     st.markdown(f"### 🏢 SQUAD STATUS ({working_agents_count} Active)")
     agents_html = ""
     for key, info in AGENTS_INFO.items():
@@ -138,24 +170,19 @@ with st.sidebar:
     
     st.markdown("---")
     st.markdown("### 🔗 INTEGRATIONS")
-    with st.expander("⚙️ Connect APIs (REQUIRED)", expanded=True):
+    with st.expander("⚙️ Connect APIs (REQUIRED)", expanded=False):
         st.caption("Add your AI and Social API Keys here.")
         live_groq_key = st.text_input("Groq API Key (For AI Brain)", type="password", value=INITIAL_GROQ_KEY)
         tw_api = st.text_input("Twitter API Key", type="password")
         li_tok = st.text_input("LinkedIn Access Token", type="password")
 
-    st.markdown("---")
-    if st.button("🔄 Refresh System"): st.rerun()
-
-# 🐛 CLOUD FIX: THE ULTIMATE NUCLEAR ROUTING FIX
-# Yeh OpenAI ki API requests ko zabardasti Groq ki taraf mor dega
+# 🐛 CLOUD FIX: STANDARD ENVIRONMENT VARIABLES
 if live_groq_key:
     os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
-    os.environ["OPENAI_BASE_URL"] = "https://api.groq.com/openai/v1" # THIS WAS THE MISSING LINK CAUSING 401 ERROR!
+    os.environ["OPENAI_BASE_URL"] = "https://api.groq.com/openai/v1"
     os.environ["OPENAI_API_KEY"] = live_groq_key
     os.environ["GROQ_API_KEY"] = live_groq_key
     
-    # Global Patch to force ChatOpenAI to use Groq
     try:
         import langchain_openai
         if not hasattr(langchain_openai.ChatOpenAI, "_original_init"):
@@ -189,8 +216,13 @@ with col_kanban:
         if done_tasks_list:
             for task in done_tasks_list:
                 st.markdown(f"<div class='k-card' style='border-left: 3px solid #10b981;'><div class='k-title'>{task['name'][:25]}...</div><div class='k-agent'>✅ Completed</div></div>", unsafe_allow_html=True)
-                with open(task['path'], "r", encoding="utf-8", errors="ignore") as f: file_content = f.read()
-                st.download_button(label="📄 Download Report", data=file_content, file_name=task['name']+".txt", key=task['path']+"_txt")
+                # Handle Image downloads differently from Text downloads
+                if task['path'].endswith('.jpg') or task['path'].endswith('.png'):
+                    with open(task['path'], "rb") as f:
+                        st.download_button(label="🖼️ Download Image", data=f, file_name=os.path.basename(task['path']), mime="image/jpeg", key=task['path']+"_img")
+                else:
+                    with open(task['path'], "r", encoding="utf-8", errors="ignore") as f: file_content = f.read()
+                    st.download_button(label="📄 Download Report", data=file_content, file_name=task['name']+".txt", key=task['path']+"_txt")
 
 with col_feed:
     st.markdown("<div class='feed-header'>🟢 LIVE FEED</div>", unsafe_allow_html=True)
@@ -203,7 +235,7 @@ with col_feed:
 st.markdown("---")
 col_up, col_in = st.columns([1, 6])
 with col_up: uploaded_file = st.file_uploader("Upload", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed")
-with col_in: user_input = st.chat_input("Command the Agency (e.g., 'Senku, read this YouTube video...')...")
+with col_in: user_input = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...")
 
 if user_input:
     st.session_state.messages.append({"role": "user", "content": user_input})
@@ -223,6 +255,7 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
     3. DO NOT add any conversational filler, explanations, or analysis before or after the routing line.
     
     ROUTING LIST:
+    - "Task Assigned. **Sai** is drawing the illustration."
     - "Task Assigned. **Naruto** is generating omni-channel content."
     - "Task Assigned. **Light** is scheduling meetings."
     - "Task Assigned. **Orihime** is analyzing customer health."
@@ -247,7 +280,10 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
     else:
         try:
             api_messages = [{"role": "system", "content": system_prompt}]
-            for m in st.session_state.messages[-6:]:
+            
+            # Combine full hidden memory with current visible messages for contextual awareness
+            all_context = st.session_state.full_memory + st.session_state.messages
+            for m in all_context[-8:]:
                 content_str = m["content"]
                 if len(content_str) > 800:
                     content_str = content_str[:800] + "... [Content truncated for memory]"
@@ -269,6 +305,9 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                         if "**Gojo**" in full_response:
                             from marketing import run_marketing_crew
                             agent_result = run_marketing_crew(msg_content)
+                        elif "**Sai**" in full_response:
+                            from sai_illustrator import run_image_generation
+                            agent_result = run_image_generation(msg_content)
                         elif "**Itachi**" in full_response:
                             from oracle_intel import run_oracle_crew
                             agent_result = run_oracle_crew(msg_content)
@@ -283,7 +322,6 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                             agent_result = run_tech_crew(msg_content)
                         elif "**Akatsuki**" in full_response:
                             from seo_empire import run_mass_seo_campaign
-                            # Isko bhi yahin clean kar diya taake agent ko sirf keyword mile
                             clean_kw = msg_content.lower().replace("akatsuki,", "").replace("write seo blogs on:", "").replace("write seo blogs on", "").strip()
                             agent_result = run_mass_seo_campaign(clean_kw)
                         elif "**Naruto**" in full_response:
@@ -292,7 +330,9 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                                 agent_result = run_multiplier_crew(msg_content)
                             except: agent_result = "Multiplier dependencies missing on cloud."
                         
-                        st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
+                        # 🛑 CANCEL TASK CHECK
+                        if len(st.session_state.active_tasks) > 0:
+                            st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
             else:
                 error_details = api_response.get('error', {}).get('message', str(api_response))
                 st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Groq API Error: {error_details}"})
@@ -300,5 +340,6 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
         except Exception as e: 
             st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Connection Error: {str(e)}"})
         
-        if st.session_state.active_tasks: st.session_state.active_tasks.pop()
+        if len(st.session_state.active_tasks) > 0:
+            st.session_state.active_tasks.pop()
         st.rerun()
