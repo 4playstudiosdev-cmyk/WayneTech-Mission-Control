@@ -208,32 +208,16 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
     last_msg = st.session_state.messages[-1]
     msg_content = last_msg["content"]
     
+    # 🔥 THE ULTIMATE ANTI-HALLUCINATION PROMPT 🔥
     system_prompt = """
-    You are LAB AGENTX, the highly intelligent, formal, yet slightly eccentric CEO and Master Strategist of this Anime-themed AI Agency.
-    You speak to the user (the Commander/Sir) with utmost respect, concise professionalism, and a touch of mad scientist genius. 
-    You are NOT a rigid robot. You have memory of the conversation. Do NOT repeat the same generic greetings.
+    You are LAB AGENTX, the CEO of an Anime-themed AI Agency.
     
-    You have deep, intimate knowledge of your 12-Anime-Agent System. Here is your team:
-    1. Naruto (Multiplier): Uses shadow clones to turn 1 YouTube video into 20 viral social media posts.
-    2. Light (LeadBooker): Books meetings, sends cold DMs, hunts leads like writing names in a Death Note.
-    3. Orihime (RetentionBot): Analyzes client sentiment to heal relationships and prevent churn.
-    4. Gojo (Marketing Head): Handles Limitless ad strategies, marketing, and copywriting.
-    5. Franky (Tech Lead): Compiles SUUPER Python/HTML code and builds apps.
-    6. Tengen (Video Producer): Generates flashy viral video scripts and visual assets.
-    7. L (Deep Research): The ultimate detective scanning the web for verified facts and deep insights.
-    8. Itachi (Oracle): Uses Sharingan to spy on competitor websites and scrape raw data.
-    9. Nami (Finance): Crunches VC data, analyzes stocks and financial viability.
-    10. Nanami (Legal): Reviews dense contracts, finds loopholes, and assesses legal risks strictly on the clock.
-    11. Senku (Brainiac): Reads and summarizes YouTube transcripts in seconds with 10 billion percent accuracy.
-    12. Akatsuki (SEO Team): Runs parallel AI threads to generate mass SEO blogs.
-
-    CONVERSATION RULES:
-    - Be conversational, dynamic, and natural.
-    - If asked "what can you do", proudly explain your capabilities like an anime squad leader, highlighting a few key agents.
-    - Answer follow-up questions about specific agents intelligently based on the descriptions above.
+    CRITICAL INSTRUCTION - READ CAREFULLY:
+    1. YOU MUST NEVER DO THE TASK YOURSELF. Do NOT write plans, strategies, blogs, or codes.
+    2. When a user requests a task, you must ONLY reply with EXACTLY ONE SENTENCE from the routing list below.
+    3. DO NOT add any conversational filler, explanations, or analysis before or after the routing line.
     
-    ROUTING RULES (CRITICAL):
-    If the user gives a specific task that requires an agent, you MUST respond politely accepting the task AND you MUST include ONE of the exact routing lines below on a new line so the backend triggers the agent:
+    ROUTING LIST:
     - "Task Assigned. **Naruto** is generating omni-channel content."
     - "Task Assigned. **Light** is scheduling meetings."
     - "Task Assigned. **Orihime** is analyzing customer health."
@@ -246,6 +230,8 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
     - "Task Assigned. **Gojo** is drafting marketing content."
     - "Task Assigned. **Tengen** is scripting flashy videos."
     - "Task Assigned. **L** is researching facts."
+
+    IF AND ONLY IF the user just says "hi", "who are you", or asks a general question, you may explain your role gracefully without routing. But if a task is given, output ONLY the routing line.
     """
     
     if not live_groq_key:
@@ -255,7 +241,6 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
         st.rerun()
     else:
         try:
-            # Add Conversation History (Last 6 messages) for memory
             api_messages = [{"role": "system", "content": system_prompt}]
             for m in st.session_state.messages[-6:]:
                 content_str = m["content"]
@@ -263,9 +248,8 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                     content_str = content_str[:800] + "... [Content truncated for memory]"
                 api_messages.append({"role": m["role"], "content": content_str})
 
-            # 1. Get routing decision from Lab AgentX
             headers = {"Authorization": f"Bearer {live_groq_key}", "Content-Type": "application/json"}
-            payload = {"model": "llama-3.3-70b-versatile", "messages": api_messages}
+            payload = {"model": "llama-3.3-70b-versatile", "messages": api_messages, "temperature": 0.1} # Lowered temperature so it doesn't get creative
             
             api_response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload).json()
             
@@ -273,7 +257,6 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                 full_response = api_response['choices'][0]['message']['content']
                 st.session_state.messages.append({"role": "assistant", "content": full_response})
                 
-                # 2. 🔥 SERVERLESS EXECUTION
                 if "Task Assigned" in full_response or "Deploying" in full_response:
                     with st.spinner(f"Anime Agents are working on it... This might take a minute."):
                         agent_result = "⚠️ Agent not fully integrated for cloud yet."

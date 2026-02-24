@@ -20,7 +20,7 @@ def save_blog(keyword, content):
     return filename
 
 def generate_single_blog(keyword):
-    print(f"🚀 Started parallel generation for: {keyword}")
+    print(f"🚀 Started generation for: {keyword}")
     
     seo_agent = Agent(
         role='Chief SEO Strategist',
@@ -67,7 +67,7 @@ def generate_single_blog(keyword):
     crew = Crew(
         agents=[seo_agent, writer_agent, editor_agent],
         tasks=[task1, task2, task3],
-        verbose=True, # 🐛 FIXED: 'int' is not callable bug fixed by setting True
+        verbose=True, 
         process=Process.sequential 
     )
 
@@ -83,8 +83,10 @@ def run_mass_seo_campaign(keywords_input):
         keywords = [k.strip() for k in keywords_input.upper().split(' AND ')]
         
     saved_files = []
+    error_logs = []
     
-    with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(keywords), 5)) as executor:
+    # 🐛 FIXED: Changed max_workers from 5 to 1 to prevent Groq API Rate Limit crashes
+    with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         future_to_keyword = {executor.submit(generate_single_blog, kw): kw for kw in keywords}
         for future in concurrent.futures.as_completed(future_to_keyword):
             kw = future_to_keyword[future]
@@ -93,7 +95,16 @@ def run_mass_seo_campaign(keywords_input):
                 saved_files.append(filepath)
                 print(f"✅ Success: Blog generated for '{kw}'")
             except Exception as exc:
-                print(f"❌ Error generating blog for '{kw}': {exc}")
+                error_msg = f"'{kw}': {exc}"
+                error_logs.append(error_msg)
+                print(f"❌ Error generating blog for {error_msg}")
 
-    report = f"🌐 **MASS SEO CAMPAIGN COMPLETE**\n\n✅ {len(saved_files)} Blogs generated concurrently.\n📂 **Files Saved in:** Deliverables/SEO_Blogs/"
+    report = f"🌐 **MASS SEO CAMPAIGN COMPLETE**\n\n✅ {len(saved_files)} Blogs generated.\n"
+    
+    # Show exactly why it failed in the UI if there's an error
+    if error_logs:
+        report += "\n⚠️ **API Limits Hit for:**\n" + "\n".join(error_logs) + "\n*(Tip: Try generating one blog at a time)*"
+    else:
+        report += "📂 **Files Saved in:** Deliverables/SEO_Blogs/"
+        
     return report
