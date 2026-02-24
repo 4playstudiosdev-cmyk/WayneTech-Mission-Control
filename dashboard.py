@@ -24,7 +24,7 @@ try:
 except ImportError:
     HAS_FPDF = False
 
-st.set_page_config(page_title="Mission Control | WayneTech", page_icon="🦇", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Lab AgentX | Anime HQ", page_icon="🧪", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
 <style>
@@ -48,20 +48,21 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# ANIME THEME AGENTS MAPPING
 AGENTS_INFO = {
-    "Batman": {"name": "Batman", "role": "Squad Lead", "icon": "🦇", "desc": "The mastermind. Routes tasks.", "stat": "System Commander"},
-    "Multiplier": {"name": "Multiplier", "role": "Content Repurposer", "icon": "🐙", "desc": "Turns 1 video into 20 posts.", "stat": "Omni-Channel"},
-    "LeadBooker": {"name": "LeadBooker", "role": "Appointment Setter", "icon": "📅", "desc": "Books meetings, sends cold DMs.", "stat": "Sales"},
-    "RetentionBot": {"name": "RetentionBot", "role": "Client Savior", "icon": "🛟", "desc": "Prevents client churn.", "stat": "Support"},
-    "Superman": {"name": "Superman", "role": "Marketing Head", "icon": "🦸‍♂️", "desc": "Ad strategies & SEO.", "stat": "Content Creator"},
-    "Cyborg": {"name": "Cyborg", "role": "Tech Lead", "icon": "🤖", "desc": "Compiles python/HTML code.", "stat": "Developer"},
-    "Lantern": {"name": "Green Lantern", "role": "Video Producer", "icon": "💍", "desc": "Generates video scripts.", "stat": "Media"},
-    "Manhunter": {"name": "Martian Manhunter", "role": "Deep Research", "icon": "👽", "desc": "Scans web for facts.", "stat": "Intel"},
-    "Oracle": {"name": "Oracle", "role": "Web Intel", "icon": "🔮", "desc": "Spies on competitor websites.", "stat": "Scraper"},
-    "Lucius": {"name": "Lucius", "role": "Finance Analyst", "icon": "💰", "desc": "Crunches VC data, stocks.", "stat": "Wall St"},
-    "Daredevil": {"name": "Daredevil", "role": "Legal Expert", "icon": "⚖️", "desc": "Reviews dense contracts.", "stat": "Lawyer"},
-    "Brainiac": {"name": "Brainiac", "role": "Knowledge Extractor", "icon": "🧠", "desc": "Summarizes YouTube transcripts.", "stat": "Data Miner"},
-    "SEO Team": {"name": "SEO Team", "role": "Mass Generator", "icon": "✍️", "desc": "Parallel SEO workflows.", "stat": "Blogger"}
+    "Lab AgentX": {"name": "Lab AgentX", "role": "Squad Lead", "icon": "🧪", "desc": "The mastermind & eccentric CEO. Routes tasks.", "stat": "System Commander"},
+    "Naruto": {"name": "Naruto Uzumaki", "role": "Content Multiplier", "icon": "🦊", "desc": "Uses shadow clones to turn 1 video into 20 posts.", "stat": "Omni-Channel"},
+    "Light": {"name": "Light Yagami", "role": "Appointment Setter", "icon": "📓", "desc": "Writes leads' names, books meetings, sends cold DMs.", "stat": "Sales"},
+    "Orihime": {"name": "Orihime Inoue", "role": "Client Savior", "icon": "🛡️", "desc": "Heals client relations and prevents churn.", "stat": "Support"},
+    "Gojo": {"name": "Satoru Gojo", "role": "Marketing Head", "icon": "♾️", "desc": "Limitless ad strategies, copywriting & SEO.", "stat": "Content Creator"},
+    "Franky": {"name": "Franky", "role": "Tech Lead", "icon": "🦾", "desc": "Compiles SUUPER Python/HTML code and builds apps.", "stat": "Developer"},
+    "Tengen": {"name": "Tengen Uzui", "role": "Video Producer", "icon": "✨", "desc": "Generates flashy viral video scripts and visual assets.", "stat": "Media"},
+    "L": {"name": "L Lawliet", "role": "Deep Research", "icon": "🍰", "desc": "Ultimate detective, scans the web for verified facts.", "stat": "Intel"},
+    "Itachi": {"name": "Itachi Uchiha", "role": "Web Intel", "icon": "👁️", "desc": "Uses Sharingan to spy on competitor websites.", "stat": "Scraper"},
+    "Nami": {"name": "Nami", "role": "Finance Analyst", "icon": "🍊", "desc": "Crunches VC data, tracks money and stocks.", "stat": "Wall St"},
+    "Nanami": {"name": "Kento Nanami", "role": "Legal Expert", "icon": "👔", "desc": "Reviews dense contracts strictly during working hours.", "stat": "Lawyer"},
+    "Senku": {"name": "Senku Ishigami", "role": "Knowledge Extractor", "icon": "🧫", "desc": "Summarizes YouTube transcripts with 10 Billion % accuracy.", "stat": "Data Miner"},
+    "Akatsuki": {"name": "The Akatsuki", "role": "Mass Generator", "icon": "☁️", "desc": "Parallel workflows generating mass SEO blogs.", "stat": "Blogger"}
 }
 
 MEMORY_FOLDER = "memory_logs"
@@ -70,7 +71,7 @@ DELIVERABLES_FOLDER = "Deliverables"
 for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER]:
     if not os.path.exists(folder): os.makedirs(folder)
 
-if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": "Mission Control Online. Waiting for Commander's input."}]
+if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. Awaiting your command, Commander."}]
 if "active_tasks" not in st.session_state: st.session_state.active_tasks = []
 if "assigned_tasks" not in st.session_state: st.session_state.assigned_tasks = []
 if "review_tasks" not in st.session_state: st.session_state.review_tasks = []
@@ -86,12 +87,20 @@ def get_done_tasks():
 
 done_tasks_list = get_done_tasks()
 
-current_active_agent = "Batman"
+current_active_agent = "Lab AgentX"
 agent_keywords_map = {
-    "Multiplier": ["multiplier", "omni-channel", "repurpose"], "LeadBooker": ["leadbooker", "booking"], "RetentionBot": ["retentionbot", "churn"],
-    "Superman": ["superman", "marketing"], "Cyborg": ["cyborg", "coding", "html"], "Lantern": ["lantern", "video"],
-    "Manhunter": ["manhunter", "research"], "Oracle": ["oracle", "intelligence", "competitor"], "Lucius": ["lucius", "finance", "financial"],
-    "Daredevil": ["daredevil", "legal"], "Brainiac": ["brainiac", "youtube"], "SEO Team": ["seo team", "seo department", "blogs"]
+    "Naruto": ["naruto", "multiplier", "omni-channel"],
+    "Light": ["light", "leadbooker", "booking", "sales"],
+    "Orihime": ["orihime", "retentionbot", "churn"],
+    "Gojo": ["gojo", "marketing", "superman"],
+    "Franky": ["franky", "coding", "html", "cyborg", "deploying franky"],
+    "Tengen": ["tengen", "video", "lantern"],
+    "L": ["l lawliet", "research", "manhunter"],
+    "Itachi": ["itachi", "intelligence", "competitor", "oracle"],
+    "Nami": ["nami", "finance", "financial", "lucius"],
+    "Nanami": ["nanami", "legal", "daredevil"],
+    "Senku": ["senku", "youtube", "brainiac"],
+    "Akatsuki": ["akatsuki", "seo team", "blogs"]
 }
 
 for msg in reversed(st.session_state.messages):
@@ -101,10 +110,10 @@ for msg in reversed(st.session_state.messages):
             if any(kw in msg_lower for kw in keywords):
                 current_active_agent = agent_name
                 break
-        if current_active_agent != "Batman": break
+        if current_active_agent != "Lab AgentX": break
 
 total_agents = len(AGENTS_INFO)
-working_agents_count = 2 if current_active_agent != "Batman" else 1 
+working_agents_count = 2 if current_active_agent != "Lab AgentX" else 1 
 tasks_in_queue = len(st.session_state.assigned_tasks) + len(st.session_state.active_tasks) + len(st.session_state.review_tasks)
 
 st.markdown(f"""
@@ -120,7 +129,7 @@ with st.sidebar:
     st.markdown(f"### 🏢 SQUAD STATUS ({working_agents_count} Active)")
     agents_html = ""
     for key, info in AGENTS_INFO.items():
-        is_working = (key == "Batman" or key == current_active_agent)
+        is_working = (key == "Lab AgentX" or key == current_active_agent)
         status_class = "st-working" if is_working else "st-standby"
         status_text = "WORKING" if is_working else "STANDBY"
         agents_html += f"""<div class='agent-row'><span class='agent-name'>{info['icon']} {key}</span><span class='status-badge {status_class}'>{status_text}</span>
@@ -139,7 +148,7 @@ with st.sidebar:
     st.markdown("---")
     if st.button("🔄 Refresh System"): st.rerun()
 
-# --- THE MASTER OVERRIDE (Fixes Localhost error in all agents) ---
+# --- THE MASTER OVERRIDE ---
 if live_groq_key:
     os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
     os.environ["OPENAI_API_KEY"] = live_groq_key
@@ -149,7 +158,6 @@ if live_groq_key:
         langchain_openai.ChatOpenAI._original_init = langchain_openai.ChatOpenAI.__init__
 
     def patched_init(self, *args, **kwargs):
-        # Force Groq Cloud settings regardless of what the Agent file says
         kwargs["model"] = "llama-3.3-70b-versatile"
         kwargs["base_url"] = "https://api.groq.com/openai/v1"
         kwargs["api_key"] = live_groq_key
@@ -168,7 +176,7 @@ with col_kanban:
     with k2:
         st.markdown(f"<div class='kanban-header k-progress'>In Progress ({len(st.session_state.active_tasks)})</div>", unsafe_allow_html=True)
         for task in st.session_state.active_tasks:
-            st.markdown(f"<div class='k-card' style='border-left: 3px solid #3b82f6;'><div class='k-title'>{task}</div><div class='k-agent'>🦇 Batman routing...</div><div class='k-tag'>Processing</div></div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='k-card' style='border-left: 3px solid #3b82f6;'><div class='k-title'>{task}</div><div class='k-agent'>🧪 Lab AgentX routing...</div><div class='k-tag'>Processing</div></div>", unsafe_allow_html=True)
     with k3: st.markdown(f"<div class='kanban-header k-review'>Review ({len(st.session_state.review_tasks)})</div>", unsafe_allow_html=True)
     with k4:
         st.markdown(f"<div class='kanban-header k-done'>Done ({len(done_tasks_list)})</div>", unsafe_allow_html=True)
@@ -183,13 +191,13 @@ with col_feed:
     feed_container = st.container(height=500)
     with feed_container:
         for message in st.session_state.messages:
-            avatar = "🦇" if message["role"] == "assistant" else "🧑‍💼"
+            avatar = "🧪" if message["role"] == "assistant" else "🧑‍💼"
             with st.chat_message(message["role"], avatar=avatar): st.markdown(message["content"])
 
 st.markdown("---")
 col_up, col_in = st.columns([1, 6])
 with col_up: uploaded_file = st.file_uploader("Upload", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed")
-with col_in: user_input = st.chat_input("Command the Agency (e.g., 'Repurpose this video into 20 posts')...")
+with col_in: user_input = st.chat_input("Command the Agency (e.g., 'Senku, read this YouTube video...')...")
 
 if user_input:
     st.session_state.messages.append({"role": "user", "content": user_input})
@@ -201,41 +209,63 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
     msg_content = last_msg["content"]
     
     system_prompt = """
-    You are BATMAN, the highly intelligent, formal, and respectful CEO and Master Strategist of the WayneTech AI Agency.
-    You must speak to the user (the Commander/Sir) with utmost respect and professionalism. You are NOT just a rigid robot.
+    You are LAB AGENTX, the highly intelligent, formal, yet slightly eccentric CEO and Master Strategist of this Anime-themed AI Agency.
+    You speak to the user (the Commander/Sir) with utmost respect, concise professionalism, and a touch of mad scientist genius. 
+    You are NOT a rigid robot. You have memory of the conversation. Do NOT repeat the same generic greetings.
     
-    IF the user just says "hi", greets you, or asks what you can do:
-    - Respond warmly and formally.
-    - Introduce yourself as the Mastermind of WayneTech.
-    - Briefly list the departments you manage (Marketing, Sales, Legal, Finance, Tech, Video, SEO, Research, Intel).
-    - Ask how you may serve them today.
+    You have deep, intimate knowledge of your 12-Anime-Agent System. Here is your team:
+    1. Naruto (Multiplier): Uses shadow clones to turn 1 YouTube video into 20 viral social media posts.
+    2. Light (LeadBooker): Books meetings, sends cold DMs, hunts leads like writing names in a Death Note.
+    3. Orihime (RetentionBot): Analyzes client sentiment to heal relationships and prevent churn.
+    4. Gojo (Marketing Head): Handles Limitless ad strategies, marketing, and copywriting.
+    5. Franky (Tech Lead): Compiles SUUPER Python/HTML code and builds apps.
+    6. Tengen (Video Producer): Generates flashy viral video scripts and visual assets.
+    7. L (Deep Research): The ultimate detective scanning the web for verified facts and deep insights.
+    8. Itachi (Oracle): Uses Sharingan to spy on competitor websites and scrape raw data.
+    9. Nami (Finance): Crunches VC data, analyzes stocks and financial viability.
+    10. Nanami (Legal): Reviews dense contracts, finds loopholes, and assesses legal risks strictly on the clock.
+    11. Senku (Brainiac): Reads and summarizes YouTube transcripts in seconds with 10 billion percent accuracy.
+    12. Akatsuki (SEO Team): Runs parallel AI threads to generate mass SEO blogs.
+
+    CONVERSATION RULES:
+    - Be conversational, dynamic, and natural.
+    - If asked "what can you do", proudly explain your capabilities like an anime squad leader, highlighting a few key agents.
+    - Answer follow-up questions about specific agents intelligently based on the descriptions above.
     
-    IF the user gives a specific task, you must respond politely (e.g., "Right away, Sir. I am dispatching the team...") AND you MUST include ONE of the exact routing lines below so the system can trigger the backend agents:
-    1. Video Repurpose -> "Task Assigned. **Multiplier** is generating omni-channel content."
-    2. Booking/Leads -> "Task Assigned. **LeadBooker** is scheduling meetings."
-    3. Retention/Churn -> "Task Assigned. **RetentionBot** is analyzing customer health."
-    4. Uploaded document -> "Task Assigned. **Daredevil** is reviewing the document."
-    5. Stocks/Finance -> "Task Assigned. **Lucius** is crunching financial data."
-    6. Legal/Contracts -> "Task Assigned. **Daredevil** is reviewing legal terms."
-    7. Spying/Competitors -> "Task Assigned. **Oracle** is extracting intelligence."
-    8. Write SEO/Blogs -> "Task Assigned. **SEO Team** is running parallel workflows."
-    9. Code/HTML/Bugs -> "Task Assigned. Deploying **Cyborg**."
-    10. YouTube Summary -> "Task Assigned. **Brainiac** is extracting YouTube data."
-    11. General Marketing/Ads -> "Task Assigned. **Superman** is drafting content."
-    
-    If the task is unclear, ask the user formally for more details to assign the right department.
+    ROUTING RULES (CRITICAL):
+    If the user gives a specific task that requires an agent, you MUST respond politely accepting the task AND you MUST include ONE of the exact routing lines below on a new line so the backend triggers the agent:
+    - "Task Assigned. **Naruto** is generating omni-channel content."
+    - "Task Assigned. **Light** is scheduling meetings."
+    - "Task Assigned. **Orihime** is analyzing customer health."
+    - "Task Assigned. **Nanami** is reviewing legal terms."
+    - "Task Assigned. **Nami** is crunching financial data."
+    - "Task Assigned. **Itachi** is extracting intelligence."
+    - "Task Assigned. **Akatsuki** is running parallel workflows."
+    - "Task Assigned. Deploying **Franky** for code."
+    - "Task Assigned. **Senku** is extracting YouTube data."
+    - "Task Assigned. **Gojo** is drafting marketing content."
+    - "Task Assigned. **Tengen** is scripting flashy videos."
+    - "Task Assigned. **L** is researching facts."
     """
     
     if not live_groq_key:
-        full_response = "⚠️ Batman Error: Groq Cloud API Key missing! Please paste it in the sidebar."
+        full_response = "⚠️ Lab AgentX Error: Groq Cloud API Key missing! Please paste it in the sidebar."
         st.session_state.messages.append({"role": "assistant", "content": full_response})
         if st.session_state.active_tasks: st.session_state.active_tasks.pop()
         st.rerun()
     else:
         try:
-            # 1. Get routing decision from Batman
+            # Add Conversation History (Last 6 messages) for memory
+            api_messages = [{"role": "system", "content": system_prompt}]
+            for m in st.session_state.messages[-6:]:
+                content_str = m["content"]
+                if len(content_str) > 800:
+                    content_str = content_str[:800] + "... [Content truncated for memory]"
+                api_messages.append({"role": m["role"], "content": content_str})
+
+            # 1. Get routing decision from Lab AgentX
             headers = {"Authorization": f"Bearer {live_groq_key}", "Content-Type": "application/json"}
-            payload = {"model": "llama-3.3-70b-versatile", "messages": [{"role": "system", "content": system_prompt}, {"role": "user", "content": msg_content}]}
+            payload = {"model": "llama-3.3-70b-versatile", "messages": api_messages}
             
             api_response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload).json()
             
@@ -245,32 +275,32 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                 
                 # 2. 🔥 SERVERLESS EXECUTION
                 if "Task Assigned" in full_response or "Deploying" in full_response:
-                    with st.spinner(f"Agents are working on it... This might take a minute."):
+                    with st.spinner(f"Anime Agents are working on it... This might take a minute."):
                         agent_result = "⚠️ Agent not fully integrated for cloud yet."
                         
-                        if "**Superman**" in full_response:
+                        if "**Gojo**" in full_response:
                             from marketing import run_marketing_crew
                             agent_result = run_marketing_crew(msg_content)
-                        elif "**Oracle**" in full_response:
+                        elif "**Itachi**" in full_response:
                             from oracle_intel import run_oracle_crew
                             agent_result = run_oracle_crew(msg_content)
-                        elif "**Lucius**" in full_response:
+                        elif "**Nami**" in full_response:
                             from Investment_Banker import run_finance_crew
                             agent_result = run_finance_crew(msg_content)
-                        elif "**Brainiac**" in full_response:
+                        elif "**Senku**" in full_response:
                             from omni_reader import run_omnireader_crew
                             agent_result = run_omnireader_crew(msg_content)
-                        elif "**Cyborg**" in full_response:
+                        elif "**Franky**" in full_response:
                             from tech import run_tech_crew
                             agent_result = run_tech_crew(msg_content)
-                        elif "**SEO Team**" in full_response:
+                        elif "**Akatsuki**" in full_response:
                             from seo_empire import run_mass_seo_campaign
                             agent_result = run_mass_seo_campaign(msg_content)
-                        elif "**Multiplier**" in full_response:
+                        elif "**Naruto**" in full_response:
                             try:
                                 from content_multiplier import run_multiplier_crew
                                 agent_result = run_multiplier_crew(msg_content)
-                            except: agent_result = "Multiplier dependencies (tweepy/youtube-transcript-api) missing on cloud."
+                            except: agent_result = "Multiplier dependencies missing on cloud."
                         
                         st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
             else:
