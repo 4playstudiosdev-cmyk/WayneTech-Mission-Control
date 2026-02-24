@@ -1,8 +1,9 @@
 import os
 import datetime
+import re # <-- Yeh line add karein
 from crewai import Agent, Task, Crew
 from langchain_openai import ChatOpenAI
-from langchain_community.document_loaders import YoutubeLoader # 🐛 FIXED: Bulletproof YouTube Loader
+from langchain_community.document_loaders import YoutubeLoader 
 
 llm = ChatOpenAI(model="llama-3.3-70b-versatile")
 
@@ -17,9 +18,16 @@ def save_yt_report(topic, content):
 def run_omnireader_crew(youtube_link_or_query):
     print(f"\n🧠 BRAINIAC (OMNI-READER) ACTIVATED FOR: {youtube_link_or_query}\n")
 
+    # 🐛 FIX: Regex se sirf link nikalo
+    match = re.search(r'(https?://[^\s]+)', youtube_link_or_query)
+    if match:
+        clean_url = match.group(0)
+    else:
+        return "⚠️ **Error:** Aapke message mein koi valid YouTube link nahi mila."
+
     # 1. Fetch Transcript Directly (Bug Fixed!)
     try:
-        loader = YoutubeLoader.from_youtube_url(youtube_link_or_query, add_video_info=False)
+        loader = YoutubeLoader.from_youtube_url(clean_url, add_video_info=False)
         docs = loader.load()
         if not docs:
             return "⚠️ **Error:** No captions found for this video."
@@ -27,7 +35,7 @@ def run_omnireader_crew(youtube_link_or_query):
     except Exception as e:
         return f"⚠️ **Error fetching captions:** {e} (Make sure the link is correct and video has subtitles)."
 
-    # 2. Agent Initialization
+    # --- Baaki saara purana code wese hi rahega ---
     yt_summarizer = Agent(
         role='Knowledge Extraction Specialist',
         goal='Extract actionable steps and key knowledge from the provided video transcript.',
