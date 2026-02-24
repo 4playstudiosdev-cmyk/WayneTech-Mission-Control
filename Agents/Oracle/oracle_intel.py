@@ -1,23 +1,36 @@
 import os
 import datetime
+import requests
+from bs4 import BeautifulSoup
 from crewai import Agent, Task, Crew, Process
 from langchain_openai import ChatOpenAI
-from crewai_tools import ScrapeWebsiteTool
-
-# --- Setup Local AI ---
-os.environ["OPENAI_API_BASE"] = "http://localhost:11434/v1"
-os.environ["OPENAI_BASE_URL"] = "http://localhost:11434/v1"
-os.environ["OPENAI_API_KEY"] = "NA"
+from langchain.tools import tool
 
 llm = ChatOpenAI(model="llama-3.3-70b-versatile")
-# Ye tool AI ko power dega kisi bhi website ko read karne ki
-scrape_tool = ScrapeWebsiteTool()
+
+# 🐛 FIXED: Custom Bulletproof Scraper Tool (No Embeddings API required!)
+@tool("Scrape Website Text")
+def scrape_tool(url: str) -> str:
+    """Useful to scrape and read the text content of a website URL. Use this to read competitor websites."""
+    try:
+        # Browser jaisa pretend karne ke liye headers
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+        response = requests.get(url, headers=headers, timeout=15)
+        soup = BeautifulSoup(response.content, 'html.parser')
+        
+        # Website se kachra (scripts/styles) nikal kar sirf text lena
+        for script in soup(["script", "style"]):
+            script.extract()
+            
+        text = soup.get_text(separator='\n', strip=True)
+        return text[:15000] # LLM ki memory full na ho isliye first 15k characters
+    except Exception as e:
+        return f"Failed to scrape website. Error: {str(e)}"
 
 def save_intel(task_name, content):
     folder = "Deliverables/Oracle_Intel"
     if not os.path.exists(folder): os.makedirs(folder)
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    # File name safe bananane ke liye
     safe_name = "".join([c for c in task_name if c.isalpha() or c.isdigit() or c==' ']).rstrip()[:20]
     filename = f"{folder}/Competitor_Report_{safe_name}_{timestamp}.md"
     with open(filename, "w", encoding="utf-8") as f:
@@ -25,12 +38,12 @@ def save_intel(task_name, content):
     return filename
 
 def run_oracle_crew(target_url_or_desc):
-    print(f"\n🔮 ORACLE ACTIVATED FOR: {target_url_or_desc}\n")
+    print(f"\n🔮 ITACHI (ORACLE) ACTIVATED FOR: {target_url_or_desc}\n")
 
     # --- AGENT 1: The Scraper (Data Gatherer) ---
     scraper_agent = Agent(
         role='Chief Web Scraper & Data Extractor',
-        goal='Extract all meaningful text, pricing, and services from the given website or topic.',
+        goal='Extract all meaningful text, pricing, and services from the given website URL.',
         backstory='You are a master hacker and data gatherer. You can read a website and instantly know what they are selling.',
         tools=[scrape_tool],
         allow_delegation=False,
@@ -57,7 +70,7 @@ def run_oracle_crew(target_url_or_desc):
 
     # --- TASKS ---
     task1 = Task(
-        description=f"Go to the web and gather all information regarding: '{target_url_or_desc}'. If it's a URL, scrape it. If it's a company name, find their details.",
+        description=f"Go to the web and gather all information regarding: '{target_url_or_desc}'. YOU MUST USE the 'Scrape Website Text' tool to read the URL provided.",
         agent=scraper_agent,
         expected_output="Raw scraped text containing business details, features, and pricing."
     )
@@ -82,7 +95,9 @@ def run_oracle_crew(target_url_or_desc):
         process=Process.sequential 
     )
 
-    result = crew.kickoff()
-    
-    saved_path = save_intel(target_url_or_desc, str(result))
-    return f"🔮 **ORACLE INTELLIGENCE GATHERED**\n\n✅ Competitor analyzed and Attack Plan created.\n📂 **Report Saved:** {saved_path}"
+    try:
+        result = crew.kickoff()
+        saved_path = save_intel(target_url_or_desc, str(result))
+        return f"🔮 **ORACLE INTELLIGENCE GATHERED**\n\n✅ Competitor analyzed and Attack Plan created.\n📂 **Report Saved:** {saved_path}"
+    except Exception as e:
+        return f"⚠️ **Oracle Error:** {str(e)}"
