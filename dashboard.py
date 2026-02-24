@@ -44,30 +44,25 @@ if st.session_state.current_page == "landing":
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        /* Hide Streamlit Header, Menu, and Sidebar completely */
         header[data-testid="stHeader"] { display: none !important; }
         section[data-testid="stSidebar"] { display: none !important; }
         button[data-testid="collapsedControl"] { display: none !important; }
         .block-container { padding-top: 0rem !important; max-width: 100% !important; padding-left: 0 !important; padding-right: 0 !important;}
         footer {display: none !important;}
         
-        /* Landing Page Base */
         .stApp { background-color: #020617; font-family: 'Plus Jakarta Sans', sans-serif; color: white; background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 70%); }
         
-        /* Custom Navbar */
         .custom-navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
         .nav-brand { font-size: 24px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
         .nav-links { font-size: 14px; font-weight: 600; color: #94a3b8; cursor: pointer; }
         .nav-links:hover { color: #38bdf8; }
         
-        /* Hero Section */
         .hero-section { text-align: center; padding: 6rem 2rem 4rem 2rem; max-width: 900px; margin: 0 auto; }
         .badge { background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 6px 16px; border-radius: 30px; font-size: 12px; font-weight: 700; letter-spacing: 1px; display: inline-block; margin-bottom: 20px; border: 1px solid rgba(56, 189, 248, 0.2); }
         .hero-title { font-size: 4.5rem; font-weight: 800; color: #f8fafc; margin-bottom: 1.5rem; line-height: 1.1; letter-spacing: -1px; }
         .hero-title span { background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-subtitle { font-size: 1.25rem; color: #94a3b8; max-width: 700px; margin: 0 auto 3rem auto; line-height: 1.6; }
         
-        /* Pricing Grid */
         .pricing-wrapper { padding: 0 2rem 6rem 2rem; max-width: 1200px; margin: 0 auto; }
         .pricing-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
         
@@ -85,11 +80,9 @@ if st.session_state.current_page == "landing":
         .feature-list li { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
         .feature-list li::before { content: '✓'; color: #38bdf8; font-weight: 900; background: rgba(56,189,248,0.1); width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-size: 12px; }
         
-        /* Streamlit Button Overrides for Pricing */
         div[data-testid="stButton"] > button { width: 100%; border-radius: 12px; padding: 24px 0; font-weight: 700; background: #1e293b; color: #f8fafc; border: 1px solid #475569; transition: all 0.2s; font-size: 16px; }
         div[data-testid="stButton"] > button:hover { background: #f8fafc; color: #0f172a; border-color: #f8fafc; transform: scale(1.02); }
         
-        /* Elite Plan Button */
         .elite-btn div[data-testid="stButton"] > button { background: #38bdf8; color: #0f172a; border: none; }
         .elite-btn div[data-testid="stButton"] > button:hover { background: #0ea5e9; color: white; }
         
@@ -193,14 +186,12 @@ if st.session_state.current_page == "landing":
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
-    # 📱 DASHBOARD CSS (Light/Clean UI, Sidebar visible)
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
         .stApp { background-color: #f4f7f6 !important; font-family: 'Plus Jakarta Sans', sans-serif; }
         
-        /* Ensure Sidebar is visible here */
         section[data-testid="stSidebar"] { display: block !important; }
         button[data-testid="collapsedControl"] { display: block !important; }
         .block-container { padding-top: 3rem !important; max-width: 1400px !important; }
@@ -234,32 +225,22 @@ elif st.session_state.current_page == "dashboard":
         .k-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; } 
         .k-agent { font-size: 12px; color: #64748b !important; display: flex; align-items: center; gap: 6px; font-weight: 500;} 
         
+        /* 🐛 BUG FIX: Hover Card Overlap Removed! Now it uses a clean inline flexbox */
         .agent-row { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 12px; margin-bottom: 8px; border-radius: 10px; 
             background: #ffffff !important; 
-            border: 1px solid #e2e8f0; position: relative; cursor: pointer; 
+            border: 1px solid #e2e8f0; cursor: pointer; 
             transition: all 0.2s ease; 
         }
-        .agent-row:hover { border-color: #94a3b8; box-shadow: 0 4px 10px rgba(0,0,0,0.04); transform: scale(1.02); }
-        .agent-name, .agent-name * { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px; color: #0f172a !important; } 
+        .agent-row:hover { border-color: #94a3b8; box-shadow: 0 4px 10px rgba(0,0,0,0.06); transform: translateY(-1px); }
+        .agent-name-container { display: flex; flex-direction: column; gap: 2px; }
+        .agent-name, .agent-name * { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: #0f172a !important; } 
+        .agent-role { font-size: 10px; color: #64748b !important; font-weight: 600; margin-left: 28px; text-transform: uppercase; letter-spacing: 0.5px;}
         
         .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 800; letter-spacing: 0.5px;}
         .st-working, .st-working * { background: #dcfce7 !important; color: #166534 !important; border: 1px solid #bbf7d0 !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.2); } 
         .st-standby, .st-standby * { background: #f8fafc !important; color: #64748b !important; border: 1px solid #e2e8f0 !important; }
-        
-        .agent-id-card { 
-            visibility: hidden; width: 240px; background-color: #0f172a !important; text-align: left; 
-            border-radius: 12px; padding: 15px; position: absolute; z-index: 1000; top: 110%; left: 5px; 
-            opacity: 0; transition: opacity 0.3s, transform 0.3s; transform: translateY(10px); 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5); border: 1px solid #334155; 
-        }
-        .agent-id-card * { color: #f8fafc !important; }
-        .agent-row:hover .agent-id-card { visibility: visible; opacity: 1; transform: translateY(0); }
-        .id-header { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; border-bottom: 1px solid #334155; padding-bottom: 8px; } 
-        .id-role { color: #38bdf8 !important; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; } 
-        .id-desc { font-size: 12px; color: #cbd5e1 !important; line-height: 1.5; } 
-        .id-stat { display: inline-block; margin-top: 10px; background: #1e293b !important; padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: 600; color: #94a3b8 !important; }
         
         #MainMenu {visibility: hidden;} footer {visibility: hidden;}
         
@@ -269,26 +250,25 @@ elif st.session_state.current_page == "dashboard":
             .stat-box:last-child { border-bottom: none; }
             .agent-row { padding: 10px; }
             .agent-name, .agent-name * { font-size: 13px; }
-            .agent-id-card { display: none !important; } 
         }
     </style>
     """, unsafe_allow_html=True)
 
     AGENTS_INFO = {
-        "Lab AgentX": {"name": "Lab AgentX", "role": "Squad Lead", "icon": "🧪", "desc": "The mastermind & eccentric CEO. Routes tasks.", "stat": "System Commander"},
-        "Sai": {"name": "Sai", "role": "Chief Illustrator", "icon": "🖌️", "desc": "Draws high-quality images, thumbnails, and concept art.", "stat": "Visuals"},
-        "Naruto": {"name": "Naruto Uzumaki", "role": "Content Multiplier", "icon": "🦊", "desc": "Uses shadow clones to turn 1 video into 20 posts.", "stat": "Omni-Channel"},
-        "Light": {"name": "Light Yagami", "role": "Appointment Setter", "icon": "📓", "desc": "Writes leads' names, books meetings, sends cold DMs.", "stat": "Sales"},
-        "Orihime": {"name": "Orihime Inoue", "role": "Client Savior", "icon": "🛡️", "desc": "Heals client relations and prevents churn.", "stat": "Support"},
-        "Gojo": {"name": "Satoru Gojo", "role": "Marketing Head", "icon": "♾️", "desc": "Limitless ad strategies, copywriting & SEO.", "stat": "Content Creator"},
-        "Franky": {"name": "Franky", "role": "Tech Lead", "icon": "🦾", "desc": "Compiles SUUPER Python/HTML code and builds apps.", "stat": "Developer"},
-        "Tengen": {"name": "Tengen Uzui", "role": "Video Producer", "icon": "✨", "desc": "Generates flashy viral video scripts and visual assets.", "stat": "Media"},
-        "L": {"name": "L Lawliet", "role": "Deep Research", "icon": "🍰", "desc": "Ultimate detective, scans the web for verified facts.", "stat": "Intel"},
-        "Itachi": {"name": "Itachi Uchiha", "role": "Web Intel", "icon": "👁️", "desc": "Uses Sharingan to spy on competitor websites.", "stat": "Scraper"},
-        "Nami": {"name": "Nami", "role": "Finance Analyst", "icon": "🍊", "desc": "Crunches VC data, tracks money and stocks.", "stat": "Wall St"},
-        "Nanami": {"name": "Kento Nanami", "role": "Legal Expert", "icon": "👔", "desc": "Reviews dense contracts strictly during working hours.", "stat": "Lawyer"},
-        "Senku": {"name": "Senku Ishigami", "role": "Knowledge Extractor", "icon": "🧫", "desc": "Summarizes YouTube transcripts with 10 Billion % accuracy.", "stat": "Data Miner"},
-        "Akatsuki": {"name": "The Akatsuki", "role": "Mass Generator", "icon": "☁️", "desc": "Parallel workflows generating mass SEO blogs.", "stat": "Blogger"}
+        "Lab AgentX": {"name": "Lab AgentX", "role": "Squad Lead", "icon": "🧪", "desc": "The mastermind & eccentric CEO.", "stat": "System Commander"},
+        "Sai": {"name": "Sai", "role": "Chief Illustrator", "icon": "🖌️", "desc": "Draws high-quality images & thumbnails.", "stat": "Visuals"},
+        "Naruto": {"name": "Naruto Uzumaki", "role": "Multiplier", "icon": "🦊", "desc": "Turns 1 video into 20 posts.", "stat": "Omni-Channel"},
+        "Light": {"name": "Light Yagami", "role": "Lead Booker", "icon": "📓", "desc": "Hunts leads and sends cold DMs.", "stat": "Sales"},
+        "Orihime": {"name": "Orihime Inoue", "role": "Client Savior", "icon": "🛡️", "desc": "Heals client relations.", "stat": "Support"},
+        "Gojo": {"name": "Satoru Gojo", "role": "Marketing Head", "icon": "♾️", "desc": "Limitless ad strategies.", "stat": "Marketing"},
+        "Franky": {"name": "Franky", "role": "Tech Lead", "icon": "🦾", "desc": "Compiles SUUPER Python/HTML code.", "stat": "Developer"},
+        "Tengen": {"name": "Tengen Uzui", "role": "Video Producer", "icon": "✨", "desc": "Flashy viral video scripts.", "stat": "Media"},
+        "L": {"name": "L Lawliet", "role": "Deep Research", "icon": "🍰", "desc": "Ultimate web detective.", "stat": "Intel"},
+        "Itachi": {"name": "Itachi Uchiha", "role": "Web Intel", "icon": "👁️", "desc": "Spies on competitor websites.", "stat": "Scraper"},
+        "Nami": {"name": "Nami", "role": "Finance Analyst", "icon": "🍊", "desc": "Crunches VC data and stocks.", "stat": "Wall St"},
+        "Nanami": {"name": "Kento Nanami", "role": "Legal Expert", "icon": "👔", "desc": "Reviews dense contracts.", "stat": "Lawyer"},
+        "Senku": {"name": "Senku Ishigami", "role": "Data Miner", "icon": "🧫", "desc": "Summarizes YouTube transcripts.", "stat": "Knowledge"},
+        "Akatsuki": {"name": "The Akatsuki", "role": "SEO Empire", "icon": "☁️", "desc": "Mass SEO blogs generator.", "stat": "Blogger"}
     }
 
     MEMORY_FOLDER = "memory_logs"
@@ -299,16 +279,9 @@ elif st.session_state.current_page == "dashboard":
     for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER, SAVED_FILES_FOLDER]:
         if not os.path.exists(folder): os.makedirs(folder)
 
-    # 🧠 STATE-BASED FILE HIDING LOGIC
-    def get_all_deliverables():
-        files = []
-        for root, _, filenames in os.walk(DELIVERABLES_FOLDER):
-            for fname in filenames:
-                files.append(os.path.normpath(os.path.join(root, fname)))
-        return set(files)
-
-    if "hidden_files" not in st.session_state: 
-        st.session_state.hidden_files = get_all_deliverables()
+    # 🧠 100% UNBREAKABLE TIMESTAMP LOGIC FOR HIDING FILES
+    if "session_start_time" not in st.session_state: 
+        st.session_state.session_start_time = time.time() - 5
 
     if "full_memory" not in st.session_state: st.session_state.full_memory = []
     if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. The Squad is ready. What's the mission, Commander?"}]
@@ -318,16 +291,18 @@ elif st.session_state.current_page == "dashboard":
 
     def get_done_tasks():
         tasks = []
-        for fpath in get_all_deliverables():
-            if fpath not in st.session_state.hidden_files:
-                fname = os.path.basename(fpath)
+        for root, _, filenames in os.walk(DELIVERABLES_FOLDER):
+            for fname in filenames:
+                fpath = os.path.join(root, fname)
                 try:
                     file_mtime = os.path.getmtime(fpath)
-                    tasks.append({
-                        "name": fname.replace(".md", "").replace(".txt", "").replace(".jpg", "").replace("_", " "), 
-                        "path": fpath, 
-                        "time": file_mtime
-                    })
+                    # Sirf wo files dikhaye ga jo New Chat button dabane ke baad bani hain!
+                    if file_mtime >= st.session_state.session_start_time:
+                        tasks.append({
+                            "name": fname.replace(".md", "").replace(".txt", "").replace(".jpg", "").replace("_", " "), 
+                            "path": fpath, 
+                            "time": file_mtime
+                        })
                 except Exception:
                     pass
         return sorted(tasks, key=lambda x: x['time'], reverse=True)[:50]
@@ -374,7 +349,6 @@ elif st.session_state.current_page == "dashboard":
     """, unsafe_allow_html=True)
 
     with st.sidebar:
-        # LOGOUT BUTTON (Takes user back to Landing Page)
         if st.button("⬅️ View Pricing Plans", use_container_width=True):
             st.session_state.current_page = "landing"
             st.rerun()
@@ -386,18 +360,22 @@ elif st.session_state.current_page == "dashboard":
                 st.session_state.full_memory.extend(st.session_state.messages)
                 st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. Memory archived. Ready for the next mission."}]
                 
-                current_files = get_all_deliverables()
-                for fpath in current_files:
-                    if fpath not in st.session_state.hidden_files:
-                        base, ext = os.path.splitext(os.path.basename(fpath))
+                # 🛑 TIMESTAMP MAGIC: UI instantly saaf ho jayegi
+                st.session_state.session_start_time = time.time()
+                
+                # Move files physically
+                for root, _, files in os.walk(DELIVERABLES_FOLDER):
+                    for file in files:
+                        src_path = os.path.join(root, file)
+                        base, ext = os.path.splitext(os.path.basename(src_path))
                         new_filename = f"{base}_{int(time.time())}{ext}"
                         dst_path = os.path.join(SAVED_FILES_FOLDER, new_filename)
                         try:
-                            shutil.copy2(fpath, dst_path) 
+                            shutil.copy2(src_path, dst_path)
+                            os.remove(src_path)
                         except Exception:
                             pass
                 
-                st.session_state.hidden_files = get_all_deliverables()
                 st.session_state.active_tasks = []
                 st.rerun()
                 
@@ -415,9 +393,17 @@ elif st.session_state.current_page == "dashboard":
             is_working = (key == "Lab AgentX" or key == current_active_agent)
             status_class = "st-working" if is_working else "st-standby"
             status_text = "WORKING" if is_working else "STANDBY"
-            agents_html += f"""<div class='agent-row'><span class='agent-name'>{info['icon']} {key}</span><span class='status-badge {status_class}'>{status_text}</span>
-            <div class='agent-id-card'><div class='id-header'><span style='font-size: 20px;'>{info['icon']}</span><div><div style='font-size: 14px; font-weight: bold;'>{info['name']}</div>
-            <div class='id-role'>{info['role']}</div></div></div><div class='id-desc'>{info['desc']}</div><div class='id-stat'>⚙️ Specialty: {info['stat']}</div></div></div>"""
+            
+            # 🐛 FIXED: Hover Card removed, added clean inline details & Native Tooltip
+            agents_html += f"""
+            <div class='agent-row' title='{info['desc']} (Specialty: {info['stat']})'>
+                <div class='agent-name-container'>
+                    <span class='agent-name'>{info['icon']} {key}</span>
+                    <span class='agent-role'>{info['role']}</span>
+                </div>
+                <span class='status-badge {status_class}'>{status_text}</span>
+            </div>
+            """
         st.markdown(agents_html, unsafe_allow_html=True)
         
         st.markdown("---")
