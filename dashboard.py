@@ -28,7 +28,7 @@ except ImportError:
 # Global Config
 st.set_page_config(page_title="Lab AgentX | AI Agency", page_icon="🧪", layout="wide", initial_sidebar_state="expanded")
 
-# 🧠 PAGE ROUTING SYSTEM (Landing Page vs Dashboard)
+# 🧠 PAGE ROUTING SYSTEM
 if "current_page" not in st.session_state:
     st.session_state.current_page = "landing"
 
@@ -36,60 +36,67 @@ def go_to_dashboard():
     st.session_state.current_page = "dashboard"
 
 # ==========================================
-# 🌟 VIP SAAS LANDING PAGE (ISOLATED UI)
+# 🌟 VIP SAAS LANDING PAGE (FULL VIBE UI)
 # ==========================================
 if st.session_state.current_page == "landing":
-    # 🛑 HIDE STREAMLIT ELEMENTS ENTIRELY FOR LANDING PAGE
+    # 🛑 HIDE STREAMLIT ELEMENTS & APPLY TAILWIND STYLES
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
+        /* Hide default Streamlit components */
         header[data-testid="stHeader"] { display: none !important; }
         section[data-testid="stSidebar"] { display: none !important; }
         button[data-testid="collapsedControl"] { display: none !important; }
         .block-container { padding-top: 0rem !important; max-width: 100% !important; padding-left: 0 !important; padding-right: 0 !important;}
         footer {display: none !important;}
         
+        /* Base Theme for Landing */
         .stApp { background-color: #020617; font-family: 'Plus Jakarta Sans', sans-serif; color: white; background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 70%); }
         
+        /* Navbar */
         .custom-navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
         .nav-brand { font-size: 24px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
         .nav-links { font-size: 14px; font-weight: 600; color: #94a3b8; cursor: pointer; }
         .nav-links:hover { color: #38bdf8; }
         
+        /* Hero Section */
         .hero-section { text-align: center; padding: 6rem 2rem 4rem 2rem; max-width: 900px; margin: 0 auto; }
         .badge { background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 6px 16px; border-radius: 30px; font-size: 12px; font-weight: 700; letter-spacing: 1px; display: inline-block; margin-bottom: 20px; border: 1px solid rgba(56, 189, 248, 0.2); }
         .hero-title { font-size: 4.5rem; font-weight: 800; color: #f8fafc; margin-bottom: 1.5rem; line-height: 1.1; letter-spacing: -1px; }
         .hero-title span { background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         .hero-subtitle { font-size: 1.25rem; color: #94a3b8; max-width: 700px; margin: 0 auto 3rem auto; line-height: 1.6; }
         
-        .pricing-wrapper { padding: 0 2rem 6rem 2rem; max-width: 1200px; margin: 0 auto; }
-        .pricing-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+        /* Section Headings */
+        .section-title { font-size: 2.5rem; font-weight: 800; text-align: center; margin: 4rem 0 2rem 0; color: #f8fafc; }
+        .section-title span { color: #38bdf8; }
         
-        .pricing-card { background: rgba(30, 41, 59, 0.5); border-radius: 24px; padding: 2.5rem; border: 1px solid #334155; transition: all 0.3s ease; text-align: left; position: relative; backdrop-filter: blur(10px); }
-        .pricing-card:hover { transform: translateY(-10px); border-color: #38bdf8; box-shadow: 0 20px 40px rgba(56, 189, 248, 0.1); background: rgba(30, 41, 59, 0.8); }
+        /* Custom Styling for Streamlit Containers (Cards) */
+        [data-testid="stVerticalBlockBorderWrapper"] {
+            background: rgba(30, 41, 59, 0.5) !important;
+            border-radius: 20px !important;
+            border: 1px solid #334155 !important;
+            padding: 1.5rem !important;
+            transition: all 0.3s ease !important;
+            backdrop-filter: blur(10px);
+        }
+        [data-testid="stVerticalBlockBorderWrapper"]:hover {
+            transform: translateY(-10px);
+            border-color: #38bdf8 !important;
+            box-shadow: 0 20px 40px rgba(56, 189, 248, 0.1) !important;
+            background: rgba(30, 41, 59, 0.8) !important;
+        }
         
-        .popular-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, #38bdf8, #818cf8); color: #fff; font-size: 12px; font-weight: 800; padding: 6px 16px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(56,189,248,0.4); }
+        /* Button Overrides */
+        div[data-testid="stButton"] > button { width: 100%; border-radius: 12px; padding: 24px 0; font-weight: 700; background: #38bdf8; color: #0f172a; border: none; transition: all 0.2s; font-size: 16px; margin-top: 15px;}
+        div[data-testid="stButton"] > button:hover { background: #0ea5e9; color: white; transform: scale(1.02); }
         
-        .plan-name { font-size: 1.2rem; font-weight: 700; color: #f8fafc; margin-bottom: 10px; }
-        .plan-price { font-size: 3rem; font-weight: 800; color: #ffffff; margin-bottom: 5px; display: flex; align-items: baseline; gap: 5px; }
-        .plan-price span { font-size: 1rem; color: #94a3b8; font-weight: 500; }
-        .plan-desc { font-size: 0.95rem; color: #94a3b8; margin-bottom: 25px; border-bottom: 1px solid #334155; padding-bottom: 25px;}
-        
-        .feature-list { list-style: none; padding: 0; margin: 0 0 30px 0; }
-        .feature-list li { font-size: 0.95rem; color: #cbd5e1; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; }
-        .feature-list li::before { content: '✓'; color: #38bdf8; font-weight: 900; background: rgba(56,189,248,0.1); width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; border-radius: 50%; font-size: 12px; }
-        
-        div[data-testid="stButton"] > button { width: 100%; border-radius: 12px; padding: 24px 0; font-weight: 700; background: #1e293b; color: #f8fafc; border: 1px solid #475569; transition: all 0.2s; font-size: 16px; }
-        div[data-testid="stButton"] > button:hover { background: #f8fafc; color: #0f172a; border-color: #f8fafc; transform: scale(1.02); }
-        
-        .elite-btn div[data-testid="stButton"] > button { background: #38bdf8; color: #0f172a; border: none; }
-        .elite-btn div[data-testid="stButton"] > button:hover { background: #0ea5e9; color: white; }
+        /* Footer */
+        .footer { text-align: center; padding: 4rem 0 2rem 0; border-top: 1px solid #1e293b; margin-top: 4rem; color: #64748b; font-size: 14px;}
         
         @media (max-width: 768px) {
             .hero-title { font-size: 3rem; }
             .custom-navbar { padding: 20px; }
-            .pricing-wrapper { padding: 0 1rem 4rem 1rem; }
         }
     </style>
     
@@ -99,86 +106,117 @@ if st.session_state.current_page == "landing":
     </div>
     
     <div class="hero-section">
-        <div class="badge">🚀 VERSION 2.0 LIVE</div>
-        <div class="hero-title">Hire an Elite AI Squad.<br><span>Automate Everything.</span></div>
-        <div class="hero-subtitle">Stop paying expensive agencies. Lab AgentX replaces your Marketing, Sales, Tech, and Research departments with autonomous, hyper-intelligent anime agents working 24/7.</div>
+        <div class="badge">🚀 VERSION 2.0 LIVE HAI</div>
+        <div class="hero-title">Hire The Ultimate AI Squad.<br><span>Automate Everything.</span></div>
+        <div class="hero-subtitle">Boring tools ko choro. Lab AgentX aapki puri team ko replace karta hai. Marketing, Sales, Tech aur Research ke liye 14 super-intelligent anime agents jo 24/7 kaam karte hain.</div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="pricing-wrapper">', unsafe_allow_html=True)
+    # --- STATS SECTION ---
     c1, c2, c3, c4 = st.columns(4)
+    with c1: st.markdown("<h2 style='text-align:center; color:#38bdf8;'>14+</h2><p style='text-align:center; color:#94a3b8;'>Elite AI Agents</p>", unsafe_allow_html=True)
+    with c2: st.markdown("<h2 style='text-align:center; color:#38bdf8;'>24/7</h2><p style='text-align:center; color:#94a3b8;'>Non-stop Execution</p>", unsafe_allow_html=True)
+    with c3: st.markdown("<h2 style='text-align:center; color:#38bdf8;'>10x</h2><p style='text-align:center; color:#94a3b8;'>Faster Delivery</p>", unsafe_allow_html=True)
+    with c4: st.markdown("<h2 style='text-align:center; color:#38bdf8;'>0%</h2><p style='text-align:center; color:#94a3b8;'>Human Error</p>", unsafe_allow_html=True)
+
+    # --- HOW IT WORKS (FLOW) ---
+    st.markdown("<div class='section-title'>⚙️ Kaam <span>Kaise Karta Hai?</span></div>", unsafe_allow_html=True)
+    f1, f2, f3 = st.columns(3)
+    with f1:
+        with st.container(border=True):
+            st.markdown("<h1 style='color:#38bdf8;'>01</h1><h3>Command Dein</h3><p style='color:#94a3b8;'>Aap bas simple English/Hindi mein apna task likhein. Lab AgentX khud samjhega ke kis department ko bulana hai.</p>", unsafe_allow_html=True)
+    with f2:
+        with st.container(border=True):
+            st.markdown("<h1 style='color:#38bdf8;'>02</h1><h3>Squad Execution</h3><p style='color:#94a3b8;'>Agents aapas mein baat karenge. Franky code likhega, Gojo marketing sambhalega, aur Itachi data scrape karega.</p>", unsafe_allow_html=True)
+    with f3:
+        with st.container(border=True):
+            st.markdown("<h1 style='color:#38bdf8;'>03</h1><h3>Download Result</h3><p style='color:#94a3b8;'>Kuch hi seconds mein aapka kaam VIP Markdown report ya Code file mein convert ho kar download ke liye ready hoga.</p>", unsafe_allow_html=True)
+
+    # --- TEAM SECTION ---
+    st.markdown("<div class='section-title'>🦸‍♂️ Miliye Hamari <span>Elite Squad Se</span></div>", unsafe_allow_html=True)
+    t1, t2, t3, t4 = st.columns(4)
+    with t1:
+        with st.container(border=True):
+            st.markdown("<h1 style='text-align:center;'>🧪</h1><h3 style='text-align:center;'>Lab AgentX</h3><p style='text-align:center; color:#94a3b8;'>The Mastermind CEO</p>", unsafe_allow_html=True)
+    with t2:
+        with st.container(border=True):
+            st.markdown("<h1 style='text-align:center;'>♾️</h1><h3 style='text-align:center;'>Satoru Gojo</h3><p style='text-align:center; color:#94a3b8;'>Marketing Head</p>", unsafe_allow_html=True)
+    with t3:
+        with st.container(border=True):
+            st.markdown("<h1 style='text-align:center;'>👁️</h1><h3 style='text-align:center;'>Itachi Uchiha</h3><p style='text-align:center; color:#94a3b8;'>Web Intel & Scraper</p>", unsafe_allow_html=True)
+    with t4:
+        with st.container(border=True):
+            st.markdown("<h1 style='text-align:center;'>🦾</h1><h3 style='text-align:center;'>Franky</h3><p style='text-align:center; color:#94a3b8;'>Tech & Dev Lead</p>", unsafe_allow_html=True)
+
+    # --- PRICING SECTION (BUG FIXED) ---
+    st.markdown("<div class='section-title'>💎 Choose Your <span>Plan</span></div>", unsafe_allow_html=True)
     
-    with c1:
-        st.markdown("""
-        <div class="pricing-card">
-            <div class="plan-name">Starter</div>
-            <div class="plan-price">$19<span>.99/mo</span></div>
-            <div class="plan-desc">Perfect for solopreneurs & creators.</div>
-            <ul class="feature-list">
-                <li>5 Autonomous AI Agents</li>
-                <li>Content Multiplier (Naruto)</li>
-                <li>Deep Research (L)</li>
-                <li>Standard Dashboard</li>
-                <li>Community Support</li>
-            </ul>
-        """, unsafe_allow_html=True)
-        if st.button("Start Free Trial", key="btn1"): go_to_dashboard(); st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+    p1, p2, p3, p4 = st.columns(4)
+    
+    with p1:
+        with st.container(border=True):
+            st.markdown("### Starter")
+            st.markdown("<h1 style='font-size:3rem; margin:0;'>$19<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
+            st.markdown("<p style='color:#94a3b8; font-size:14px; border-bottom:1px solid #334155; padding-bottom:15px;'>Solopreneurs ke liye best.</p>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style='color:#cbd5e1; font-size:14px; line-height:2;'>
+            <span style='color:#38bdf8'>✓</span> 5 AI Agents<br>
+            <span style='color:#38bdf8'>✓</span> Content Multiplier (Naruto)<br>
+            <span style='color:#38bdf8'>✓</span> Deep Research (L)<br>
+            <span style='color:#38bdf8'>✓</span> Standard Dashboard<br>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("Start Free Trial", key="btn1"): go_to_dashboard(); st.rerun()
 
-    with c2:
-        st.markdown("""
-        <div class="pricing-card">
-            <div class="plan-name">Growth</div>
-            <div class="plan-price">$39<span>.99/mo</span></div>
-            <div class="plan-desc">For growing startups & small teams.</div>
-            <ul class="feature-list">
-                <li>10 Autonomous AI Agents</li>
-                <li>Sales Outreach (Light)</li>
-                <li>SEO Empire (Akatsuki)</li>
-                <li>Finance Analyst (Nami)</li>
-                <li>Priority Support</li>
-            </ul>
-        """, unsafe_allow_html=True)
-        if st.button("Get Growth", key="btn2"): go_to_dashboard(); st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
+    with p2:
+        with st.container(border=True):
+            st.markdown("### Growth")
+            st.markdown("<h1 style='font-size:3rem; margin:0;'>$39<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
+            st.markdown("<p style='color:#94a3b8; font-size:14px; border-bottom:1px solid #334155; padding-bottom:15px;'>Startups ko scale karne ke liye.</p>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style='color:#cbd5e1; font-size:14px; line-height:2;'>
+            <span style='color:#38bdf8'>✓</span> 10 AI Agents<br>
+            <span style='color:#38bdf8'>✓</span> Sales Outreach (Light)<br>
+            <span style='color:#38bdf8'>✓</span> SEO Empire (Akatsuki)<br>
+            <span style='color:#38bdf8'>✓</span> Finance Analyst (Nami)<br>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("Get Growth", key="btn2"): go_to_dashboard(); st.rerun()
 
-    with c3:
-        st.markdown("""
-        <div class="pricing-card" style="border-color: #38bdf8; background: rgba(30, 41, 59, 0.7);">
-            <div class="popular-badge">Most Popular</div>
-            <div class="plan-name" style="color: #38bdf8;">Elite Agency</div>
-            <div class="plan-price">$54<span>.99/mo</span></div>
-            <div class="plan-desc">Full agency power for serious businesses.</div>
-            <ul class="feature-list">
-                <li>16 Premium AI Agents</li>
-                <li>Image Generation (Sai)</li>
-                <li>Tech Dev Team (Franky)</li>
-                <li>Legal Audits (Nanami)</li>
-                <li>24/7 VIP Support</li>
-            </ul>
-        <div class="elite-btn">
-        """, unsafe_allow_html=True)
-        if st.button("Get Elite Access", key="btn3"): go_to_dashboard(); st.rerun()
-        st.markdown("</div></div>", unsafe_allow_html=True)
+    with p3:
+        # Most Popular Plan
+        with st.container(border=True):
+            st.markdown("<div style='background:linear-gradient(135deg, #38bdf8, #818cf8); color:white; padding:3px 10px; border-radius:20px; font-size:10px; display:inline-block; font-weight:bold;'>MOST POPULAR</div>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color:#38bdf8;'>Elite Agency</h3>", unsafe_allow_html=True)
+            st.markdown("<h1 style='font-size:3rem; margin:0;'>$54<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
+            st.markdown("<p style='color:#94a3b8; font-size:14px; border-bottom:1px solid #334155; padding-bottom:15px;'>Full agency power aapke haath mein.</p>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style='color:#cbd5e1; font-size:14px; line-height:2;'>
+            <span style='color:#38bdf8'>✓</span> 16 Premium AI Agents<br>
+            <span style='color:#38bdf8'>✓</span> Image Gen (Sai)<br>
+            <span style='color:#38bdf8'>✓</span> Tech Dev Team (Franky)<br>
+            <span style='color:#38bdf8'>✓</span> Legal Audits (Nanami)<br>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("Get Elite Access", key="btn3"): go_to_dashboard(); st.rerun()
 
-    with c4:
-        st.markdown("""
-        <div class="pricing-card">
-            <div class="plan-name">Enterprise</div>
-            <div class="plan-price">$89<span>.99/mo</span></div>
-            <div class="plan-desc">Custom automation for large scale operations.</div>
-            <ul class="feature-list">
-                <li>25+ AI Agents (Unlimited)</li>
-                <li>Custom Character Bots</li>
-                <li>Dedicated API Keys</li>
-                <li>White-label Workspace</li>
-                <li>1-on-1 Onboarding</li>
-            </ul>
-        """, unsafe_allow_html=True)
-        if st.button("Contact Sales", key="btn4"): go_to_dashboard(); st.rerun()
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-    st.markdown('</div><div style="text-align:center; padding: 2rem 0; color: #475569; font-size: 14px;">Backed by Groq Technology ⚡ • © 2026 Lab AgentX</div>', unsafe_allow_html=True)
+    with p4:
+        with st.container(border=True):
+            st.markdown("### Enterprise")
+            st.markdown("<h1 style='font-size:3rem; margin:0;'>$89<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
+            st.markdown("<p style='color:#94a3b8; font-size:14px; border-bottom:1px solid #334155; padding-bottom:15px;'>Custom automation big teams ke liye.</p>", unsafe_allow_html=True)
+            st.markdown("""
+            <div style='color:#cbd5e1; font-size:14px; line-height:2;'>
+            <span style='color:#38bdf8'>✓</span> 25+ AI Agents (Unlimited)<br>
+            <span style='color:#38bdf8'>✓</span> Custom Character Bots<br>
+            <span style='color:#38bdf8'>✓</span> White-label Workspace<br>
+            <span style='color:#38bdf8'>✓</span> 1-on-1 Onboarding<br>
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("Contact Sales", key="btn4"): go_to_dashboard(); st.rerun()
+
+    # --- FOOTER ---
+    st.markdown("<div class='footer'>Backed by Groq Technology ⚡ • © 2026 Lab AgentX | Made for Scale</div>", unsafe_allow_html=True)
 
 
 # ==========================================
@@ -225,7 +263,6 @@ elif st.session_state.current_page == "dashboard":
         .k-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; } 
         .k-agent { font-size: 12px; color: #64748b !important; display: flex; align-items: center; gap: 6px; font-weight: 500;} 
         
-        /* 🐛 BUG FIX: Hover Card Overlap Removed! Now it uses a clean inline flexbox */
         .agent-row { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 12px; margin-bottom: 8px; border-radius: 10px; 
@@ -296,7 +333,6 @@ elif st.session_state.current_page == "dashboard":
                 fpath = os.path.join(root, fname)
                 try:
                     file_mtime = os.path.getmtime(fpath)
-                    # Sirf wo files dikhaye ga jo New Chat button dabane ke baad bani hain!
                     if file_mtime >= st.session_state.session_start_time:
                         tasks.append({
                             "name": fname.replace(".md", "").replace(".txt", "").replace(".jpg", "").replace("_", " "), 
@@ -359,11 +395,7 @@ elif st.session_state.current_page == "dashboard":
             if st.button("💬 New Chat", use_container_width=True):
                 st.session_state.full_memory.extend(st.session_state.messages)
                 st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. Memory archived. Ready for the next mission."}]
-                
-                # 🛑 TIMESTAMP MAGIC: UI instantly saaf ho jayegi
                 st.session_state.session_start_time = time.time()
-                
-                # Move files physically
                 for root, _, files in os.walk(DELIVERABLES_FOLDER):
                     for file in files:
                         src_path = os.path.join(root, file)
@@ -375,7 +407,6 @@ elif st.session_state.current_page == "dashboard":
                             os.remove(src_path)
                         except Exception:
                             pass
-                
                 st.session_state.active_tasks = []
                 st.rerun()
                 
@@ -386,7 +417,6 @@ elif st.session_state.current_page == "dashboard":
                 st.rerun()
                 
         st.markdown("---")
-        
         st.markdown(f"### 🏢 SQUAD STATUS ({working_agents_count} Active)")
         agents_html = ""
         for key, info in AGENTS_INFO.items():
@@ -394,7 +424,6 @@ elif st.session_state.current_page == "dashboard":
             status_class = "st-working" if is_working else "st-standby"
             status_text = "WORKING" if is_working else "STANDBY"
             
-            # 🐛 FIXED: Hover Card removed, added clean inline details & Native Tooltip
             agents_html += f"""
             <div class='agent-row' title='{info['desc']} (Specialty: {info['stat']})'>
                 <div class='agent-name-container'>
@@ -427,7 +456,6 @@ elif st.session_state.current_page == "dashboard":
                     saved_files.sort(key=os.path.getmtime, reverse=True)
                 except:
                     pass
-                    
                 for sf in saved_files:
                     fname = os.path.basename(sf)
                     display_name = fname.replace(".md", "").replace(".txt", "").replace(".jpg", "")[:25] + "..."
