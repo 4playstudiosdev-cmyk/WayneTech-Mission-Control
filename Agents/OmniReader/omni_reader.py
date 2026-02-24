@@ -2,21 +2,9 @@ import os
 import datetime
 from crewai import Agent, Task, Crew
 from langchain_openai import ChatOpenAI
-from youtube_transcript_api import YouTubeTranscriptApi
-import urllib.parse as urlparse
+from langchain_community.document_loaders import YoutubeLoader # 🐛 FIXED: Bulletproof YouTube Loader
 
-# LLM setup (API Key and Base URL will be automatically injected by Dashboard)
 llm = ChatOpenAI(model="llama-3.3-70b-versatile")
-
-def get_youtube_video_id(url):
-    """YouTube URL se Video ID nikalne ka function"""
-    url_data = urlparse.urlparse(url)
-    query = urlparse.parse_qs(url_data.query)
-    if "v" in query:
-        return query["v"][0]
-    elif url_data.netloc == "youtu.be":
-        return url_data.path[1:]
-    return None
 
 def save_yt_report(topic, content):
     folder = "Deliverables/Omni_Reader"
@@ -29,18 +17,15 @@ def save_yt_report(topic, content):
 def run_omnireader_crew(youtube_link_or_query):
     print(f"\n🧠 BRAINIAC (OMNI-READER) ACTIVATED FOR: {youtube_link_or_query}\n")
 
-    # 1. Fetch Transcript Directly (No Embeddings API required!)
-    video_id = get_youtube_video_id(youtube_link_or_query)
-    if not video_id:
-        return "⚠️ **Error:** Invalid YouTube URL. Please provide a valid link."
-        
+    # 1. Fetch Transcript Directly (Bug Fixed!)
     try:
-        transcript_data = YouTubeTranscriptApi.get_transcript(video_id)
-        transcript_text = " ".join([t['text'] for t in transcript_data])
-        # Limit to 20k characters to avoid overloading the LLM context window
-        transcript_text = transcript_text[:20000] 
+        loader = YoutubeLoader.from_youtube_url(youtube_link_or_query, add_video_info=False)
+        docs = loader.load()
+        if not docs:
+            return "⚠️ **Error:** No captions found for this video."
+        transcript_text = docs[0].page_content[:20000] 
     except Exception as e:
-        return f"⚠️ **Error fetching captions:** {e} (Video might not have English subtitles enabled)."
+        return f"⚠️ **Error fetching captions:** {e} (Make sure the link is correct and video has subtitles)."
 
     # 2. Agent Initialization
     yt_summarizer = Agent(
