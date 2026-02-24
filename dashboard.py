@@ -48,7 +48,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ANIME THEME AGENTS MAPPING
 AGENTS_INFO = {
     "Lab AgentX": {"name": "Lab AgentX", "role": "Squad Lead", "icon": "🧪", "desc": "The mastermind & eccentric CEO. Routes tasks.", "stat": "System Commander"},
     "Naruto": {"name": "Naruto Uzumaki", "role": "Content Multiplier", "icon": "🦊", "desc": "Uses shadow clones to turn 1 video into 20 posts.", "stat": "Omni-Channel"},
@@ -148,22 +147,29 @@ with st.sidebar:
     st.markdown("---")
     if st.button("🔄 Refresh System"): st.rerun()
 
-# --- THE MASTER OVERRIDE ---
+# 🐛 CLOUD FIX: THE ULTIMATE NUCLEAR ROUTING FIX
+# Yeh OpenAI ki API requests ko zabardasti Groq ki taraf mor dega
 if live_groq_key:
     os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
+    os.environ["OPENAI_BASE_URL"] = "https://api.groq.com/openai/v1" # THIS WAS THE MISSING LINK CAUSING 401 ERROR!
     os.environ["OPENAI_API_KEY"] = live_groq_key
+    os.environ["GROQ_API_KEY"] = live_groq_key
     
-    import langchain_openai
-    if not hasattr(langchain_openai.ChatOpenAI, "_original_init"):
-        langchain_openai.ChatOpenAI._original_init = langchain_openai.ChatOpenAI.__init__
+    # Global Patch to force ChatOpenAI to use Groq
+    try:
+        import langchain_openai
+        if not hasattr(langchain_openai.ChatOpenAI, "_original_init"):
+            langchain_openai.ChatOpenAI._original_init = langchain_openai.ChatOpenAI.__init__
 
-    def patched_init(self, *args, **kwargs):
-        kwargs["model"] = "llama-3.3-70b-versatile"
-        kwargs["base_url"] = "https://api.groq.com/openai/v1"
-        kwargs["api_key"] = live_groq_key
-        langchain_openai.ChatOpenAI._original_init(self, *args, **kwargs)
+        def patched_init(self, *args, **kwargs):
+            kwargs["model"] = "llama-3.3-70b-versatile"
+            kwargs["base_url"] = "https://api.groq.com/openai/v1"
+            kwargs["api_key"] = live_groq_key
+            langchain_openai.ChatOpenAI._original_init(self, *args, **kwargs)
 
-    langchain_openai.ChatOpenAI.__init__ = patched_init
+        langchain_openai.ChatOpenAI.__init__ = patched_init
+    except Exception:
+        pass
 else:
     st.warning("⚠️ Cloud Brain Offline! Open 'Connect APIs' in the sidebar and paste your Groq API Key.")
 
@@ -208,7 +214,6 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
     last_msg = st.session_state.messages[-1]
     msg_content = last_msg["content"]
     
-    # 🔥 THE ULTIMATE ANTI-HALLUCINATION PROMPT 🔥
     system_prompt = """
     You are LAB AGENTX, the CEO of an Anime-themed AI Agency.
     
@@ -249,7 +254,7 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                 api_messages.append({"role": m["role"], "content": content_str})
 
             headers = {"Authorization": f"Bearer {live_groq_key}", "Content-Type": "application/json"}
-            payload = {"model": "llama-3.3-70b-versatile", "messages": api_messages, "temperature": 0.1} # Lowered temperature so it doesn't get creative
+            payload = {"model": "llama-3.3-70b-versatile", "messages": api_messages, "temperature": 0.1}
             
             api_response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers=headers, json=payload).json()
             
@@ -278,7 +283,9 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                             agent_result = run_tech_crew(msg_content)
                         elif "**Akatsuki**" in full_response:
                             from seo_empire import run_mass_seo_campaign
-                            agent_result = run_mass_seo_campaign(msg_content)
+                            # Isko bhi yahin clean kar diya taake agent ko sirf keyword mile
+                            clean_kw = msg_content.lower().replace("akatsuki,", "").replace("write seo blogs on:", "").replace("write seo blogs on", "").strip()
+                            agent_result = run_mass_seo_campaign(clean_kw)
                         elif "**Naruto**" in full_response:
                             try:
                                 from content_multiplier import run_multiplier_crew

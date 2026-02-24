@@ -1,11 +1,17 @@
 import os
 import datetime
 import concurrent.futures
+import re
 from crewai import Agent, Task, Crew, Process
 from langchain_openai import ChatOpenAI
 
-# --- Local AI Setup ---
-llm = ChatOpenAI(model="llama-3.3-70b-versatile")
+def get_llm():
+    # 🐛 CLOUD FIX: Guarantee Groq Base URL and Live Key usage at runtime
+    return ChatOpenAI(
+        model="llama-3.3-70b-versatile",
+        base_url="https://api.groq.com/openai/v1",
+        api_key=os.environ.get("OPENAI_API_KEY", "NA")
+    )
 
 def save_blog(keyword, content):
     folder = "Deliverables/SEO_Blogs"
@@ -22,12 +28,15 @@ def save_blog(keyword, content):
 def generate_single_blog(keyword):
     print(f"🚀 Started generation for: {keyword}")
     
+    # Get the securely configured LLM
+    cloud_llm = get_llm()
+    
     seo_agent = Agent(
         role='Chief SEO Strategist',
         goal=f'Find the best LSI keywords, search intent, and H1/H2 structure for: {keyword}',
         backstory='Aap ek master SEO expert hain jo Google algorithm ko beat karna jante hain.',
         allow_delegation=False,
-        llm=llm
+        llm=cloud_llm
     )
 
     writer_agent = Agent(
@@ -35,7 +44,7 @@ def generate_single_blog(keyword):
         goal='Write a highly engaging, human-like 2000-word article based on the SEO outline.',
         backstory='Aap ek top-tier copywriter hain. Aapki writing boring nahi hoti, balki reader ko hook karti hai.',
         allow_delegation=False,
-        llm=llm
+        llm=cloud_llm
     )
 
     editor_agent = Agent(
@@ -43,7 +52,7 @@ def generate_single_blog(keyword):
         goal='Format the article with Markdown, add Meta Description, and ensure 0% fluff.',
         backstory='Aap details par focus karte hain. Aap ensure karte hain ke article publish-ready ho.',
         allow_delegation=False,
-        llm=llm
+        llm=cloud_llm
     )
 
     task1 = Task(
@@ -78,14 +87,15 @@ def generate_single_blog(keyword):
 def run_mass_seo_campaign(keywords_input):
     print(f"\n🌐 MASS SEO EMPIRE ACTIVATED FOR: {keywords_input}\n")
     
-    keywords = [k.strip() for k in keywords_input.split(',')]
-    if len(keywords) == 1 and (" AND " in keywords_input.upper()):
-        keywords = [k.strip() for k in keywords_input.upper().split(' AND ')]
+    # 🐛 FIXED: Remove conversational text before parsing keywords to prevent API failures
+    clean_input = re.sub(r'(?i)^(write\s*(seo)?\s*blogs?\s*on:?\s*)', '', keywords_input)
+    raw_keywords = re.split(r',|\band\b', clean_input, flags=re.IGNORECASE)
+    keywords = [k.strip() for k in raw_keywords if k.strip()]
         
     saved_files = []
     error_logs = []
     
-    # 🐛 FIXED: Changed max_workers from 5 to 1 to prevent Groq API Rate Limit crashes
+    # Execute one by one to respect Free API limits
     with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
         future_to_keyword = {executor.submit(generate_single_blog, kw): kw for kw in keywords}
         for future in concurrent.futures.as_completed(future_to_keyword):
@@ -101,7 +111,6 @@ def run_mass_seo_campaign(keywords_input):
 
     report = f"🌐 **MASS SEO CAMPAIGN COMPLETE**\n\n✅ {len(saved_files)} Blogs generated.\n"
     
-    # Show exactly why it failed in the UI if there's an error
     if error_logs:
         report += "\n⚠️ **API Limits Hit for:**\n" + "\n".join(error_logs) + "\n*(Tip: Try generating one blog at a time)*"
     else:
