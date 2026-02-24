@@ -8,14 +8,14 @@ import sys
 import shutil 
 from dotenv import load_dotenv
 
-# --- FOLDER PATHS FIX FOR CLOUD ---
+# --- CLOUD MATE FOLDER PATHS FIX KARO ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
 agents_dir = os.path.join(current_dir, 'Agents')
 sys.path.append(agents_dir)
 for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 'OmniReader', 'Multiplier', 'sales', 'ImageGen']:
     sys.path.append(os.path.join(agents_dir, dept))
 
-# API Keys load karna
+# API Keys load karo
 load_dotenv()
 INITIAL_GROQ_KEY = os.getenv("GROQ_API_KEY", "")
 
@@ -36,191 +36,218 @@ def go_to_dashboard():
     st.session_state.current_page = "dashboard"
 
 # ==========================================
-# 🌟 VIP SAAS LANDING PAGE (FULL VIBE UI)
+# 🌟 VIP SAAS LANDING PAGE (PROFESSIONAL UI)
 # ==========================================
 if st.session_state.current_page == "landing":
-    # 🛑 HIDE STREAMLIT ELEMENTS & APPLY TAILWIND STYLES
+    # 🛑 HIDE STREAMLIT ELEMENTS & APPLY PREMIUM TAILWIND STYLES
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        /* Hide default Streamlit components */
+        /* Streamlit components ne hide karo */
         header[data-testid="stHeader"] { display: none !important; }
         section[data-testid="stSidebar"] { display: none !important; }
         button[data-testid="collapsedControl"] { display: none !important; }
-        .block-container { padding-top: 0rem !important; max-width: 100% !important; padding-left: 0 !important; padding-right: 0 !important;}
+        
+        /* Professional Spacing & Max-Width for Large Screens */
+        .block-container { 
+            padding-top: 0rem !important; 
+            max-width: 1100px !important; /* Fixes the stretching issue */
+            padding-left: 1rem !important; 
+            padding-right: 1rem !important;
+        }
         footer {display: none !important;}
         
-        /* Base Theme for Landing */
-        .stApp { background-color: #020617; font-family: 'Plus Jakarta Sans', sans-serif; color: white; background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #020617 70%); }
+        /* Base Theme */
+        .stApp { 
+            background-color: #040814; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: white; 
+            background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #040814 60%); 
+        }
         
         /* Navbar */
-        .custom-navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 50px; border-bottom: 1px solid rgba(255,255,255,0.05); backdrop-filter: blur(10px); }
+        .custom-navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 0px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-brand { font-size: 24px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
-        .nav-links { font-size: 14px; font-weight: 600; color: #94a3b8; cursor: pointer; }
+        .nav-links { font-size: 14px; font-weight: 600; color: #94a3b8; cursor: pointer; transition: 0.3s; }
         .nav-links:hover { color: #38bdf8; }
         
         /* Hero Section */
-        .hero-section { text-align: center; padding: 6rem 2rem 4rem 2rem; max-width: 900px; margin: 0 auto; }
-        .badge { background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 6px 16px; border-radius: 30px; font-size: 12px; font-weight: 700; letter-spacing: 1px; display: inline-block; margin-bottom: 20px; border: 1px solid rgba(56, 189, 248, 0.2); }
-        .hero-title { font-size: 4.5rem; font-weight: 800; color: #f8fafc; margin-bottom: 1.5rem; line-height: 1.1; letter-spacing: -1px; }
+        .hero-section { text-align: center; padding: 5rem 1rem 3rem 1rem; }
+        .badge { background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 6px 16px; border-radius: 30px; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; display: inline-block; margin-bottom: 25px; border: 1px solid rgba(56, 189, 248, 0.2); }
+        .hero-title { font-size: 4rem; font-weight: 800; color: #f8fafc; margin-bottom: 1.5rem; line-height: 1.15; letter-spacing: -1.5px; }
         .hero-title span { background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-subtitle { font-size: 1.25rem; color: #94a3b8; max-width: 700px; margin: 0 auto 3rem auto; line-height: 1.6; }
+        .hero-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 650px; margin: 0 auto 3rem auto; line-height: 1.7; }
         
         /* Section Headings */
-        .section-title { font-size: 2.5rem; font-weight: 800; text-align: center; margin: 4rem 0 2rem 0; color: #f8fafc; }
+        .section-title { font-size: 2.2rem; font-weight: 800; text-align: center; margin: 5rem 0 2.5rem 0; color: #f8fafc; }
         .section-title span { color: #38bdf8; }
         
-        /* Custom Styling for Streamlit Containers (Cards) */
+        /* Custom Cards for Teams & Flow */
         [data-testid="stVerticalBlockBorderWrapper"] {
-            background: rgba(30, 41, 59, 0.5) !important;
-            border-radius: 20px !important;
-            border: 1px solid #334155 !important;
+            background: rgba(15, 23, 42, 0.6) !important;
+            border-radius: 16px !important;
+            border: 1px solid rgba(255,255,255,0.05) !important;
             padding: 1.5rem !important;
             transition: all 0.3s ease !important;
             backdrop-filter: blur(10px);
+            height: 100%;
         }
         [data-testid="stVerticalBlockBorderWrapper"]:hover {
-            transform: translateY(-10px);
-            border-color: #38bdf8 !important;
-            box-shadow: 0 20px 40px rgba(56, 189, 248, 0.1) !important;
+            transform: translateY(-5px);
+            border-color: rgba(56, 189, 248, 0.4) !important;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4) !important;
             background: rgba(30, 41, 59, 0.8) !important;
         }
         
-        /* Button Overrides */
-        div[data-testid="stButton"] > button { width: 100%; border-radius: 12px; padding: 24px 0; font-weight: 700; background: #38bdf8; color: #0f172a; border: none; transition: all 0.2s; font-size: 16px; margin-top: 15px;}
-        div[data-testid="stButton"] > button:hover { background: #0ea5e9; color: white; transform: scale(1.02); }
+        /* Professional Button Overrides - Fixed Overflow Bug */
+        div[data-testid="stButton"] > button { 
+            border-radius: 10px !important; 
+            padding: 0.6rem 0 !important; 
+            font-weight: 700 !important; 
+            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%) !important; 
+            color: #ffffff !important; 
+            border: none !important; 
+            transition: all 0.3s ease !important; 
+            font-size: 15px !important; 
+            margin-top: 10px !important;
+            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2) !important;
+        }
+        div[data-testid="stButton"] > button:hover { 
+            transform: translateY(-2px) !important; 
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4) !important; 
+        }
         
         /* Footer */
-        .footer { text-align: center; padding: 4rem 0 2rem 0; border-top: 1px solid #1e293b; margin-top: 4rem; color: #64748b; font-size: 14px;}
+        .footer { text-align: center; padding: 3rem 0 2rem 0; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; color: #64748b; font-size: 14px;}
         
         @media (max-width: 768px) {
-            .hero-title { font-size: 3rem; }
-            .custom-navbar { padding: 20px; }
+            .hero-title { font-size: 2.5rem; }
+            .hero-section { padding-top: 3rem; }
         }
     </style>
     
     <div class="custom-navbar">
         <div class="nav-brand">🧪 Lab AgentX</div>
-        <div class="nav-links">Sign In →</div>
+        <div class="nav-links">Login Karo →</div>
     </div>
     
     <div class="hero-section">
-        <div class="badge">🚀 VERSION 2.0 LIVE HAI</div>
-        <div class="hero-title">Hire The Ultimate AI Squad.<br><span>Automate Everything.</span></div>
-        <div class="hero-subtitle">Boring tools ko choro. Lab AgentX aapki puri team ko replace karta hai. Marketing, Sales, Tech aur Research ke liye 14 super-intelligent anime agents jo 24/7 kaam karte hain.</div>
+        <div class="badge">🚀 VERSION 2.0 LIVE CHE</div>
+        <div class="hero-title">Ultimate AI Squad Hire Karo.<br><span>Badhu Automate Karo.</span></div>
+        <div class="hero-subtitle">Boring tools ne chhodi do. Lab AgentX tamari aakhi team ne replace kare che. Marketing, Sales, Tech ane Research mate 14 super-intelligent anime agents je 24/7 kaam kare che.</div>
     </div>
     """, unsafe_allow_html=True)
 
     # --- STATS SECTION ---
     c1, c2, c3, c4 = st.columns(4)
-    with c1: st.markdown("<h2 style='text-align:center; color:#38bdf8;'>14+</h2><p style='text-align:center; color:#94a3b8;'>Elite AI Agents</p>", unsafe_allow_html=True)
-    with c2: st.markdown("<h2 style='text-align:center; color:#38bdf8;'>24/7</h2><p style='text-align:center; color:#94a3b8;'>Non-stop Execution</p>", unsafe_allow_html=True)
-    with c3: st.markdown("<h2 style='text-align:center; color:#38bdf8;'>10x</h2><p style='text-align:center; color:#94a3b8;'>Faster Delivery</p>", unsafe_allow_html=True)
-    with c4: st.markdown("<h2 style='text-align:center; color:#38bdf8;'>0%</h2><p style='text-align:center; color:#94a3b8;'>Human Error</p>", unsafe_allow_html=True)
+    with c1: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>14+</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Elite AI Agents</p>", unsafe_allow_html=True)
+    with c2: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>24/7</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Non-stop Kaam</p>", unsafe_allow_html=True)
+    with c3: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>10x</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Jhadap Thi Delivery</p>", unsafe_allow_html=True)
+    with c4: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>0%</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Human Error</p>", unsafe_allow_html=True)
 
     # --- HOW IT WORKS (FLOW) ---
-    st.markdown("<div class='section-title'>⚙️ Kaam <span>Kaise Karta Hai?</span></div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title'>⚙️ Kaam <span>Kevi Rite Kare Che?</span></div>", unsafe_allow_html=True)
     f1, f2, f3 = st.columns(3)
     with f1:
         with st.container(border=True):
-            st.markdown("<h1 style='color:#38bdf8;'>01</h1><h3>Command Dein</h3><p style='color:#94a3b8;'>Aap bas simple English/Hindi mein apna task likhein. Lab AgentX khud samjhega ke kis department ko bulana hai.</p>", unsafe_allow_html=True)
+            st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>01</h1><h3 style='margin-bottom:10px;'>Command Aapo</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Tame khali simple bhasha ma tamaru task lakho. Lab AgentX jate j samjhi jase ke kaya department ne bolavvanu che.</p>", unsafe_allow_html=True)
     with f2:
         with st.container(border=True):
-            st.markdown("<h1 style='color:#38bdf8;'>02</h1><h3>Squad Execution</h3><p style='color:#94a3b8;'>Agents aapas mein baat karenge. Franky code likhega, Gojo marketing sambhalega, aur Itachi data scrape karega.</p>", unsafe_allow_html=True)
+            st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>02</h1><h3 style='margin-bottom:10px;'>Squad Execution</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Agents ekbija sathe vaat karse. Franky code lakhse, Gojo marketing sambhalse, ane Itachi data scrape karse.</p>", unsafe_allow_html=True)
     with f3:
         with st.container(border=True):
-            st.markdown("<h1 style='color:#38bdf8;'>03</h1><h3>Download Result</h3><p style='color:#94a3b8;'>Kuch hi seconds mein aapka kaam VIP Markdown report ya Code file mein convert ho kar download ke liye ready hoga.</p>", unsafe_allow_html=True)
+            st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>03</h1><h3 style='margin-bottom:10px;'>Result Download Karo</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Ganti ni seconds ma tamaru kaam VIP Markdown report ke Code file ma convert thai ne download mate ready hase.</p>", unsafe_allow_html=True)
 
     # --- TEAM SECTION ---
-    st.markdown("<div class='section-title'>🦸‍♂️ Miliye Hamari <span>Elite Squad Se</span></div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title'>🦸‍♂️ Aamari <span>Elite Squad Thi Malo</span></div>", unsafe_allow_html=True)
     t1, t2, t3, t4 = st.columns(4)
     with t1:
         with st.container(border=True):
-            st.markdown("<h1 style='text-align:center;'>🧪</h1><h3 style='text-align:center;'>Lab AgentX</h3><p style='text-align:center; color:#94a3b8;'>The Mastermind CEO</p>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center; font-size:40px; margin-bottom:10px;'>🧪</div><h4 style='text-align:center; margin:0;'>Lab AgentX</h4><p style='text-align:center; color:#94a3b8; font-size:13px; margin-top:5px;'>The Mastermind CEO</p>", unsafe_allow_html=True)
     with t2:
         with st.container(border=True):
-            st.markdown("<h1 style='text-align:center;'>♾️</h1><h3 style='text-align:center;'>Satoru Gojo</h3><p style='text-align:center; color:#94a3b8;'>Marketing Head</p>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center; font-size:40px; margin-bottom:10px;'>♾️</div><h4 style='text-align:center; margin:0;'>Satoru Gojo</h4><p style='text-align:center; color:#94a3b8; font-size:13px; margin-top:5px;'>Marketing Head</p>", unsafe_allow_html=True)
     with t3:
         with st.container(border=True):
-            st.markdown("<h1 style='text-align:center;'>👁️</h1><h3 style='text-align:center;'>Itachi Uchiha</h3><p style='text-align:center; color:#94a3b8;'>Web Intel & Scraper</p>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center; font-size:40px; margin-bottom:10px;'>👁️</div><h4 style='text-align:center; margin:0;'>Itachi Uchiha</h4><p style='text-align:center; color:#94a3b8; font-size:13px; margin-top:5px;'>Web Intel & Scraper</p>", unsafe_allow_html=True)
     with t4:
         with st.container(border=True):
-            st.markdown("<h1 style='text-align:center;'>🦾</h1><h3 style='text-align:center;'>Franky</h3><p style='text-align:center; color:#94a3b8;'>Tech & Dev Lead</p>", unsafe_allow_html=True)
+            st.markdown("<div style='text-align:center; font-size:40px; margin-bottom:10px;'>🦾</div><h4 style='text-align:center; margin:0;'>Franky</h4><p style='text-align:center; color:#94a3b8; font-size:13px; margin-top:5px;'>Tech & Dev Lead</p>", unsafe_allow_html=True)
 
-    # --- PRICING SECTION (BUG FIXED) ---
-    st.markdown("<div class='section-title'>💎 Choose Your <span>Plan</span></div>", unsafe_allow_html=True)
+    # --- PRICING SECTION ---
+    st.markdown("<div class='section-title'>💎 Tamaro <span>Plan Pasand Karo</span></div>", unsafe_allow_html=True)
     
     p1, p2, p3, p4 = st.columns(4)
     
     with p1:
         with st.container(border=True):
-            st.markdown("### Starter")
-            st.markdown("<h1 style='font-size:3rem; margin:0;'>$19<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
-            st.markdown("<p style='color:#94a3b8; font-size:14px; border-bottom:1px solid #334155; padding-bottom:15px;'>Solopreneurs ke liye best.</p>", unsafe_allow_html=True)
+            st.markdown("<h3 style='margin-bottom:0;'>Starter</h3>", unsafe_allow_html=True)
+            st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$19<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
+            st.markdown("<p style='color:#94a3b8; font-size:13px; border-bottom:1px solid #334155; padding-bottom:15px; margin-bottom:15px;'>Solopreneurs mate best.</p>", unsafe_allow_html=True)
             st.markdown("""
-            <div style='color:#cbd5e1; font-size:14px; line-height:2;'>
-            <span style='color:#38bdf8'>✓</span> 5 AI Agents<br>
-            <span style='color:#38bdf8'>✓</span> Content Multiplier (Naruto)<br>
-            <span style='color:#38bdf8'>✓</span> Deep Research (L)<br>
-            <span style='color:#38bdf8'>✓</span> Standard Dashboard<br>
+            <div style='color:#cbd5e1; font-size:13px; line-height:2.2; min-height: 140px;'>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> 5 AI Agents<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> Content Multiplier (Naruto)<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> Deep Research (L)<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> Standard Dashboard<br>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("Start Free Trial", key="btn1"): go_to_dashboard(); st.rerun()
+            if st.button("Mafat Trial Sharu Karo", key="btn1", use_container_width=True): go_to_dashboard(); st.rerun()
 
     with p2:
         with st.container(border=True):
-            st.markdown("### Growth")
-            st.markdown("<h1 style='font-size:3rem; margin:0;'>$39<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
-            st.markdown("<p style='color:#94a3b8; font-size:14px; border-bottom:1px solid #334155; padding-bottom:15px;'>Startups ko scale karne ke liye.</p>", unsafe_allow_html=True)
+            st.markdown("<h3 style='margin-bottom:0;'>Growth</h3>", unsafe_allow_html=True)
+            st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$39<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
+            st.markdown("<p style='color:#94a3b8; font-size:13px; border-bottom:1px solid #334155; padding-bottom:15px; margin-bottom:15px;'>Startups ne scale karva mate.</p>", unsafe_allow_html=True)
             st.markdown("""
-            <div style='color:#cbd5e1; font-size:14px; line-height:2;'>
-            <span style='color:#38bdf8'>✓</span> 10 AI Agents<br>
-            <span style='color:#38bdf8'>✓</span> Sales Outreach (Light)<br>
-            <span style='color:#38bdf8'>✓</span> SEO Empire (Akatsuki)<br>
-            <span style='color:#38bdf8'>✓</span> Finance Analyst (Nami)<br>
+            <div style='color:#cbd5e1; font-size:13px; line-height:2.2; min-height: 140px;'>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> 10 AI Agents<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> Sales Outreach (Light)<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> SEO Empire (Akatsuki)<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> Finance Analyst (Nami)<br>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("Get Growth", key="btn2"): go_to_dashboard(); st.rerun()
+            if st.button("Growth Plan Lo", key="btn2", use_container_width=True): go_to_dashboard(); st.rerun()
 
     with p3:
-        # Most Popular Plan
+        # Most Popular Plan with distinct styling
         with st.container(border=True):
-            st.markdown("<div style='background:linear-gradient(135deg, #38bdf8, #818cf8); color:white; padding:3px 10px; border-radius:20px; font-size:10px; display:inline-block; font-weight:bold;'>MOST POPULAR</div>", unsafe_allow_html=True)
-            st.markdown("<h3 style='color:#38bdf8;'>Elite Agency</h3>", unsafe_allow_html=True)
-            st.markdown("<h1 style='font-size:3rem; margin:0;'>$54<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
-            st.markdown("<p style='color:#94a3b8; font-size:14px; border-bottom:1px solid #334155; padding-bottom:15px;'>Full agency power aapke haath mein.</p>", unsafe_allow_html=True)
+            st.markdown("<div style='background:linear-gradient(135deg, #38bdf8, #818cf8); color:white; padding:3px 10px; border-radius:20px; font-size:10px; display:inline-block; font-weight:bold; margin-bottom:5px;'>SAUTHI VADHU LOKPRIYA</div>", unsafe_allow_html=True)
+            st.markdown("<h3 style='margin-bottom:0; color:#38bdf8;'>Elite Agency</h3>", unsafe_allow_html=True)
+            st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$54<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
+            st.markdown("<p style='color:#94a3b8; font-size:13px; border-bottom:1px solid #334155; padding-bottom:15px; margin-bottom:15px;'>Full agency power tamara hath ma.</p>", unsafe_allow_html=True)
             st.markdown("""
-            <div style='color:#cbd5e1; font-size:14px; line-height:2;'>
-            <span style='color:#38bdf8'>✓</span> 16 Premium AI Agents<br>
-            <span style='color:#38bdf8'>✓</span> Image Gen (Sai)<br>
-            <span style='color:#38bdf8'>✓</span> Tech Dev Team (Franky)<br>
-            <span style='color:#38bdf8'>✓</span> Legal Audits (Nanami)<br>
+            <div style='color:#cbd5e1; font-size:13px; line-height:2.2; min-height: 140px;'>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> 16 Premium AI Agents<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> Image Gen (Sai)<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> Tech Dev Team (Franky)<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> Legal Audits (Nanami)<br>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("Get Elite Access", key="btn3"): go_to_dashboard(); st.rerun()
+            if st.button("Elite Access Lo", key="btn3", use_container_width=True): go_to_dashboard(); st.rerun()
 
     with p4:
         with st.container(border=True):
-            st.markdown("### Enterprise")
-            st.markdown("<h1 style='font-size:3rem; margin:0;'>$89<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
-            st.markdown("<p style='color:#94a3b8; font-size:14px; border-bottom:1px solid #334155; padding-bottom:15px;'>Custom automation big teams ke liye.</p>", unsafe_allow_html=True)
+            st.markdown("<h3 style='margin-bottom:0;'>Enterprise</h3>", unsafe_allow_html=True)
+            st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$89<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
+            st.markdown("<p style='color:#94a3b8; font-size:13px; border-bottom:1px solid #334155; padding-bottom:15px; margin-bottom:15px;'>Moti teams mate custom automation.</p>", unsafe_allow_html=True)
             st.markdown("""
-            <div style='color:#cbd5e1; font-size:14px; line-height:2;'>
-            <span style='color:#38bdf8'>✓</span> 25+ AI Agents (Unlimited)<br>
-            <span style='color:#38bdf8'>✓</span> Custom Character Bots<br>
-            <span style='color:#38bdf8'>✓</span> White-label Workspace<br>
-            <span style='color:#38bdf8'>✓</span> 1-on-1 Onboarding<br>
+            <div style='color:#cbd5e1; font-size:13px; line-height:2.2; min-height: 140px;'>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> 25+ AI Agents (Anlimit)<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> Custom Character Bots<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> White-label Workspace<br>
+            <span style='color:#38bdf8; font-weight:bold;'>✓</span> 1-on-1 Onboarding<br>
             </div>
             """, unsafe_allow_html=True)
-            if st.button("Contact Sales", key="btn4"): go_to_dashboard(); st.rerun()
+            if st.button("Sales Ne Contact Karo", key="btn4", use_container_width=True): go_to_dashboard(); st.rerun()
 
     # --- FOOTER ---
-    st.markdown("<div class='footer'>Backed by Groq Technology ⚡ • © 2026 Lab AgentX | Made for Scale</div>", unsafe_allow_html=True)
+    st.markdown("<div class='footer'>Backed by Groq Technology ⚡ • © 2026 Lab AgentX | Bhavishya Mate Banavelu</div>", unsafe_allow_html=True)
 
 
 # ==========================================
-# 🧪 MAIN DASHBOARD (ISOLATED UI)
+# 🧪 MAIN DASHBOARD (WORKSPACE UI)
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
@@ -228,7 +255,7 @@ elif st.session_state.current_page == "dashboard":
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        .stApp { background-color: #f4f7f6 !important; font-family: 'Plus Jakarta Sans', sans-serif; }
+        .stApp { background-color: #f8fafc !important; font-family: 'Plus Jakarta Sans', sans-serif; }
         
         section[data-testid="stSidebar"] { display: block !important; }
         button[data-testid="collapsedControl"] { display: block !important; }
@@ -236,9 +263,9 @@ elif st.session_state.current_page == "dashboard":
         
         .top-stats { 
             display: flex; justify-content: space-around; 
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); 
+            background: #ffffff; 
             padding: 20px; border-radius: 16px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); 
             margin-bottom: 25px; border: 1px solid #e2e8f0; 
             flex-wrap: wrap; gap: 15px;
         }
@@ -246,38 +273,40 @@ elif st.session_state.current_page == "dashboard":
         .stat-box { text-align: center; flex: 1; min-width: 120px; transition: transform 0.2s; } 
         .stat-box:hover { transform: translateY(-2px); }
         .stat-box * { color: #0f172a !important; }
-        .stat-value { font-size: 28px; font-weight: 800; letter-spacing: -0.5px; } 
+        .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; } 
         .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-top: 4px; color: #64748b !important; }
         
-        .kanban-header { font-size: 14px; font-weight: 700; color: #334155 !important; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 3px solid #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px; }
+        .kanban-header { font-size: 13px; font-weight: 800; color: #475569 !important; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 3px solid #e2e8f0; text-transform: uppercase; letter-spacing: 1px; }
         .k-assigned { border-bottom-color: #f59e0b; } .k-progress { border-bottom-color: #3b82f6; } .k-review { border-bottom-color: #8b5cf6; } .k-done { border-bottom-color: #10b981; }
         
         .k-card { 
-            background: #ffffff !important; border: 1px solid #e2e8f0; border-radius: 10px; 
-            padding: 14px; margin-bottom: 14px; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02); 
+            background: #ffffff !important; border: 1px solid #e2e8f0; border-radius: 12px; 
+            padding: 16px; margin-bottom: 14px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02); 
             transition: all 0.2s ease; word-wrap: break-word;
         }
-        .k-card:hover { box-shadow: 0 5px 15px rgba(0,0,0,0.05); transform: translateY(-2px); border-color: #cbd5e1; }
+        .k-card:hover { box-shadow: 0 8px 20px rgba(0,0,0,0.06); transform: translateY(-2px); border-color: #cbd5e1; }
         .k-card * { color: #0f172a !important; }
-        .k-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; } 
-        .k-agent { font-size: 12px; color: #64748b !important; display: flex; align-items: center; gap: 6px; font-weight: 500;} 
+        .k-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; } 
+        .k-agent { font-size: 12px; color: #64748b !important; display: flex; align-items: center; gap: 6px; font-weight: 600;} 
         
         .agent-row { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding: 12px; margin-bottom: 8px; border-radius: 10px; 
+            padding: 14px 12px; margin-bottom: 10px; border-radius: 12px; 
             background: #ffffff !important; 
             border: 1px solid #e2e8f0; cursor: pointer; 
             transition: all 0.2s ease; 
         }
-        .agent-row:hover { border-color: #94a3b8; box-shadow: 0 4px 10px rgba(0,0,0,0.06); transform: translateY(-1px); }
-        .agent-name-container { display: flex; flex-direction: column; gap: 2px; }
+        .agent-row:hover { border-color: #94a3b8; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transform: translateY(-1px); }
+        .agent-name-container { display: flex; flex-direction: column; gap: 4px; }
         .agent-name, .agent-name * { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: #0f172a !important; } 
-        .agent-role { font-size: 10px; color: #64748b !important; font-weight: 600; margin-left: 28px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .agent-role { font-size: 10px; color: #64748b !important; font-weight: 700; margin-left: 28px; text-transform: uppercase; letter-spacing: 0.5px;}
         
         .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 800; letter-spacing: 0.5px;}
         .st-working, .st-working * { background: #dcfce7 !important; color: #166534 !important; border: 1px solid #bbf7d0 !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.2); } 
         .st-standby, .st-standby * { background: #f8fafc !important; color: #64748b !important; border: 1px solid #e2e8f0 !important; }
+        
+        div[data-testid="stButton"] > button { border-radius: 8px !important; font-weight: 600 !important; }
         
         #MainMenu {visibility: hidden;} footer {visibility: hidden;}
         
@@ -285,8 +314,6 @@ elif st.session_state.current_page == "dashboard":
             .top-stats { flex-direction: column; gap: 5px; }
             .stat-box { width: 100%; border-bottom: 1px solid #f1f5f9; padding: 10px 0; }
             .stat-box:last-child { border-bottom: none; }
-            .agent-row { padding: 10px; }
-            .agent-name, .agent-name * { font-size: 13px; }
         }
     </style>
     """, unsafe_allow_html=True)
@@ -316,12 +343,22 @@ elif st.session_state.current_page == "dashboard":
     for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER, SAVED_FILES_FOLDER]:
         if not os.path.exists(folder): os.makedirs(folder)
 
-    # 🧠 100% UNBREAKABLE TIMESTAMP LOGIC FOR HIDING FILES
+    # 🧠 STATE-BASED FILE HIDING LOGIC
+    def get_all_deliverables():
+        files = []
+        for root, _, filenames in os.walk(DELIVERABLES_FOLDER):
+            for fname in filenames:
+                files.append(os.path.normpath(os.path.join(root, fname)))
+        return set(files)
+
+    if "hidden_files" not in st.session_state: 
+        st.session_state.hidden_files = get_all_deliverables()
+
     if "session_start_time" not in st.session_state: 
         st.session_state.session_start_time = time.time() - 5
 
     if "full_memory" not in st.session_state: st.session_state.full_memory = []
-    if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. The Squad is ready. What's the mission, Commander?"}]
+    if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. Tamari squad taiyar che, Commander. Su aadesh che?"}]
     if "active_tasks" not in st.session_state: st.session_state.active_tasks = []
     if "assigned_tasks" not in st.session_state: st.session_state.assigned_tasks = []
     if "review_tasks" not in st.session_state: st.session_state.review_tasks = []
@@ -377,24 +414,24 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown(f"""
     <div class="top-stats">
-        <div class="stat-box"><div class="stat-value">{total_agents}</div><div class="stat-label">Total Agents</div></div>
-        <div class="stat-box"><div class="stat-value">{tasks_in_queue}</div><div class="stat-label">Tasks in Queue</div></div>
-        <div class="stat-box"><div class="stat-value" style="color:#3b82f6 !important;">{current_active_agent}</div><div class="stat-label">Filtering By</div></div>
-        <div class="stat-box"><div class="stat-value" style="color:#10b981 !important;">● ONLINE</div><div class="stat-label">System Status</div></div>
+        <div class="stat-box"><div class="stat-value">{total_agents}</div><div class="stat-label">Kul Agents</div></div>
+        <div class="stat-box"><div class="stat-value">{tasks_in_queue}</div><div class="stat-label">Queue Ma Tasks</div></div>
+        <div class="stat-box"><div class="stat-value" style="color:#3b82f6 !important;">{current_active_agent}</div><div class="stat-label">Filter Karelu</div></div>
+        <div class="stat-box"><div class="stat-value" style="color:#10b981 !important;">● ONLINE</div><div class="stat-label">System Ni Sthiti</div></div>
     </div>
     """, unsafe_allow_html=True)
 
     with st.sidebar:
-        if st.button("⬅️ View Pricing Plans", use_container_width=True):
+        if st.button("⬅️ Pricing Plans Juo", use_container_width=True):
             st.session_state.current_page = "landing"
             st.rerun()
             
         st.markdown("### 🎛️ AGENCY CONTROLS")
         col_c1, col_c2 = st.columns(2)
         with col_c1:
-            if st.button("💬 New Chat", use_container_width=True):
+            if st.button("💬 Navi Chat", use_container_width=True):
                 st.session_state.full_memory.extend(st.session_state.messages)
-                st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. Memory archived. Ready for the next mission."}]
+                st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. Juna data archive thai gaya che. Navi mission mate taiyar."}]
                 st.session_state.session_start_time = time.time()
                 for root, _, files in os.walk(DELIVERABLES_FOLDER):
                     for file in files:
@@ -411,13 +448,13 @@ elif st.session_state.current_page == "dashboard":
                 st.rerun()
                 
         with col_c2:
-            if st.button("🛑 Cancel Task", use_container_width=True):
+            if st.button("🛑 Task Radd Karo", use_container_width=True):
                 st.session_state.active_tasks = []
-                st.session_state.messages.append({"role": "assistant", "content": "🛑 **Task Cancelled.** The squad is standing down."})
+                st.session_state.messages.append({"role": "assistant", "content": "🛑 **Task Cancelled.** Squad e kaam rokavi didhu che."})
                 st.rerun()
                 
         st.markdown("---")
-        st.markdown(f"### 🏢 SQUAD STATUS ({working_agents_count} Active)")
+        st.markdown(f"### 🏢 SQUAD NI STHITI ({working_agents_count} Active)")
         agents_html = ""
         for key, info in AGENTS_INFO.items():
             is_working = (key == "Lab AgentX" or key == current_active_agent)
@@ -438,13 +475,13 @@ elif st.session_state.current_page == "dashboard":
         st.markdown("---")
         st.markdown("### 🔗 INTEGRATIONS")
         with st.expander("⚙️ Connect APIs (REQUIRED)", expanded=False):
-            st.caption("Add your AI and Social API Keys here.")
-            live_groq_key = st.text_input("Groq API Key (For AI Brain)", type="password", value=INITIAL_GROQ_KEY)
+            st.caption("Ahiya tamara AI ane Social API keys add karo.")
+            live_groq_key = st.text_input("Groq API Key (AI Brain Mate)", type="password", value=INITIAL_GROQ_KEY)
             tw_api = st.text_input("Twitter API Key", type="password")
             li_tok = st.text_input("LinkedIn Access Token", type="password")
 
         st.markdown("---")
-        st.markdown("### 📁 SAVED FILES")
+        st.markdown("### 📁 SAVE KAREL FILES")
         saved_files = []
         for root, _, files in os.walk(SAVED_FILES_FOLDER):
             for file in files:
@@ -467,7 +504,7 @@ elif st.session_state.current_page == "dashboard":
                         with open(sf, "r", encoding="utf-8", errors="ignore") as f: file_content = f.read()
                         st.download_button(label=f"📄 {display_name}", data=file_content, file_name=fname, key=sf+"_saved")
         else:
-            st.caption("No saved files yet. Click 'New Chat' to archive current tasks.")
+            st.caption("Haju koi file save nathi thai. Navi Chat par click karo archive karva mate.")
 
     if live_groq_key:
         os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
@@ -490,36 +527,36 @@ elif st.session_state.current_page == "dashboard":
         except Exception:
             pass
     else:
-        st.warning("⚠️ Cloud Brain Offline! Open 'Connect APIs' in the sidebar and paste your Groq API Key.")
+        st.warning("⚠️ Cloud Brain Offline! Sidebar ma jai ne Groq API Key aapo.")
 
     col_kanban, col_feed = st.columns([2.5, 1.2])
 
     with col_kanban:
         st.markdown("### 📋 TASK TRACKER")
         k1, k2, k3, k4 = st.columns(4)
-        with k1: st.markdown(f"<div class='kanban-header k-assigned'>Assigned ({len(st.session_state.assigned_tasks)})</div>", unsafe_allow_html=True)
+        with k1: st.markdown(f"<div class='kanban-header k-assigned'>Aapel ({len(st.session_state.assigned_tasks)})</div>", unsafe_allow_html=True)
         with k2:
-            st.markdown(f"<div class='kanban-header k-progress'>In Progress ({len(st.session_state.active_tasks)})</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='kanban-header k-progress'>Chalu Kaam ({len(st.session_state.active_tasks)})</div>", unsafe_allow_html=True)
             for task in st.session_state.active_tasks:
-                st.markdown(f"<div class='k-card' style='border-left: 3px solid #3b82f6;'><div class='k-title'>{task}</div><div class='k-agent'>🧪 Lab AgentX routing...</div><div class='k-tag'>Processing</div></div>", unsafe_allow_html=True)
-        with k3: st.markdown(f"<div class='kanban-header k-review'>Review ({len(st.session_state.review_tasks)})</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='k-card' style='border-left: 4px solid #3b82f6;'><div class='k-title'>{task}</div><div class='k-agent'>🧪 Lab AgentX routing...</div></div>", unsafe_allow_html=True)
+        with k3: st.markdown(f"<div class='kanban-header k-review'>Tapasani ({len(st.session_state.review_tasks)})</div>", unsafe_allow_html=True)
         with k4:
-            st.markdown(f"<div class='kanban-header k-done'>Done ({len(done_tasks_list)})</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='kanban-header k-done'>Puru Thayelu ({len(done_tasks_list)})</div>", unsafe_allow_html=True)
             if done_tasks_list:
                 done_container = st.container(height=500, border=False)
                 with done_container:
                     for task in done_tasks_list:
-                        st.markdown(f"<div class='k-card' style='border-left: 3px solid #10b981;'><div class='k-title'>{task['name'][:25]}...</div><div class='k-agent'>✅ Completed</div></div>", unsafe_allow_html=True)
+                        st.markdown(f"<div class='k-card' style='border-left: 4px solid #10b981;'><div class='k-title'>{task['name'][:25]}...</div><div class='k-agent'>✅ Puru Thayelu</div></div>", unsafe_allow_html=True)
                         if task['path'].endswith('.jpg') or task['path'].endswith('.png'):
                             with open(task['path'], "rb") as f:
-                                st.download_button(label="🖼️ Download Image", data=f, file_name=os.path.basename(task['path']), mime="image/jpeg", key=task['path']+"_img")
+                                st.download_button(label="🖼️ Image Download Karo", data=f, file_name=os.path.basename(task['path']), mime="image/jpeg", key=task['path']+"_img", use_container_width=True)
                         else:
                             with open(task['path'], "r", encoding="utf-8", errors="ignore") as f: file_content = f.read()
-                            st.download_button(label="📄 Download Report", data=file_content, file_name=task['name']+".txt", key=task['path']+"_txt")
+                            st.download_button(label="📄 Report Download Karo", data=file_content, file_name=task['name']+".txt", key=task['path']+"_txt", use_container_width=True)
 
     with col_feed:
         st.markdown("<div class='feed-header'>🟢 LIVE FEED</div>", unsafe_allow_html=True)
-        feed_container = st.container(height=500)
+        feed_container = st.container(height=500, border=True)
         with feed_container:
             for message in st.session_state.messages:
                 avatar = "🧪" if message["role"] == "assistant" else "🧑‍💼"
@@ -572,7 +609,7 @@ elif st.session_state.current_page == "dashboard":
         """
         
         if not live_groq_key:
-            full_response = "⚠️ Lab AgentX Error: Groq Cloud API Key missing! Please paste it in the sidebar."
+            full_response = "⚠️ Lab AgentX Error: Groq Cloud API Key missing! Sidebar ma jai ne add karo."
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             if st.session_state.active_tasks: st.session_state.active_tasks.pop()
             st.rerun()
@@ -597,7 +634,7 @@ elif st.session_state.current_page == "dashboard":
                     st.session_state.messages.append({"role": "assistant", "content": full_response})
                     
                     if "Task Assigned" in full_response or "Deploying" in full_response:
-                        with st.spinner(f"Anime Agents are arguing and working... This might take a minute."):
+                        with st.spinner(f"Anime Agents are arguing and working... Thodi rah juo."):
                             agent_result = "⚠️ Agent not fully integrated for cloud yet."
                             
                             if "**Gojo**" in full_response:
