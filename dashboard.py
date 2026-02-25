@@ -263,25 +263,19 @@ elif st.session_state.current_page == "dashboard":
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         .stApp { background-color: #020617 !important; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc;}
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
-        .block-container { padding-top: 3rem !important; max-width: 1400px !important; }
+        
+        /* EXACT Container Spacing for perfect Chat Input alignment */
+        .block-container { padding-top: 3rem !important; max-width: 1400px !important; padding-left: 2rem !important; padding-right: 2rem !important; }
+        
         .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #f8fafc !important; }
         
-        /* 🔥 BUG FIX 1: Sidebar Buttons Explicit Dark Mode with White Text */
+        /* 🔥 FIX 1: Sidebar Buttons Explicit Dark Mode with White Text */
         section[data-testid="stSidebar"] div[data-testid="stButton"] > button { 
-            background-color: #1e293b !important; 
-            border: 1px solid #334155 !important; 
-            border-radius: 8px !important; 
+            background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 8px !important; 
         }
-        section[data-testid="stSidebar"] div[data-testid="stButton"] > button p {
-            color: #ffffff !important;
-            font-weight: 700 !important;
-        }
-        section[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover { 
-            border-color: #38bdf8 !important; 
-        }
-        section[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover p {
-            color: #38bdf8 !important;
-        }
+        section[data-testid="stSidebar"] div[data-testid="stButton"] > button p { color: #ffffff !important; font-weight: 700 !important; }
+        section[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover { border-color: #38bdf8 !important; }
+        section[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover p { color: #38bdf8 !important; }
         
         /* Special Squad Chat Button */
         .squad-btn div[data-testid="stButton"] > button { background-color: #38bdf8 !important; border: none !important; }
@@ -311,39 +305,67 @@ elif st.session_state.current_page == "dashboard":
         .st-standby { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        /* Chat Input Core */
-        div[data-baseweb="chat-input"] { background-color: #1f2937 !important; border: none !important; border-radius: 30px !important; padding: 8px 15px !important; box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;}
-        div[data-baseweb="chat-input"] textarea { color: #f3f4f6 !important; -webkit-text-fill-color: #f3f4f6 !important; font-size: 15px !important; padding-left: 50px !important;}
-        div[data-baseweb="chat-input"] textarea::placeholder { color: #9ca3af !important; }
-        div[data-baseweb="chat-input"] svg { fill: #d1d5db !important; }
-        
-        /* 🔥 BUG FIX 3: Chat Uploader ➕ icon pulled DOWN perfectly into the chat box */
-        div[data-testid="stPopover"] {
-            position: relative;
-            top: 53px;
-            left: 12px;
-            z-index: 999;
-            width: 35px;
+        /* 🔥 FIX 2: Force Complete Dark Theme on Chat Input Container */
+        div[data-testid="stChatInput"] { padding-bottom: 15px !important; }
+        div[data-testid="stChatInput"] > div { 
+            background-color: #1f2937 !important; 
+            border: 1px solid #334155 !important; 
+            border-radius: 30px !important; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
         }
+        div[data-testid="stChatInput"] textarea { 
+            background-color: transparent !important;
+            color: #f8fafc !important; 
+            -webkit-text-fill-color: #f8fafc !important; 
+            font-size: 15px !important; 
+            padding-left: 45px !important; /* Space for the floating + button */
+        }
+        div[data-testid="stChatInput"] textarea::placeholder { color: #9ca3af !important; }
+        div[data-testid="stChatInput"] svg { fill: #94a3b8 !important; }
+        
+        /* 🔥 FIX 3: Chat Uploader ➕ icon injected directly inside the left of Chat Input! */
+        div[data-testid="stPopover"] {
+            position: fixed !important;
+            bottom: 30px !important; /* Perfectly centered with the input box vertical axis */
+            z-index: 99999 !important;
+        }
+        
+        /* Math to snap to the exact left edge of the chat input */
+        @media (min-width: 1400px) {
+            div[data-testid="stPopover"] { left: calc(50% - 700px + 2.5rem) !important; }
+        }
+        @media (max-width: 1399px) {
+            div[data-testid="stPopover"] { left: 2.5rem !important; }
+        }
+        @media (max-width: 768px) {
+            div[data-testid="stPopover"] { left: 1.5rem !important; bottom: 33px !important; }
+        }
+
         button[data-testid="stPopoverButton"] { 
             background-color: transparent !important; 
-            color: #9ca3af !important; 
             border: none !important; 
-            font-size: 24px !important; 
             padding: 0 !important; 
-            width: 35px !important; 
-            height: 35px !important; 
+            width: 32px !important; 
+            height: 32px !important; 
             display: flex !important; 
             justify-content: center !important; 
             align-items: center !important; 
+            border-radius: 50% !important;
             transition: all 0.2s ease !important; 
         }
-        button[data-testid="stPopoverButton"] p { display: none; } /* Hide any text inside the button */
-        button[data-testid="stPopoverButton"]:hover { 
-            color: #ffffff !important; 
-            background-color: #374151 !important; 
-            border-radius: 50% !important; 
+        button[data-testid="stPopoverButton"] p { display: none !important; } /* Hide the literal text completely */
+        button[data-testid="stPopoverButton"]::before { 
+            content: '➕' !important; 
+            font-size: 16px !important; 
+            color: #9ca3af !important; 
         }
+        button[data-testid="stPopoverButton"]:hover { 
+            background-color: #374151 !important; 
+        }
+        
+        /* Custom UI for the expanded upload box */
+        div[data-testid="stPopoverBody"] { background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 12px !important; padding: 15px !important; }
+        [data-testid="stFileUploadDropzone"] { background-color: #0f172a !important; border: 1px dashed #4b5563 !important; border-radius: 12px !important; }
         
         div[data-testid="stTabs"] button { color: #94a3b8 !important; font-weight: 700 !important; font-size: 15px !important; padding-bottom: 10px !important;}
         div[data-testid="stTabs"] button[aria-selected="true"] { color: #38bdf8 !important; border-bottom-color: #38bdf8 !important; }
@@ -538,7 +560,7 @@ elif st.session_state.current_page == "dashboard":
                     with st.chat_message(message["role"], avatar="🧪" if message["role"] == "assistant" else "🧑‍💼"): st.markdown(message["content"])
 
     with tab2:
-        # 🔥 BUG FIX 2: Zero Indentation + Compressed HTML string for perfectly rendered Org Chart
+        # 🔥 BUG FIX 2: Zero Indentation HTML completely fixes the Org Chart rendering issue
         org_chart_html = "<div class='org-tree-wrapper'><div class='org-node ceo'><h3>👑 Commander (Aap)</h3><p>Vision · Strategy · Final Decisions</p></div><div class='line-vertical'></div><div class='org-node coo'><h3>🧪 Lab AgentX (COO)</h3><p>Research · Delegation · Orchestration</p><div style='margin-top: 10px;'><span class='tag-special'>Llama 3.3 (Groq)</span></div></div><div class='line-horizontal'><div class='mid-drop'></div></div><div class='dept-container'><div class='dept-col'><div class='dept-head tech'><h3><span>🦾 Franky <span style=\"color:#94a3b8; font-size:11px;\">(CTO)</span></span> <span class='tag-model' style='background:#9333ea;'>Codex 5.3</span></h3><p>Technical execution, code quality, infrastructure, and security.</p></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>👁️ Itachi</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Web Intel & Scraper</div><div class='agent-tags'><span class='tag-model'>Groq 70B</span></div></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>🧫 Senku</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Data & Knowledge Miner</div><div class='agent-tags'><span class='tag-model'>RAG Engine</span></div></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>💡 Bulma</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Conversion Optimizer</div><div class='agent-tags'><span class='tag-model'>Llama 3.3</span></div></div></div><div class='dept-col'><div class='dept-head mkt'><h3><span>♾️ Gojo <span style=\"color:#94a3b8; font-size:11px;\">(CMO)</span></span> <span class='tag-model' style='background:#ea580c;'>Opus 4.6</span></h3><p>Content strategy, brand voice, and multi-platform distribution.</p></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>🦊 Naruto</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Content Multiplier</div><div class='agent-tags'><span class='tag-model'>Llama 3.3</span><span class='tag-model' style='background:#ea580c;'>Sonnet 3.5</span></div></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>☁️ Akatsuki</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>SEO Empire Logs</div><div class='agent-tags'><span class='tag-model'>Groq Fast</span></div></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>✨ Tengen</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Video Producer</div><div class='agent-tags'><span class='tag-model'>Llama Vision</span></div></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>🖌️ Sai</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Chief Illustrator</div><div class='agent-tags'><span class='tag-special'>Nano Banana Pro</span></div></div></div><div class='dept-col'><div class='dept-head rev'><h3><span>📓 Light <span style=\"color:#94a3b8; font-size:11px;\">(CRO)</span></span> <span class='tag-model' style='background:#ea580c;'>Opus 4.6</span></h3><p>Revenue operations, growth metrics, community health.</p></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>🍰 L Lawliet</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Deep Research / Market Intel</div><div class='agent-tags'><span class='tag-model'>Groq 70B</span></div></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>🍊 Nami</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Finance & VC Analyst</div><div class='agent-tags'><span class='tag-model'>Llama 3.3</span></div></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>👔 Nanami</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Legal Expert / Contracts</div><div class='agent-tags'><span class='tag-model'>Opus Core</span></div></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>🛡️ Orihime</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Retention Specialist</div><div class='agent-tags'><span class='tag-model' style='background:#ea580c;'>Sonnet 3.5</span></div></div><div class='agent-box'><div class='agent-box-top'><span class='agent-box-title'>🎩 Sebastian</span><span class='tag-active'>✅ Active</span></div><div class='agent-box-role'>Email Marketing / PR</div><div class='agent-tags'><span class='tag-model'>Llama 3.3</span></div></div></div></div></div>"
         st.markdown(org_chart_html, unsafe_allow_html=True)
 
@@ -557,9 +579,9 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    # 🔥 BUG FIX 3: Transparent ➕ Popover that floats over the Chat Input perfectly
-    with st.popover("➕"):
-        st.caption("Upload PDF/TXT context for the agent")
+    # 🔥 BUG FIX 3: Magic Popover physically pinned inside the Chat input wrapper
+    with st.popover("dummy", help="Upload PDF/TXT context for the agent"):
+        st.caption("Upload documents for AI memory:")
         uploaded_file2 = st.file_uploader("Drop context files here", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed", key="bottom_up")
         if uploaded_file2: st.success(f"✅ {uploaded_file2.name} attached.")
 
@@ -611,7 +633,7 @@ elif st.session_state.current_page == "dashboard":
                 
                 if 'choices' in api_response:
                     full_response = api_response['choices'][0]['message']['content']
-                    st.session_state.tokens_used += len(full_response) * 3  # Fake token bump for demo
+                    st.session_state.tokens_used += len(full_response) * 3 
                     try:
                         for line in [line for line in full_response.split('\n') if ':' in line and 'Task Assigned' not in line and 'PART' not in line]:
                             parts = line.split(":", 1)
