@@ -258,45 +258,42 @@ elif st.session_state.current_page == "checkout":
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
-    # 🔥 THE CLEAN & SAFE UI CSS 🔥
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        /* Force complete dark background on all main containers to kill white gaps */
-        .stApp, .stAppViewContainer, .stAppScrollToBottomContainer { 
+        /* 🔥 THE ULTIMATE SAFE CSS FIX 🔥 */
+        /* Force App Background Dark */
+        .stApp, .stAppViewContainer { 
             background-color: #020617 !important; 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             color: #f8fafc;
         }
         
+        /* Force the Bottom Bar (where the chat input lives) to be strictly dark */
+        [data-testid="stBottom"],
+        [data-testid="stBottom"] > div,
+        .stAppBottom,
+        .stAppBottom > div {
+            background-color: #020617 !important;
+            border-top: none !important;
+        }
+
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
         .block-container { padding-top: 3rem !important; max-width: 1400px !important; }
         .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #f8fafc !important; }
         
-        /* 1. SAFE SIDEBAR BUTTONS FIX */
-        [data-testid="stSidebar"] button { 
-            background-color: #1e293b !important; 
-            border: 1px solid #334155 !important; 
-            border-radius: 8px !important; 
-        }
-        [data-testid="stSidebar"] button * { 
-            color: #ffffff !important; 
-            font-weight: 700 !important; 
-        }
-        [data-testid="stSidebar"] button:hover { 
-            border-color: #38bdf8 !important; 
-            background-color: #0f172a !important; 
-        }
-        [data-testid="stSidebar"] button:hover * { 
-            color: #38bdf8 !important; 
-        }
+        /* Sidebar Buttons */
+        [data-testid="stSidebar"] button { background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 8px !important; }
+        [data-testid="stSidebar"] button * { color: #ffffff !important; font-weight: 700 !important; }
+        [data-testid="stSidebar"] button:hover { border-color: #38bdf8 !important; background-color: #0f172a !important; }
+        [data-testid="stSidebar"] button:hover * { color: #38bdf8 !important; }
         
         .squad-btn button { background-color: #38bdf8 !important; border: none !important; }
         .squad-btn button * { color: #020617 !important; font-weight: 800 !important; }
         .squad-btn button:hover { background-color: #0ea5e9 !important; }
         
-        /* General Stats and Kanban */
+        /* Stats & Cards */
         .top-stats { display: flex; justify-content: space-around; background: #0f172a; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; border: 1px solid #1e293b; flex-wrap: wrap; gap: 15px; }
         .stat-box { text-align: center; flex: 1; min-width: 120px;} 
         .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: #f8fafc !important; } 
@@ -317,38 +314,30 @@ elif st.session_state.current_page == "dashboard":
         .st-standby { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        /* 🔥 FIX 2: Kill the White Bottom Bar & Force White Text inside Chat */
-        /* This completely removes the white background at the bottom of the screen */
-        div[data-testid="stBottom"], 
-        div[data-testid="stBottom"] > div { 
-            background-color: #020617 !important; 
-            background-image: none !important;
-        }
-        
-        div[data-testid="stChatInput"] { 
-            background-color: transparent !important; 
-        }
-        div[data-testid="stChatInput"] > div, 
-        div[data-testid="stChatInput"] .stChatInput { 
+        /* 🔥 CHAT INPUT BOX DESIGN */
+        [data-testid="stChatInput"] { background-color: #020617 !important; }
+        [data-testid="stChatInput"] > div,
+        [data-testid="stChatInput"] .stChatInput { 
             background-color: #1e293b !important; 
             border: 1px solid #334155 !important; 
             border-radius: 12px !important; 
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
         }
         
-        /* Explicitly forcing white text no matter what Streamlit tries to do */
-        div[data-testid="stChatInput"] textarea { 
+        /* 🔥 FIX THE INVISIBLE TEXT IN CHAT BOX */
+        [data-testid="stChatInput"] textarea,
+        [data-baseweb="base-input"] textarea,
+        [data-baseweb="textarea"] textarea { 
             color: #ffffff !important; 
             -webkit-text-fill-color: #ffffff !important; 
             caret-color: #ffffff !important;
             font-size: 15px !important;
             background-color: transparent !important;
         }
-        div[data-testid="stChatInput"] textarea::placeholder { 
-            color: #9ca3af !important; 
-            -webkit-text-fill-color: #9ca3af !important; 
+        [data-testid="stChatInput"] textarea::placeholder { 
+            color: #94a3b8 !important; 
+            -webkit-text-fill-color: #94a3b8 !important; 
         }
-        div[data-testid="stChatInput"] svg { fill: #9ca3af !important; }
+        [data-testid="stChatInput"] svg { fill: #94a3b8 !important; }
         
         div[data-testid="stTabs"] button { color: #94a3b8 !important; font-weight: 700 !important; font-size: 15px !important; padding-bottom: 10px !important;}
         div[data-testid="stTabs"] button[aria-selected="true"] { color: #38bdf8 !important; border-bottom-color: #38bdf8 !important; }
@@ -555,20 +544,19 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    # 🔥 THE ULTIMATE CHAT INPUT FIX: Native ChatGPT Style Uploader
+    # 🔥 FIX 3: Native Chat Input with File Uploader! No more CSS hacks for the paperclip!
     user_input = None
     try:
-        # Streamlit >= 1.38 natively puts a paperclip inside the chat box!
+        # Streamlit 1.38+ supports accept_file natively
         chat_data = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...", accept_file="multiple")
         if chat_data:
             user_input = chat_data.get("text", "")
             files = chat_data.get("files", [])
-            if files:
-                st.success(f"✅ {len(files)} file(s) successfully attached to Agent memory.")
+            if files: st.success(f"✅ {len(files)} file(s) attached.")
     except TypeError:
-        # Fallback for older environments without breaking the layout
-        with st.expander("📎 Attach Context Files"):
-            st.file_uploader("Drop files here", type=["pdf", "png", "txt", "csv"])
+        # Safe fallback
+        with st.expander("📎 Attach Documents for AI"):
+            st.file_uploader("Drop context files here", type=["pdf", "png", "txt", "csv"])
         user_input = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...")
 
     if user_input:
