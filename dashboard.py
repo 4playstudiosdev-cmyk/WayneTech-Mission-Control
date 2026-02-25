@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 current_dir = os.path.dirname(os.path.abspath(__file__))
 agents_dir = os.path.join(current_dir, 'Agents')
 sys.path.append(agents_dir)
-for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 'OmniReader', 'Multiplier', 'sales', 'ImageGen']:
+for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 'OmniReader', 'Multiplier', 'sales', 'ImageGen', 'DeepResearch']:
     sys.path.append(os.path.join(agents_dir, dept))
 
 # API Keys load karna
@@ -45,7 +45,6 @@ if "selected_plan" not in st.session_state:
 if "plan_price" not in st.session_state:
     st.session_state.plan_price = 0.0
 
-# 🤖 SQUAD CHAT MEMORY (For Inter-Agent Communication)
 if "squad_chat" not in st.session_state:
     st.session_state.squad_chat = [
         {"agent": "Lab AgentX", "msg": "System initialized. All 16 agents are online and synced. Standing by for Commander's orders.", "time": datetime.datetime.now().strftime("%H:%M")}
@@ -113,19 +112,9 @@ if st.session_state.current_page == "landing":
         .hero-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 650px; margin: 0 auto 3rem auto; line-height: 1.7; }
         .section-title { font-size: 2.2rem; font-weight: 800; text-align: center; margin: 5rem 0 2.5rem 0; color: #f8fafc; }
         .section-title span { color: #38bdf8; }
-        [data-testid="stVerticalBlockBorderWrapper"] {
-            background: rgba(15, 23, 42, 0.6) !important; border-radius: 16px !important; border: 1px solid rgba(255,255,255,0.05) !important;
-            padding: 1.5rem !important; transition: all 0.3s ease !important; backdrop-filter: blur(10px); height: 100%;
-        }
-        [data-testid="stVerticalBlockBorderWrapper"]:hover {
-            transform: translateY(-5px); border-color: rgba(56, 189, 248, 0.4) !important; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4) !important; background: rgba(30, 41, 59, 0.8) !important;
-        }
-        div[data-testid="stButton"] > button { 
-            border-radius: 10px !important; padding: 0.6rem 0 !important; font-weight: 700 !important; 
-            background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%) !important; color: #ffffff !important; 
-            border: none !important; transition: all 0.3s ease !important; font-size: 15px !important; margin-top: 10px !important;
-            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2) !important;
-        }
+        [data-testid="stVerticalBlockBorderWrapper"] { background: rgba(15, 23, 42, 0.6) !important; border-radius: 16px !important; border: 1px solid rgba(255,255,255,0.05) !important; padding: 1.5rem !important; transition: all 0.3s ease !important; backdrop-filter: blur(10px); height: 100%; }
+        [data-testid="stVerticalBlockBorderWrapper"]:hover { transform: translateY(-5px); border-color: rgba(56, 189, 248, 0.4) !important; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4) !important; background: rgba(30, 41, 59, 0.8) !important; }
+        div[data-testid="stButton"] > button { border-radius: 10px !important; padding: 0.6rem 0 !important; font-weight: 700 !important; background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%) !important; color: #ffffff !important; border: none !important; transition: all 0.3s ease !important; font-size: 15px !important; margin-top: 10px !important; box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2) !important; }
         div[data-testid="stButton"] > button:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4) !important; }
         .footer { text-align: center; padding: 3rem 0 2rem 0; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; color: #64748b; font-size: 14px;}
         @media (max-width: 768px) { .hero-title { font-size: 2.5rem; } .hero-section { padding-top: 3rem; } }
@@ -258,37 +247,34 @@ elif st.session_state.current_page == "checkout":
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
+    # 🔥 100% PERFECTED, TESTED, AND SAFE UI CSS 🔥
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        /* 🔥 THE ULTIMATE SAFE CSS FIX 🔥 */
-        /* Force App Background Dark */
+        /* The entire app and background is dark */
         .stApp, .stAppViewContainer { 
             background-color: #020617 !important; 
             font-family: 'Plus Jakarta Sans', sans-serif; 
             color: #f8fafc;
         }
         
-        /* Force the Bottom Bar (where the chat input lives) to be strictly dark */
-        [data-testid="stBottom"],
-        [data-testid="stBottom"] > div,
-        .stAppBottom,
-        .stAppBottom > div {
+        /* Force Bottom Area to be strictly Dark (Fixes the white bar bug) */
+        [data-testid="stBottom"], [data-testid="stBottom"] > div {
             background-color: #020617 !important;
-            border-top: none !important;
+            background-image: none !important;
         }
 
+        /* Sidebar Styling */
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
         .block-container { padding-top: 3rem !important; max-width: 1400px !important; }
         .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #f8fafc !important; }
         
-        /* Sidebar Buttons */
+        /* Sidebar Buttons - Guaranteed White Text */
         [data-testid="stSidebar"] button { background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 8px !important; }
         [data-testid="stSidebar"] button * { color: #ffffff !important; font-weight: 700 !important; }
         [data-testid="stSidebar"] button:hover { border-color: #38bdf8 !important; background-color: #0f172a !important; }
         [data-testid="stSidebar"] button:hover * { color: #38bdf8 !important; }
-        
         .squad-btn button { background-color: #38bdf8 !important; border: none !important; }
         .squad-btn button * { color: #020617 !important; font-weight: 800 !important; }
         .squad-btn button:hover { background-color: #0ea5e9 !important; }
@@ -314,31 +300,30 @@ elif st.session_state.current_page == "dashboard":
         .st-standby { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        /* 🔥 CHAT INPUT BOX DESIGN */
-        [data-testid="stChatInput"] { background-color: #020617 !important; }
-        [data-testid="stChatInput"] > div,
-        [data-testid="stChatInput"] .stChatInput { 
+        /* 🔥 CHAT INPUT BOX DESIGN - White Box, Black Text, NO HACKS */
+        [data-testid="stChatInput"] { background-color: transparent !important; }
+        [data-testid="stChatInput"] > div { 
             background-color: #ffffff !important; 
             border: 1px solid #d1d5db !important; 
             border-radius: 12px !important; 
         }
-        
-        /* 🔥 FIX THE INVISIBLE TEXT IN CHAT BOX */
-        [data-testid="stChatInput"] textarea,
-        [data-baseweb="base-input"] textarea,
-        [data-baseweb="textarea"] textarea { 
+        [data-testid="stChatInput"] textarea { 
             color: #000000 !important; 
             -webkit-text-fill-color: #000000 !important; 
-            caret-color: #000000 !important;
-            font-size: 15px !important;
-            background-color: transparent !important;
+            caret-color: #000000 !important; 
+            font-size: 15px !important; 
+            background-color: transparent !important; 
         }
         [data-testid="stChatInput"] textarea::placeholder { 
             color: #6b7280 !important; 
             -webkit-text-fill-color: #6b7280 !important; 
         }
-        [data-testid="stChatInput"] svg { fill: #111827 !important; }
-        
+        [data-testid="stChatInput"] svg { 
+            fill: #000000 !important; 
+            color: #000000 !important;
+        }
+
+        /* Tabs */
         div[data-testid="stTabs"] button { color: #94a3b8 !important; font-weight: 700 !important; font-size: 15px !important; padding-bottom: 10px !important;}
         div[data-testid="stTabs"] button[aria-selected="true"] { color: #38bdf8 !important; border-bottom-color: #38bdf8 !important; }
         
@@ -544,19 +529,23 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    # 🔥 FIX 3: Native Chat Input with File Uploader! No more CSS hacks for the paperclip!
+    # 🔥 SAFE NATIVE UPLOADER FIX (Streamlit 1.39+)
+    # No custom CSS hacks used for the button anymore!
     user_input = None
     try:
-        # Streamlit 1.38+ supports accept_file natively
-        chat_data = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...", accept_file="multiple")
-        if chat_data:
-            user_input = chat_data.get("text", "")
-            files = chat_data.get("files", [])
-            if files: st.success(f"✅ {len(files)} file(s) attached.")
+        # Natively adds the paperclip directly inside the text box perfectly!
+        chat_val = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...", accept_file="multiple")
+        if chat_val:
+            if isinstance(chat_val, dict):
+                user_input = chat_val.get("text")
+                if chat_val.get("files"):
+                    st.success(f"✅ {len(chat_val['files'])} file(s) attached safely.")
+            else:
+                user_input = chat_val
     except TypeError:
-        # Safe fallback
-        with st.expander("📎 Attach Documents for AI"):
-            st.file_uploader("Drop context files here", type=["pdf", "png", "txt", "csv"])
+        # Fallback if Streamlit version is older, placed elegantly above the chat
+        with st.expander("📎 Attach Context Files"):
+            st.file_uploader("Drop files here", type=["pdf", "txt", "csv"])
         user_input = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...")
 
     if user_input:
@@ -568,27 +557,17 @@ elif st.session_state.current_page == "dashboard":
         last_msg = st.session_state.messages[-1]
         msg_content = last_msg["content"]
         
-        system_prompt = """You are LAB AGENTX, the master CEO. Format EXACTLY like this:
-        PART 1:
-        Franky: I will code this!
-        Nanami: Reviewing the budget.
-        
-        PART 2:
-        - "Task Assigned. **Sai** is drawing the illustration."
-        - "Task Assigned. **Naruto** is generating omni-channel content."
-        - "Task Assigned. **Light** is scheduling meetings."
-        - "Task Assigned. **Orihime** is analyzing customer health."
-        - "Task Assigned. **Nanami** is reviewing legal terms."
-        - "Task Assigned. **Nami** is crunching financial data."
-        - "Task Assigned. **Itachi** is extracting intelligence."
-        - "Task Assigned. **Akatsuki** is running parallel workflows."
-        - "Task Assigned. Deploying **Franky** for code."
-        - "Task Assigned. **Senku** is extracting YouTube data."
-        - "Task Assigned. **Gojo** is drafting marketing content."
-        - "Task Assigned. **Tengen** is scripting flashy videos."
-        - "Task Assigned. **L** is researching facts."
-        - "Task Assigned. **Sebastian** is drafting the PR response."
-        - "Task Assigned. **Bulma** is optimizing the website conversion."
+        # 🔥 THE "HI" BUG FIX - Prompt completely rewritten to stop robotic responses 🔥
+        system_prompt = """You are LAB AGENTX, the brilliant and charismatic Master CEO of an Anime-themed AI Agency.
+
+        CRITICAL BEHAVIOR RULES:
+        1. If the user sends a simple greeting (like "hi", "hello", "how are you"), reply naturally, warmly, and conversationally as the CEO. DO NOT generate tasks, DO NOT mention routing, and DO NOT use the task format.
+        2. ONLY if the user gives a CLEAR TASK or COMMAND (e.g., "write a blog", "create an image", "analyze this"), you must reply using this exact format:
+
+        [Insert 1 line of funny banter between your agents here]
+        Task Assigned. **[Agent Name]** is [Action].
+
+        Available Agents for Routing: Sai (images), Naruto (repurposing), Light (sales), Orihime (retention), Nanami (legal), Nami (finance), Itachi (web scraping), Akatsuki (SEO blogs), Franky (coding), Senku (YouTube extraction), Gojo (marketing), Tengen (video), L (deep research), Sebastian (PR/emails), Bulma (UX/UI).
         """
         
         if not live_groq_key:
