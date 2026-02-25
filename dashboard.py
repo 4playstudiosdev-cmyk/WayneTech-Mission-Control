@@ -247,25 +247,19 @@ elif st.session_state.current_page == "checkout":
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
-    # 🔥 100% PERFECTED, TESTED, AND SAFE UI CSS 🔥
+    # 🔥 THE ULTIMATE BULLETPROOF CSS FIX 🔥
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        /* The entire app and background is dark */
-        .stApp, .stAppViewContainer { 
+        /* 1. FORCE THE ENTIRE PAGE BLACK (Kills the white bottom bar) */
+        .stApp, .stAppViewContainer, .stAppScrollToBottomContainer, [data-testid="stBottom"], [data-testid="stBottom"] > div { 
             background-color: #020617 !important; 
+            background-image: none !important;
             font-family: 'Plus Jakarta Sans', sans-serif; 
             color: #f8fafc;
         }
-        
-        /* Force Bottom Area to be strictly Dark (Fixes the white bar bug) */
-        [data-testid="stBottom"], [data-testid="stBottom"] > div {
-            background-color: #020617 !important;
-            background-image: none !important;
-        }
 
-        /* Sidebar Styling */
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
         .block-container { padding-top: 3rem !important; max-width: 1400px !important; }
         .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #f8fafc !important; }
@@ -300,27 +294,54 @@ elif st.session_state.current_page == "dashboard":
         .st-standby { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        /* 🔥 CHAT INPUT BOX DESIGN - White Box, Black Text, NO HACKS */
-        [data-testid="stChatInput"] { background-color: transparent !important; }
-        [data-testid="stChatInput"] > div { 
-            background-color: #ffffff !important; 
+        /* 🔥 2. SAFE CHAT INPUT BOX DESIGN (WHITE BOX, BLACK TEXT) */
+        [data-testid="stChatInput"] { 
+            background-color: transparent !important; 
+        }
+        [data-testid="stChatInput"] > div, 
+        [data-testid="stChatInput"] .stChatInput { 
+            background-color: #ffffff !important; /* White Box */
             border: 1px solid #d1d5db !important; 
             border-radius: 12px !important; 
         }
-        [data-testid="stChatInput"] textarea { 
-            color: #000000 !important; 
+        [data-testid="stChatInput"] textarea, 
+        [data-baseweb="textarea"] textarea { 
+            color: #000000 !important; /* Black Text */
             -webkit-text-fill-color: #000000 !important; 
-            caret-color: #000000 !important; 
+            caret-color: #000000 !important; /* Black Cursor */
             font-size: 15px !important; 
             background-color: transparent !important; 
         }
         [data-testid="stChatInput"] textarea::placeholder { 
-            color: #6b7280 !important; 
+            color: #6b7280 !important; /* Gray Placeholder */
             -webkit-text-fill-color: #6b7280 !important; 
         }
         [data-testid="stChatInput"] svg { 
-            fill: #000000 !important; 
-            color: #000000 !important;
+            fill: #111827 !important; /* Dark Icon */
+        }
+
+        /* UPLOADER BUTTON STYLING (Safely above chat) */
+        .upload-wrapper {
+            margin-bottom: -15px;
+            z-index: 999;
+            position: relative;
+        }
+        [data-testid="stPopover"] button {
+            background-color: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 20px !important;
+            padding: 5px 15px !important;
+            min-height: 0px !important;
+            transition: all 0.2s ease;
+        }
+        [data-testid="stPopover"] button * {
+            color: #f8fafc !important;
+            font-size: 13px !important;
+            font-weight: 600 !important;
+        }
+        [data-testid="stPopover"] button:hover {
+            border-color: #38bdf8 !important;
+            background-color: #0f172a !important;
         }
 
         /* Tabs */
@@ -529,24 +550,15 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    # 🔥 SAFE NATIVE UPLOADER FIX (Streamlit 1.39+)
-    # No custom CSS hacks used for the button anymore!
-    user_input = None
-    try:
-        # Natively adds the paperclip directly inside the text box perfectly!
-        chat_val = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...", accept_file="multiple")
-        if chat_val:
-            if isinstance(chat_val, dict):
-                user_input = chat_val.get("text")
-                if chat_val.get("files"):
-                    st.success(f"✅ {len(chat_val['files'])} file(s) attached safely.")
-            else:
-                user_input = chat_val
-    except TypeError:
-        # Fallback if Streamlit version is older, placed elegantly above the chat
-        with st.expander("📎 Attach Context Files"):
-            st.file_uploader("Drop files here", type=["pdf", "txt", "csv"])
-        user_input = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...")
+    # 🔥 FIX: SAFE ATTACHMENT POPOVER (Positioned securely right above chat without breaking)
+    st.markdown("<div class='upload-wrapper'>", unsafe_allow_html=True)
+    with st.popover("📎 Attach File"):
+        uploaded_file2 = st.file_uploader("Drop context files here", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed")
+        if uploaded_file2: st.success(f"✅ {uploaded_file2.name} attached.")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # Clean, Standard text input (No accept_file bug!)
+    user_input = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...")
 
     if user_input:
         st.session_state.messages.append({"role": "user", "content": user_input})
@@ -557,21 +569,25 @@ elif st.session_state.current_page == "dashboard":
         last_msg = st.session_state.messages[-1]
         msg_content = last_msg["content"]
         
-        # 🔥 THE "HI" BUG FIX - Prompt completely rewritten to stop robotic responses 🔥
+        # 🔥 THE "HI" BUG FIX: Strict Prompt to prevent random routing 🔥
         system_prompt = """You are LAB AGENTX, the brilliant and charismatic Master CEO of an Anime-themed AI Agency.
 
-        CRITICAL BEHAVIOR RULES:
-        1. If the user sends a simple greeting (like "hi", "hello", "how are you"), reply naturally, warmly, and conversationally as the CEO. DO NOT generate tasks, DO NOT mention routing, and DO NOT use the task format.
-        2. ONLY if the user gives a CLEAR TASK or COMMAND (e.g., "write a blog", "create an image", "analyze this"), you must reply using this exact format:
+        CRITICAL RULE 1: If the user simply says a greeting (like "hi", "hello", "how are you"), or asks a general question, ONLY reply naturally as a friendly CEO. DO NOT assign tasks. DO NOT output "PART 1" or "PART 2". 
+        
+        CRITICAL RULE 2: ONLY IF the user gives a CLEAR TASK (e.g., "write a blog", "create an image", "code a game"), you MUST output EXACTLY this format:
 
-        [Insert 1 line of funny banter between your agents here]
-        Task Assigned. **[Agent Name]** is [Action].
+        PART 1:
+        [Agent 1]: [Funny comment]
+        [Agent 2]: [Funny comment]
+        
+        PART 2:
+        - "Task Assigned. **[Agent Name]** is [Action]."
 
-        Available Agents for Routing: Sai (images), Naruto (repurposing), Light (sales), Orihime (retention), Nanami (legal), Nami (finance), Itachi (web scraping), Akatsuki (SEO blogs), Franky (coding), Senku (YouTube extraction), Gojo (marketing), Tengen (video), L (deep research), Sebastian (PR/emails), Bulma (UX/UI).
+        Available Agents: Sai (images), Naruto (repurposing), Light (sales), Orihime (retention), Nanami (legal), Nami (finance), Itachi (web scraping), Akatsuki (SEO blogs), Franky (coding), Senku (YouTube extraction), Gojo (marketing), Tengen (video), L (deep research), Sebastian (PR/emails), Bulma (UX/UI).
         """
         
         if not live_groq_key:
-            st.session_state.messages.append({"role": "assistant", "content": "⚠️ Groq Cloud API Key missing!"})
+            st.session_state.messages.append({"role": "assistant", "content": "⚠️ Groq Cloud API Key missing! Please add it in the sidebar integrations tab."})
             if st.session_state.active_tasks: st.session_state.active_tasks.pop()
             st.rerun()
         else:
@@ -585,15 +601,19 @@ elif st.session_state.current_page == "dashboard":
                 if 'choices' in api_response:
                     full_response = api_response['choices'][0]['message']['content']
                     st.session_state.tokens_used += len(full_response) * 3 
+                    
+                    # Safe parsing for Squad Chat banter
                     try:
-                        for line in [line for line in full_response.split('\n') if ':' in line and 'Task Assigned' not in line and 'PART' not in line]:
-                            parts = line.split(":", 1)
-                            if len(parts) == 2: st.session_state.squad_chat.append({"agent": parts[0].replace("*", "").strip(), "msg": parts[1].strip(), "time": datetime.datetime.now().strftime("%H:%M")})
+                        if "PART 2:" in full_response or "Task Assigned" in full_response:
+                            for line in [line for line in full_response.split('\n') if ':' in line and 'Task Assigned' not in line and 'PART' not in line]:
+                                parts = line.split(":", 1)
+                                if len(parts) == 2: st.session_state.squad_chat.append({"agent": parts[0].replace("*", "").strip(), "msg": parts[1].strip(), "time": datetime.datetime.now().strftime("%H:%M")})
                     except: pass
                     
                     st.session_state.messages.append({"role": "assistant", "content": full_response})
                     
-                    if "Task Assigned" in full_response or "Deploying" in full_response:
+                    # Only execute code if it actually assigned a task
+                    if "Task Assigned" in full_response and "PART 2" in full_response:
                         with st.spinner(f"Anime Agents are working... Please wait."):
                             agent_result = "⚠️ Module integrated but running in safe mode."
                             if "**Gojo**" in full_response: from marketing import run_marketing_crew; agent_result = run_marketing_crew(msg_content)
@@ -603,6 +623,7 @@ elif st.session_state.current_page == "dashboard":
                             elif "**Senku**" in full_response: from omni_reader import run_omnireader_crew; agent_result = run_omnireader_crew(msg_content)
                             elif "**Franky**" in full_response: from tech import run_tech_crew; agent_result = run_tech_crew(msg_content)
                             elif "**Akatsuki**" in full_response: from seo_empire import run_mass_seo_campaign; agent_result = run_mass_seo_campaign(msg_content.lower().replace("akatsuki,", "").strip())
+                            elif "**L**" in full_response: from kimi_research import run_kimi_squad; agent_result = run_kimi_squad(msg_content)
                             
                             if len(st.session_state.active_tasks) > 0:
                                 st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
