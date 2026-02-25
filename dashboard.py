@@ -262,7 +262,14 @@ elif st.session_state.current_page == "dashboard":
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        .stApp { background-color: #020617 !important; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc;}
+        
+        /* Force complete dark background on all main containers to kill white gaps */
+        .stApp, .stAppViewContainer, .stAppScrollToBottomContainer { 
+            background-color: #020617 !important; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #f8fafc;
+        }
+        
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
         .block-container { padding-top: 3rem !important; max-width: 1400px !important; }
         .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #f8fafc !important; }
@@ -310,24 +317,37 @@ elif st.session_state.current_page == "dashboard":
         .st-standby { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        /* 2. SAFE CHAT INPUT FIX: 100% Dark Background & White Text */
+        /* 🔥 FIX 2: Kill the White Bottom Bar & Force White Text inside Chat */
+        /* This completely removes the white background at the bottom of the screen */
+        div[data-testid="stBottom"], 
+        div[data-testid="stBottom"] > div { 
+            background-color: #020617 !important; 
+            background-image: none !important;
+        }
+        
         div[data-testid="stChatInput"] { 
-            background-color: #020617 !important; /* Force transparent surroundings */
+            background-color: transparent !important; 
         }
         div[data-testid="stChatInput"] > div, 
         div[data-testid="stChatInput"] .stChatInput { 
             background-color: #1e293b !important; 
             border: 1px solid #334155 !important; 
-            border-radius: 16px !important; 
+            border-radius: 12px !important; 
             box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
         }
+        
+        /* Explicitly forcing white text no matter what Streamlit tries to do */
         div[data-testid="stChatInput"] textarea { 
-            color: #000000 !important; 
+            color: #ffffff !important; 
             -webkit-text-fill-color: #ffffff !important; 
+            caret-color: #ffffff !important;
             font-size: 15px !important;
             background-color: transparent !important;
         }
-        div[data-testid="stChatInput"] textarea::placeholder { color: #9ca3af !important; }
+        div[data-testid="stChatInput"] textarea::placeholder { 
+            color: #9ca3af !important; 
+            -webkit-text-fill-color: #9ca3af !important; 
+        }
         div[data-testid="stChatInput"] svg { fill: #9ca3af !important; }
         
         div[data-testid="stTabs"] button { color: #94a3b8 !important; font-weight: 700 !important; font-size: 15px !important; padding-bottom: 10px !important;}
