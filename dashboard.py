@@ -28,6 +28,15 @@ except ImportError:
 # Global Config
 st.set_page_config(page_title="Lab AgentX | AI Agency", page_icon="🧪", layout="wide", initial_sidebar_state="expanded")
 
+# 🔥 BUG FIX: Define Folders Globally HERE so all pages can access them
+MEMORY_FOLDER = "memory_logs"
+UPLOAD_FOLDER = "uploads"
+DELIVERABLES_FOLDER = "Deliverables"
+SAVED_FILES_FOLDER = "Saved_Files" 
+
+for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER, SAVED_FILES_FOLDER]:
+    if not os.path.exists(folder): os.makedirs(folder)
+
 # 🧠 PAGE ROUTING & MEMORY SYSTEM
 if "current_page" not in st.session_state:
     st.session_state.current_page = "landing"
