@@ -179,7 +179,6 @@ elif st.session_state.current_page == "checkout":
         .stApp { background-color: #020617; font-family: 'Plus Jakarta Sans', sans-serif; color: white; }
         .block-container { max-width: 600px !important; padding-top: 4rem !important; }
         
-        /* Payment styling */
         .auth-card { background: #0f172a; padding: 3rem; border-radius: 20px; border: 1px solid #1e293b; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .auth-title { font-size: 24px; font-weight: 800; color: #f8fafc; margin-bottom: 5px; text-align: center; }
         .auth-sub { color: #94a3b8; text-align: center; margin-bottom: 30px; font-size: 14px; }
@@ -190,7 +189,6 @@ elif st.session_state.current_page == "checkout":
         div[data-testid="stButton"] > button { width: 100%; border-radius: 8px !important; padding: 12px 0 !important; font-weight: 700 !important; background: #38bdf8 !important; color: #0f172a !important; border: none !important; transition: all 0.3s ease !important; }
         div[data-testid="stButton"] > button:hover { background: #0ea5e9 !important; transform: translateY(-2px) !important; }
         
-        /* Cancel Button override */
         .cancel-btn div[data-testid="stButton"] > button { background: transparent !important; border: 1px solid #334155 !important; color: #94a3b8 !important; }
         .cancel-btn div[data-testid="stButton"] > button:hover { border-color: #f87171 !important; color: #f87171 !important; }
     </style>
@@ -200,7 +198,6 @@ elif st.session_state.current_page == "checkout":
     st.markdown(f"<div class='auth-title'>Checkout: {st.session_state.selected_plan} Plan</div>", unsafe_allow_html=True)
     st.markdown("<div class='auth-sub'>Create your account and complete payment to access the workspace.</div>", unsafe_allow_html=True)
     
-    # 💰 Dynamic Price display based on coupon
     if "final_price" not in st.session_state:
         st.session_state.final_price = st.session_state.plan_price
         
@@ -219,7 +216,6 @@ elif st.session_state.current_page == "checkout":
         submit_btn = st.form_submit_button("Complete Payment & Launch Dashboard")
         
         if submit_btn:
-            # 🎁 FUNDER VIP COUPON LOGIC
             if coupon.strip().upper() == "FUNDERVIP":
                 st.success("🎉 VIP Coupon Applied! Payment bypassed. Loading workspace...")
                 time.sleep(1)
@@ -227,7 +223,7 @@ elif st.session_state.current_page == "checkout":
                 st.rerun()
             elif st.session_state.final_price > 0:
                 with st.spinner(f"Processing payment via {payment_method}..."):
-                    time.sleep(2) # Simulating payment processing
+                    time.sleep(2) 
                     st.success("✅ Payment successful! Setting up your AI Agency...")
                     time.sleep(1)
                     go_to_dashboard()
@@ -241,7 +237,7 @@ elif st.session_state.current_page == "checkout":
     st.markdown("<div class='cancel-btn'>", unsafe_allow_html=True)
     if st.button("← Go Back"):
         st.session_state.current_page = "landing"
-        st.session_state.final_price = st.session_state.plan_price # reset price
+        st.session_state.final_price = st.session_state.plan_price 
         st.rerun()
     st.markdown("</div>", unsafe_allow_html=True)
 
@@ -251,52 +247,67 @@ elif st.session_state.current_page == "checkout":
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
+    # 🐛 FIX: Aggressive CSS overriding to kill all default white boxes!
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
+        /* Base App Styling */
         .stApp { background-color: #020617 !important; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc;}
         
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
-        button[data-testid="collapsedControl"] { display: block !important; }
+        button[data-testid="collapsedControl"] { display: block !important; color: #f8fafc !important; }
         .block-container { padding-top: 3rem !important; max-width: 1400px !important; }
         
-        /* Make all text in main container light */
-        .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6 { color: #f8fafc !important; }
+        /* Force text to light mode */
+        .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #f8fafc !important; }
         
+        /* 🔥 BUG FIX: Dark Theme Sidebar Buttons (No more white boxes) */
+        div[data-testid="stSidebar"] div[data-testid="stButton"] > button {
+            background-color: #1e293b !important;
+            color: #f8fafc !important;
+            border: 1px solid #334155 !important;
+            border-radius: 8px !important;
+        }
+        div[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover {
+            border-color: #38bdf8 !important;
+            color: #38bdf8 !important;
+            background-color: #0f172a !important;
+        }
+        div[data-testid="stSidebar"] div[data-testid="stButton"] > button * {
+            color: inherit !important;
+        }
+
+        /* Top Stats Bar */
         .top-stats { 
             display: flex; justify-content: space-around; 
-            background: #0f172a; 
-            padding: 20px; border-radius: 16px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
-            margin-bottom: 25px; border: 1px solid #1e293b; 
+            background: #0f172a; padding: 20px; border-radius: 16px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 25px; border: 1px solid #1e293b; 
             flex-wrap: wrap; gap: 15px;
         }
-        
         .stat-box { text-align: center; flex: 1; min-width: 120px; transition: transform 0.2s; } 
         .stat-box:hover { transform: translateY(-2px); }
         .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: #f8fafc !important; } 
         .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-top: 4px; color: #94a3b8 !important; }
         
+        /* Kanban Board */
         .kanban-header { font-size: 13px; font-weight: 800; color: #94a3b8 !important; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 3px solid #1e293b; text-transform: uppercase; letter-spacing: 1px; }
         .k-assigned { border-bottom-color: #f59e0b; } .k-progress { border-bottom-color: #3b82f6; } .k-review { border-bottom-color: #8b5cf6; } .k-done { border-bottom-color: #10b981; }
         
         .k-card { 
             background: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; 
-            padding: 16px; margin-bottom: 14px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
+            padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
             transition: all 0.2s ease; word-wrap: break-word;
         }
         .k-card:hover { border-color: #38bdf8; transform: translateY(-2px); }
         .k-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #f8fafc !important;} 
         .k-agent { font-size: 12px; color: #94a3b8 !important; display: flex; align-items: center; gap: 6px; font-weight: 600;} 
         
-        /* Dashboard Agents List in Sidebar */
+        /* Sidebar Agents List */
         .agent-row { 
             display: flex; justify-content: space-between; align-items: center; 
             padding: 14px 12px; margin-bottom: 10px; border-radius: 12px; 
-            background: #1e293b !important; 
-            border: 1px solid #334155; cursor: pointer; 
+            background: #1e293b !important; border: 1px solid #334155; cursor: pointer; 
             transition: all 0.2s ease; 
         }
         .agent-row:hover { border-color: #38bdf8; }
@@ -305,14 +316,58 @@ elif st.session_state.current_page == "dashboard":
         .agent-role { font-size: 10px; color: #94a3b8 !important; font-weight: 700; margin-left: 28px; text-transform: uppercase; letter-spacing: 0.5px;}
         
         .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 800; letter-spacing: 0.5px;}
-        .st-working, .st-working * { background: rgba(34, 197, 94, 0.2) !important; color: #4ade80 !important; border: 1px solid #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.2); } 
+        .st-working, .st-working * { background: rgba(34, 197, 94, 0.15) !important; color: #4ade80 !important; border: 1px solid #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.2); } 
         .st-standby, .st-standby * { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         
         /* Chat Feed Styling */
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        /* File Uploader overriding */
-        div[data-testid="stFileUploader"] { background-color: #1e293b; padding: 10px; border-radius: 10px; border: 1px dashed #334155; }
+        /* 🔥 BUG FIX: Chat Input (Dark Mode Forced) */
+        div[data-baseweb="chat-input"] {
+            background-color: #1e293b !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px !important;
+        }
+        div[data-baseweb="chat-input"] textarea {
+            color: #f8fafc !important;
+            -webkit-text-fill-color: #f8fafc !important;
+        }
+        div[data-baseweb="chat-input"] svg {
+            fill: #94a3b8 !important;
+        }
+        
+        /* 🔥 BUG FIX: File Uploader (Dark Mode Forced) */
+        [data-testid="stFileUploadDropzone"] {
+            background-color: #1e293b !important;
+            border: 1px dashed #475569 !important;
+            border-radius: 12px !important;
+        }
+        [data-testid="stFileUploadDropzone"] * {
+            color: #cbd5e1 !important;
+        }
+        [data-testid="stFileUploadDropzone"] svg {
+            fill: #38bdf8 !important;
+        }
+        
+        /* Main Button overriding */
+        div[data-testid="stMain"] div[data-testid="stButton"] > button { 
+            background-color: #1e293b !important; 
+            color: #f8fafc !important; 
+            border: 1px solid #334155 !important; 
+            border-radius: 8px !important; 
+        }
+        div[data-testid="stMain"] div[data-testid="stButton"] > button:hover {
+            border-color: #38bdf8 !important;
+            color: #38bdf8 !important;
+        }
+        
+        /* Expander Styling */
+        div[data-testid="stExpander"] {
+            background-color: #0f172a !important;
+            border: 1px solid #1e293b !important;
+            border-radius: 12px !important;
+        }
+        div[data-testid="stExpander"] summary { background-color: #0f172a !important; }
         
         #MainMenu {visibility: hidden;} footer {visibility: hidden;}
         
@@ -422,7 +477,7 @@ elif st.session_state.current_page == "dashboard":
     <div class="top-stats">
         <div class="stat-box"><div class="stat-value">{total_agents}</div><div class="stat-label">Total Agents</div></div>
         <div class="stat-box"><div class="stat-value">{tasks_in_queue}</div><div class="stat-label">Tasks in Queue</div></div>
-        <div class="stat-box"><div class="stat-value" style="color:#3b82f6 !important;">{current_active_agent}</div><div class="stat-label">Filtering By</div></div>
+        <div class="stat-box"><div class="stat-value" style="color:#38bdf8 !important;">{current_active_agent}</div><div class="stat-label">Filtering By</div></div>
         <div class="stat-box"><div class="stat-value" style="color:#4ade80 !important;">● CLOUD HOSTED</div><div class="stat-label">System Status</div></div>
     </div>
     """, unsafe_allow_html=True)
@@ -458,14 +513,6 @@ elif st.session_state.current_page == "dashboard":
                 st.session_state.active_tasks = []
                 st.session_state.messages.append({"role": "assistant", "content": "🛑 **Task Cancelled.** The squad is standing down."})
                 st.rerun()
-                
-        # 🐛 THE FILE UPLOADER FIX: Moved to sidebar to prevent Chat Input layout breaking!
-        st.markdown("---")
-        st.markdown("### 📁 KNOWLEDGE BASE")
-        st.caption("Upload documents for AI context")
-        uploaded_file = st.file_uploader("Upload Docs", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed")
-        if uploaded_file:
-            st.success(f"{uploaded_file.name} loaded.")
                 
         st.markdown("---")
         st.markdown(f"### 🏢 SQUAD STATUS ({working_agents_count} Active)")
@@ -578,7 +625,12 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    # 🐛 FIX: No extra columns, just pure chat input. File uploader is now in Sidebar!
+    # 🐛 THE FIX: File uploader removed from sidebar and moved right above chat input!
+    with st.expander("📎 Attach Documents (Knowledge Base)"):
+        uploaded_file = st.file_uploader("Upload context files here before giving a command:", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed")
+        if uploaded_file:
+            st.success(f"✅ {uploaded_file.name} loaded into Agent memory.")
+
     user_input = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...")
 
     if user_input:
