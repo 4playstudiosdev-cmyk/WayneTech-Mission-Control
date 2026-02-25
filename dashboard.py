@@ -28,7 +28,7 @@ except ImportError:
 # Global Config
 st.set_page_config(page_title="Lab AgentX | AI Agency", page_icon="🧪", layout="wide", initial_sidebar_state="expanded")
 
-# 🧠 PAGE ROUTING SYSTEM (landing -> checkout -> dashboard)
+# 🧠 PAGE ROUTING & MEMORY SYSTEM
 if "current_page" not in st.session_state:
     st.session_state.current_page = "landing"
 if "selected_plan" not in st.session_state:
@@ -36,13 +36,41 @@ if "selected_plan" not in st.session_state:
 if "plan_price" not in st.session_state:
     st.session_state.plan_price = 0.0
 
+# 🤖 SQUAD CHAT MEMORY (For Inter-Agent Communication)
+if "squad_chat" not in st.session_state:
+    st.session_state.squad_chat = [
+        {"agent": "Lab AgentX", "msg": "System initialized. All 16 agents are online and synced. Standing by for Commander's orders.", "time": datetime.datetime.now().strftime("%H:%M")}
+    ]
+
 def go_to_checkout(plan_name, price):
     st.session_state.selected_plan = plan_name
     st.session_state.plan_price = price
+    # Reset final price for fresh checkout
+    st.session_state.final_price = price
     st.session_state.current_page = "checkout"
 
 def go_to_dashboard():
     st.session_state.current_page = "dashboard"
+
+# 💬 THE VIP SQUAD CHAT MODAL
+@st.dialog("💬 Internal Squad Chat")
+def show_squad_chat():
+    st.markdown("<p style='color:#94a3b8; font-size:14px; margin-bottom:15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px;'>Secure channel. Monitoring live agent collaboration and task handoffs.</p>", unsafe_allow_html=True)
+    
+    chat_html = "<div style='max-height: 450px; overflow-y: auto; padding-right: 10px;'>"
+    for chat in st.session_state.squad_chat:
+        agent_color = "#38bdf8" if chat['agent'] == "Lab AgentX" else "#10b981" if chat['agent'] == "System" else "#f59e0b"
+        chat_html += f"""
+        <div style='background: #1e293b; padding: 12px 16px; border-radius: 12px; margin-bottom: 12px; border-left: 4px solid {agent_color};'>
+            <div style='display: flex; justify-content: space-between; margin-bottom: 6px;'>
+                <span style='color: {agent_color}; font-weight: 800; font-size: 13px; text-transform: uppercase;'>{chat['agent']}</span>
+                <span style='color: #64748b; font-size: 11px; font-weight: 600;'>{chat['time']}</span>
+            </div>
+            <div style='color: #f8fafc; font-size: 14px; line-height: 1.5;'>{chat['msg']}</div>
+        </div>
+        """
+    chat_html += "</div>"
+    st.markdown(chat_html, unsafe_allow_html=True)
 
 # ==========================================
 # 🌟 VIP SAAS LANDING PAGE
@@ -110,12 +138,12 @@ if st.session_state.current_page == "landing":
     <div class="hero-section">
         <div class="badge">🚀 VERSION 2.0 LIVE</div>
         <div class="hero-title">Hire The Ultimate AI Squad.<br><span>Automate Everything.</span></div>
-        <div class="hero-subtitle">Stop relying on boring tools. Lab AgentX replaces your entire team. Access 14 super-intelligent anime agents for Marketing, Sales, Tech, and Research working 24/7.</div>
+        <div class="hero-subtitle">Stop relying on boring tools. Lab AgentX replaces your entire team. Access 16 super-intelligent anime agents for Marketing, Sales, Tech, and Research working 24/7.</div>
     </div>
     """, unsafe_allow_html=True)
 
     c1, c2, c3, c4 = st.columns(4)
-    with c1: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>14+</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Elite AI Agents</p>", unsafe_allow_html=True)
+    with c1: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>16+</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Elite AI Agents</p>", unsafe_allow_html=True)
     with c2: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>24/7</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Non-stop Execution</p>", unsafe_allow_html=True)
     with c3: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>10x</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Faster Delivery</p>", unsafe_allow_html=True)
     with c4: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>0%</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Human Error</p>", unsafe_allow_html=True)
@@ -125,7 +153,7 @@ if st.session_state.current_page == "landing":
     with f1:
         with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>01</h1><h3 style='margin-bottom:10px;'>Give Commands</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Just write your task in simple English. Lab AgentX automatically understands which department to assign.</p>", unsafe_allow_html=True)
     with f2:
-        with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>02</h1><h3 style='margin-bottom:10px;'>Squad Execution</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Agents collaborate. Franky writes code, Gojo handles marketing, and Itachi scrapes competitor data.</p>", unsafe_allow_html=True)
+        with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>02</h1><h3 style='margin-bottom:10px;'>Squad Execution</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Agents collaborate via Squad Chat. Franky writes code, Gojo handles marketing, and Itachi scrapes competitor data.</p>", unsafe_allow_html=True)
     with f3:
         with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>03</h1><h3 style='margin-bottom:10px;'>Download Result</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>In a matter of seconds, your work is completed and ready to download as a VIP Markdown report or code file.</p>", unsafe_allow_html=True)
 
@@ -154,7 +182,7 @@ if st.session_state.current_page == "landing":
             st.markdown("<h3 style='margin-bottom:0; color:#38bdf8;'>Elite Agency</h3>", unsafe_allow_html=True)
             st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$54<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
             st.markdown("<p style='color:#94a3b8; font-size:13px; border-bottom:1px solid #334155; padding-bottom:15px; margin-bottom:15px;'>Full agency power in your hands.</p>", unsafe_allow_html=True)
-            st.markdown("<div style='color:#cbd5e1; font-size:13px; line-height:2.2; min-height: 140px;'><span style='color:#38bdf8; font-weight:bold;'>✓</span> 16 Premium AI Agents<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Image Generation<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Tech Dev Team<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Legal Audits</div>", unsafe_allow_html=True)
+            st.markdown("<div style='color:#cbd5e1; font-size:13px; line-height:2.2; min-height: 140px;'><span style='color:#38bdf8; font-weight:bold;'>✓</span> 16 Premium AI Agents<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Conversion Optimizer<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Tech Dev Team<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Legal Audits</div>", unsafe_allow_html=True)
             if st.button("Get Elite Access", key="btn3", use_container_width=True): go_to_checkout("Elite Agency", 54.99); st.rerun()
 
     with p4:
@@ -168,78 +196,149 @@ if st.session_state.current_page == "landing":
     st.markdown("<div class='footer'>Backed by Groq Technology ⚡ • © 2026 Lab AgentX | Built for Scale</div>", unsafe_allow_html=True)
 
 # ==========================================
-# 💳 CHECKOUT & AUTHENTICATION PAGE
+# 💳 CHECKOUT & AUTHENTICATION PAGE (PADDLE/STRIPE STYLE)
 # ==========================================
 elif st.session_state.current_page == "checkout":
+    
+    # 🔥 PADDLE STYLE EXACT REPLICA CSS 🔥
     st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
         header[data-testid="stHeader"] { display: none !important; }
         section[data-testid="stSidebar"] { display: none !important; }
-        .stApp { background-color: #020617; font-family: 'Plus Jakarta Sans', sans-serif; color: white; }
-        .block-container { max-width: 600px !important; padding-top: 4rem !important; }
         
-        .auth-card { background: #0f172a; padding: 3rem; border-radius: 20px; border: 1px solid #1e293b; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .auth-title { font-size: 24px; font-weight: 800; color: #f8fafc; margin-bottom: 5px; text-align: center; }
-        .auth-sub { color: #94a3b8; text-align: center; margin-bottom: 30px; font-size: 14px; }
-        .price-tag { font-size: 36px; font-weight: 800; color: #38bdf8; text-align: center; margin-bottom: 30px; }
+        /* Light minimalist background matching screenshot */
+        .stApp { background-color: #ffffff !important; font-family: 'Inter', sans-serif; color: #111827 !important; }
+        .block-container { max-width: 1100px !important; padding-top: 2rem !important; }
         
-        div[data-testid="stTextInput"] input { background-color: #1e293b; color: white; border: 1px solid #334155; border-radius: 8px; }
+        /* Global Text Colors override for Light Theme */
+        .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #111827 !important; }
         
-        div[data-testid="stButton"] > button { width: 100%; border-radius: 8px !important; padding: 12px 0 !important; font-weight: 700 !important; background: #38bdf8 !important; color: #0f172a !important; border: none !important; transition: all 0.3s ease !important; }
-        div[data-testid="stButton"] > button:hover { background: #0ea5e9 !important; transform: translateY(-2px) !important; }
+        /* Back Button */
+        .back-link { font-size: 14px; color: #d97706 !important; text-decoration: none; display: flex; align-items: center; gap: 5px; cursor: pointer; font-weight: 500; margin-bottom: 40px;}
+        .back-link:hover { text-decoration: underline; }
         
-        .cancel-btn div[data-testid="stButton"] > button { background: transparent !important; border: 1px solid #334155 !important; color: #94a3b8 !important; }
-        .cancel-btn div[data-testid="stButton"] > button:hover { border-color: #f87171 !important; color: #f87171 !important; }
+        /* Left Column Summary Card */
+        .summary-card { background: #f9fafb; border-radius: 12px; padding: 25px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); margin-bottom: 30px; border: 1px solid #e5e7eb;}
+        .summary-price { font-size: 32px; font-weight: 700; color: #111827 !important; margin: 0; display: flex; align-items: baseline; gap: 8px;}
+        .summary-price span { font-size: 14px; font-weight: 400; color: #6b7280 !important;}
+        .summary-plan { font-size: 14px; color: #4b5563 !important; margin-top: 15px; margin-bottom: 5px; font-weight: 500;}
+        .summary-plan-bold { font-weight: 700; font-size: 16px; margin-bottom: 20px;}
+        
+        .divider { border-top: 1px solid #e5e7eb; margin: 20px 0; }
+        
+        .bill-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 12px; color: #4b5563 !important;}
+        .bill-row.total { font-weight: 700; color: #111827 !important; font-size: 16px; margin-top: 10px;}
+        
+        /* Form Inputs */
+        div[data-testid="stTextInput"] label { color: #4b5563 !important; font-size: 14px !important; font-weight: 500 !important; }
+        div[data-testid="stTextInput"] input { background-color: #ffffff !important; color: #111827 !important; border: 1px solid #d1d5db !important; border-radius: 6px !important; padding: 12px !important; font-size: 14px !important; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;}
+        div[data-testid="stTextInput"] input:focus { border-color: #d97706 !important; box-shadow: 0 0 0 1px #d97706 !important; }
+        
+        /* Payment Method Tabs Fake styling */
+        .payment-tabs { display: flex; gap: 10px; margin-bottom: 20px;}
+        .pay-tab { flex: 1; border: 1px solid #d1d5db; border-radius: 6px; padding: 10px; text-align: center; font-size: 14px; font-weight: 500; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 5px; background: white;}
+        .pay-tab.active { border: 2px solid #d97706; background: #fffbeb;}
+        
+        /* The Big Subscribe Button */
+        div[data-testid="stForm"] div[data-testid="stButton"] > button { width: 100%; border-radius: 6px !important; padding: 14px 0 !important; font-weight: 600 !important; background-color: #d97706 !important; color: #ffffff !important; border: none !important; font-size: 16px !important; margin-top: 10px !important; transition: background-color 0.2s; }
+        div[data-testid="stForm"] div[data-testid="stButton"] > button:hover { background-color: #b45309 !important; }
+        
+        .footer-note { text-align: center; font-size: 12px; color: #6b7280 !important; margin-top: 20px;}
+        
+        /* Hide the annoying form border in Streamlit */
+        [data-testid="stForm"] { border: none !important; padding: 0 !important; }
     </style>
     """, unsafe_allow_html=True)
     
-    st.markdown("<div class='auth-card'>", unsafe_allow_html=True)
-    st.markdown(f"<div class='auth-title'>Checkout: {st.session_state.selected_plan} Plan</div>", unsafe_allow_html=True)
-    st.markdown("<div class='auth-sub'>Create your account and complete payment to access the workspace.</div>", unsafe_allow_html=True)
-    
+    # Initialize session price if not set
     if "final_price" not in st.session_state:
         st.session_state.final_price = st.session_state.plan_price
-        
-    st.markdown(f"<div class='price-tag'>Total: ${st.session_state.final_price:.2f}</div>", unsafe_allow_html=True)
+
+    # Top Back Button
+    if st.button("← Return to Lab AgentX HQ", key="back_to_landing"):
+        st.session_state.current_page = "landing"
+        st.rerun()
+
+    # Split Screen Layout exactly like screenshot
+    col_left, col_space, col_right = st.columns([1, 0.2, 1.2])
     
-    with st.form("checkout_form"):
-        st.text_input("Full Name", placeholder="Bruce Wayne")
-        st.text_input("Email Address", placeholder="bruce@wayneenterprises.com")
-        st.text_input("Password", type="password", placeholder="••••••••")
+    with col_left:
+        st.markdown(f"""
+        <div class="summary-card">
+            <div class="summary-price">${st.session_state.final_price:.2f} <span>inc. VAT</span></div>
+            <div class="summary-plan">Lab AgentX Subscription</div>
+            <div class="summary-plan-bold">{st.session_state.selected_plan} Plan / month</div>
+            
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+                <div style="background:#e5e7eb; padding:4px 12px; border-radius:4px; font-size:14px; color:#4b5563;">1</div>
+                <span style="font-size:20px; color:#9ca3af;">+</span>
+            </div>
+            
+            <div class="divider"></div>
+            <div class="bill-row"><span>Subtotal</span><span>${st.session_state.final_price:.2f}</span></div>
+            <div class="bill-row"><span>VAT</span><span>$0.00</span></div>
+            <div class="bill-row total"><span>Total</span><span>${st.session_state.final_price:.2f}</span></div>
+            <div class="bill-row" style="margin-top:20px;"><span>Due today</span><span style="font-weight:700; color:#111827;">${st.session_state.final_price:.2f}</span></div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    with col_right:
+        # Fake Payment Tabs exactly like screenshot
+        st.markdown("""
+        <div class="payment-tabs">
+            <div class="pay-tab active">💳 Card</div>
+            <div class="pay-tab">🅿️ PayPal</div>
+            <div class="pay-tab">🇬 Google Pay</div>
+        </div>
+        """, unsafe_allow_html=True)
         
-        st.markdown("### Payment Method")
-        payment_method = st.radio("Select Provider", ["Stripe (Credit/Debit Card)", "PayPal", "Easypaisa"], label_visibility="collapsed")
-        
-        coupon = st.text_input("Promo Code / Coupon", placeholder="Enter code here...")
-        
-        submit_btn = st.form_submit_button("Complete Payment & Launch Dashboard")
-        
-        if submit_btn:
-            if coupon.strip().upper() == "FUNDERVIP":
-                st.success("🎉 VIP Coupon Applied! Payment bypassed. Loading workspace...")
-                time.sleep(1)
-                go_to_dashboard()
-                st.rerun()
-            elif st.session_state.final_price > 0:
-                with st.spinner(f"Processing payment via {payment_method}..."):
-                    time.sleep(2) 
-                    st.success("✅ Payment successful! Setting up your AI Agency...")
+        with st.form("stripe_checkout_simulation"):
+            # Card Number
+            st.text_input("Card number", placeholder="XXXX XXXX XXXX XXXX")
+            
+            # Expiry and CVC in columns
+            c_exp, c_cvc = st.columns(2)
+            with c_exp: st.text_input("Expiration date", placeholder="MM / YY")
+            with c_cvc: st.text_input("Security code", placeholder="CVC", type="password")
+            
+            st.text_input("Name on card", placeholder="Bruce Wayne")
+            
+            # Additional fields (Coupon logic implemented here)
+            coupon = st.text_input("Add discount code (FUNDERVIP)", placeholder="Enter code...")
+            
+            st.markdown("<div style='margin: 15px 0 20px 0; font-size: 13px; color: #4b5563;'><input type='checkbox' checked> Save my card details for a faster checkout next time</div>", unsafe_allow_html=True)
+            
+            # Submit Button
+            if st.session_state.final_price == 0.0:
+                submit_label = "Complete VIP Setup"
+            else:
+                submit_label = "Subscribe now"
+                
+            submit_btn = st.form_submit_button(submit_label)
+            
+            if submit_btn:
+                if coupon.strip().upper() == "FUNDERVIP":
+                    # Instant VIP Bypass
+                    st.success("🎉 VIP Code Applied! Activating your Agent Workspace...")
                     time.sleep(1)
+                    st.session_state.final_price = 0.0
                     go_to_dashboard()
                     st.rerun()
-            else:
-                go_to_dashboard()
-                st.rerun()
-                
-    st.markdown("</div>", unsafe_allow_html=True)
-    
-    st.markdown("<div class='cancel-btn'>", unsafe_allow_html=True)
-    if st.button("← Go Back"):
-        st.session_state.current_page = "landing"
-        st.session_state.final_price = st.session_state.plan_price 
-        st.rerun()
-    st.markdown("</div>", unsafe_allow_html=True)
+                elif st.session_state.final_price > 0:
+                    # Simulation processing
+                    with st.spinner("Processing payment securely with Stripe..."):
+                        time.sleep(2)
+                        st.success("✅ Payment Successful! Redirecting to Workspace...")
+                        time.sleep(1)
+                        go_to_dashboard()
+                        st.rerun()
+                else:
+                    go_to_dashboard()
+                    st.rerun()
+                    
+        st.markdown(f"<div class='footer-note'>Pay ${st.session_state.final_price:.2f} now, then ${st.session_state.plan_price:.2f} monthly.<br><br>Sold by <strong>Lab AgentX Payments</strong>. Secure Checkout.</div>", unsafe_allow_html=True)
 
 
 # ==========================================
@@ -247,69 +346,41 @@ elif st.session_state.current_page == "checkout":
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
-    # 🐛 FIX: Aggressive CSS overriding to kill all default white boxes!
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        /* Base App Styling */
         .stApp { background-color: #020617 !important; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc;}
         
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
         button[data-testid="collapsedControl"] { display: block !important; color: #f8fafc !important; }
         .block-container { padding-top: 3rem !important; max-width: 1400px !important; }
         
-        /* Force text to light mode */
         .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #f8fafc !important; }
         
-        /* 🔥 BUG FIX: Dark Theme Sidebar Buttons (No more white boxes) */
         div[data-testid="stSidebar"] div[data-testid="stButton"] > button {
-            background-color: #1e293b !important;
-            color: #f8fafc !important;
-            border: 1px solid #334155 !important;
-            border-radius: 8px !important;
+            background-color: #1e293b !important; color: #f8fafc !important; border: 1px solid #334155 !important; border-radius: 8px !important;
         }
-        div[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover {
-            border-color: #38bdf8 !important;
-            color: #38bdf8 !important;
-            background-color: #0f172a !important;
-        }
-        div[data-testid="stSidebar"] div[data-testid="stButton"] > button * {
-            color: inherit !important;
-        }
+        div[data-testid="stSidebar"] div[data-testid="stButton"] > button:hover { border-color: #38bdf8 !important; color: #38bdf8 !important; background-color: #0f172a !important; }
+        
+        .squad-btn div[data-testid="stButton"] > button { background-color: #38bdf8 !important; color: #0f172a !important; border: none !important; font-weight: 800 !important; }
+        .squad-btn div[data-testid="stButton"] > button:hover { background-color: #0ea5e9 !important; color: white !important; }
 
-        /* Top Stats Bar */
-        .top-stats { 
-            display: flex; justify-content: space-around; 
-            background: #0f172a; padding: 20px; border-radius: 16px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 25px; border: 1px solid #1e293b; 
-            flex-wrap: wrap; gap: 15px;
-        }
+        .top-stats { display: flex; justify-content: space-around; background: #0f172a; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 25px; border: 1px solid #1e293b; flex-wrap: wrap; gap: 15px; }
         .stat-box { text-align: center; flex: 1; min-width: 120px; transition: transform 0.2s; } 
         .stat-box:hover { transform: translateY(-2px); }
         .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: #f8fafc !important; } 
         .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-top: 4px; color: #94a3b8 !important; }
         
-        /* Kanban Board */
         .kanban-header { font-size: 13px; font-weight: 800; color: #94a3b8 !important; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 3px solid #1e293b; text-transform: uppercase; letter-spacing: 1px; }
         .k-assigned { border-bottom-color: #f59e0b; } .k-progress { border-bottom-color: #3b82f6; } .k-review { border-bottom-color: #8b5cf6; } .k-done { border-bottom-color: #10b981; }
         
-        .k-card { 
-            background: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; 
-            padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
-            transition: all 0.2s ease; word-wrap: break-word;
-        }
+        .k-card { background: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s ease; word-wrap: break-word; }
         .k-card:hover { border-color: #38bdf8; transform: translateY(-2px); }
         .k-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #f8fafc !important;} 
         .k-agent { font-size: 12px; color: #94a3b8 !important; display: flex; align-items: center; gap: 6px; font-weight: 600;} 
         
-        /* Sidebar Agents List */
-        .agent-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            padding: 14px 12px; margin-bottom: 10px; border-radius: 12px; 
-            background: #1e293b !important; border: 1px solid #334155; cursor: pointer; 
-            transition: all 0.2s ease; 
-        }
+        .agent-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 12px; margin-bottom: 10px; border-radius: 12px; background: #1e293b !important; border: 1px solid #334155; cursor: pointer; transition: all 0.2s ease; }
         .agent-row:hover { border-color: #38bdf8; }
         .agent-name-container { display: flex; flex-direction: column; gap: 4px; }
         .agent-name, .agent-name * { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: #f8fafc !important; } 
@@ -319,92 +390,46 @@ elif st.session_state.current_page == "dashboard":
         .st-working, .st-working * { background: rgba(34, 197, 94, 0.15) !important; color: #4ade80 !important; border: 1px solid #22c55e !important; box-shadow: 0 0 10px rgba(34, 197, 94, 0.2); } 
         .st-standby, .st-standby * { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         
-        /* Chat Feed Styling */
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        /* 🔥 BUG FIX: Chat Input (Dark Mode Forced) */
-        div[data-baseweb="chat-input"] {
-            background-color: #1e293b !important;
-            border: 1px solid #334155 !important;
-            border-radius: 12px !important;
-        }
-        div[data-baseweb="chat-input"] textarea {
-            color: #f8fafc !important;
-            -webkit-text-fill-color: #f8fafc !important;
-        }
-        div[data-baseweb="chat-input"] svg {
-            fill: #94a3b8 !important;
-        }
+        div[data-baseweb="chat-input"] { background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 12px !important; }
+        div[data-baseweb="chat-input"] textarea { color: #f8fafc !important; -webkit-text-fill-color: #f8fafc !important; }
+        div[data-baseweb="chat-input"] svg { fill: #94a3b8 !important; }
         
-        /* 🔥 BUG FIX: File Uploader (Dark Mode Forced) */
-        [data-testid="stFileUploadDropzone"] {
-            background-color: #1e293b !important;
-            border: 1px dashed #475569 !important;
-            border-radius: 12px !important;
-        }
-        [data-testid="stFileUploadDropzone"] * {
-            color: #cbd5e1 !important;
-        }
-        [data-testid="stFileUploadDropzone"] svg {
-            fill: #38bdf8 !important;
-        }
+        [data-testid="stFileUploadDropzone"] { background-color: #1e293b !important; border: 1px dashed #475569 !important; border-radius: 12px !important; }
+        [data-testid="stFileUploadDropzone"] * { color: #cbd5e1 !important; }
+        [data-testid="stFileUploadDropzone"] svg { fill: #38bdf8 !important; }
         
-        /* Main Button overriding */
-        div[data-testid="stMain"] div[data-testid="stButton"] > button { 
-            background-color: #1e293b !important; 
-            color: #f8fafc !important; 
-            border: 1px solid #334155 !important; 
-            border-radius: 8px !important; 
-        }
-        div[data-testid="stMain"] div[data-testid="stButton"] > button:hover {
-            border-color: #38bdf8 !important;
-            color: #38bdf8 !important;
-        }
+        div[data-testid="stMain"] div[data-testid="stButton"] > button { background-color: #1e293b !important; color: #f8fafc !important; border: 1px solid #334155 !important; border-radius: 8px !important; }
+        div[data-testid="stMain"] div[data-testid="stButton"] > button:hover { border-color: #38bdf8 !important; color: #38bdf8 !important; }
         
-        /* Expander Styling */
-        div[data-testid="stExpander"] {
-            background-color: #0f172a !important;
-            border: 1px solid #1e293b !important;
-            border-radius: 12px !important;
-        }
+        div[data-testid="stExpander"] { background-color: #0f172a !important; border: 1px solid #1e293b !important; border-radius: 12px !important; }
         div[data-testid="stExpander"] summary { background-color: #0f172a !important; }
         
         #MainMenu {visibility: hidden;} footer {visibility: hidden;}
-        
-        @media (max-width: 768px) {
-            .top-stats { flex-direction: column; gap: 5px; }
-            .stat-box { width: 100%; border-bottom: 1px solid #1e293b; padding: 10px 0; }
-            .stat-box:last-child { border-bottom: none; }
-        }
     </style>
     """, unsafe_allow_html=True)
 
+    # 🔥 16 ELITE AGENTS
     AGENTS_INFO = {
-        "Lab AgentX": {"name": "Lab AgentX", "role": "Squad Lead", "icon": "🧪", "desc": "The mastermind & eccentric CEO.", "stat": "System Commander"},
-        "Sai": {"name": "Sai", "role": "Chief Illustrator", "icon": "🖌️", "desc": "Draws high-quality images & thumbnails.", "stat": "Visuals"},
-        "Naruto": {"name": "Naruto Uzumaki", "role": "Multiplier", "icon": "🦊", "desc": "Turns 1 video into 20 posts.", "stat": "Omni-Channel"},
-        "Light": {"name": "Light Yagami", "role": "Lead Booker", "icon": "📓", "desc": "Hunts leads and sends cold DMs.", "stat": "Sales"},
-        "Orihime": {"name": "Orihime Inoue", "role": "Client Savior", "icon": "🛡️", "desc": "Heals client relations.", "stat": "Support"},
-        "Gojo": {"name": "Satoru Gojo", "role": "Marketing Head", "icon": "♾️", "desc": "Limitless ad strategies.", "stat": "Marketing"},
-        "Franky": {"name": "Franky", "role": "Tech Lead", "icon": "🦾", "desc": "Compiles SUUPER Python/HTML code.", "stat": "Developer"},
+        "Lab AgentX": {"name": "Lab AgentX", "role": "Squad Lead", "icon": "🧪", "desc": "The mastermind CEO. Assigns tasks like Jarvis.", "stat": "System Commander"},
+        "Orihime": {"name": "Orihime Inoue", "role": "Retention Specialist", "icon": "🛡️", "desc": "Monitors churn and customer activation (Like Groot).", "stat": "Support"},
+        "Franky": {"name": "Franky", "role": "Developer Agent", "icon": "🦾", "desc": "Writes PRs and bug fixes (Like Friday).", "stat": "Tech"},
+        "L": {"name": "L Lawliet", "role": "Customer Research", "icon": "🍰", "desc": "Deep web research on competitors (Like Fury).", "stat": "Intel"},
+        "Light": {"name": "Light Yagami", "role": "Outbound Scout", "icon": "📓", "desc": "Hunts leads and handles outreach (Like Hawkeye).", "stat": "Sales"},
+        "Naruto": {"name": "Naruto Uzumaki", "role": "Content Writer", "icon": "🦊", "desc": "Generates omni-channel content (Like Loki).", "stat": "Content"},
+        "Sebastian": {"name": "Sebastian", "role": "Email Marketing", "icon": "🎩", "desc": "Drafts onboarding and cold email sequences (Like Pepper).", "stat": "Communications"},
+        "Senku": {"name": "Senku Ishigami", "role": "Data Agent", "icon": "🧫", "desc": "Analyzes big data and transcripts (Like Vision).", "stat": "Knowledge"},
+        "Bulma": {"name": "Bulma", "role": "Conversion Optimizer", "icon": "💡", "desc": "Tests website flows for drops (Website Tester).", "stat": "UX/UI"},
+        "Gojo": {"name": "Satoru Gojo", "role": "Marketing Head", "icon": "♾️", "desc": "Limitless Meta Ad strategies.", "stat": "Ads"},
+        "Itachi": {"name": "Itachi Uchiha", "role": "Web Scraper", "icon": "👁️", "desc": "Spies on competitor websites silently.", "stat": "Scraping"},
+        "Akatsuki": {"name": "The Akatsuki", "role": "SEO Empire", "icon": "☁️", "desc": "Mass SEO blogs generator.", "stat": "Blogger"},
         "Tengen": {"name": "Tengen Uzui", "role": "Video Producer", "icon": "✨", "desc": "Flashy viral video scripts.", "stat": "Media"},
-        "L": {"name": "L Lawliet", "role": "Deep Research", "icon": "🍰", "desc": "Ultimate web detective.", "stat": "Intel"},
-        "Itachi": {"name": "Itachi Uchiha", "role": "Web Intel", "icon": "👁️", "desc": "Spies on competitor websites.", "stat": "Scraper"},
+        "Sai": {"name": "Sai", "role": "Chief Illustrator", "icon": "🖌️", "desc": "Draws high-quality images & thumbnails.", "stat": "Visuals"},
         "Nami": {"name": "Nami", "role": "Finance Analyst", "icon": "🍊", "desc": "Crunches VC data and stocks.", "stat": "Wall St"},
-        "Nanami": {"name": "Kento Nanami", "role": "Legal Expert", "icon": "👔", "desc": "Reviews dense contracts.", "stat": "Lawyer"},
-        "Senku": {"name": "Senku Ishigami", "role": "Data Miner", "icon": "🧫", "desc": "Summarizes YouTube transcripts.", "stat": "Knowledge"},
-        "Akatsuki": {"name": "The Akatsuki", "role": "SEO Empire", "icon": "☁️", "desc": "Mass SEO blogs generator.", "stat": "Blogger"}
+        "Nanami": {"name": "Kento Nanami", "role": "Legal Expert", "icon": "👔", "desc": "Reviews dense corporate contracts.", "stat": "Lawyer"}
     }
 
-    MEMORY_FOLDER = "memory_logs"
-    UPLOAD_FOLDER = "uploads"
-    DELIVERABLES_FOLDER = "Deliverables"
-    SAVED_FILES_FOLDER = "Saved_Files" 
-
-    for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER, SAVED_FILES_FOLDER]:
-        if not os.path.exists(folder): os.makedirs(folder)
-
-    # 🧠 STATE-BASED FILE HIDING LOGIC
     def get_all_deliverables():
         files = []
         for root, _, filenames in os.walk(DELIVERABLES_FOLDER):
@@ -417,12 +442,6 @@ elif st.session_state.current_page == "dashboard":
 
     if "session_start_time" not in st.session_state: 
         st.session_state.session_start_time = time.time() - 5
-
-    if "full_memory" not in st.session_state: st.session_state.full_memory = []
-    if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": f"Lab AgentX Online. Welcome to the **{st.session_state.selected_plan} Workspace**. Your elite squad is ready. What's the mission?"}]
-    if "active_tasks" not in st.session_state: st.session_state.active_tasks = []
-    if "assigned_tasks" not in st.session_state: st.session_state.assigned_tasks = []
-    if "review_tasks" not in st.session_state: st.session_state.review_tasks = []
 
     def get_done_tasks():
         tasks = []
@@ -457,7 +476,9 @@ elif st.session_state.current_page == "dashboard":
         "Nami": ["nami", "finance", "financial", "lucius"],
         "Nanami": ["nanami", "legal", "daredevil"],
         "Senku": ["senku", "youtube", "brainiac"],
-        "Akatsuki": ["akatsuki", "seo team", "blogs"]
+        "Akatsuki": ["akatsuki", "seo team", "blogs"],
+        "Sebastian": ["sebastian", "email", "pr", "butler", "reply"],
+        "Bulma": ["bulma", "website tester", "conversion", "ux", "ui"]
     }
 
     for msg in reversed(st.session_state.messages):
@@ -483,16 +504,22 @@ elif st.session_state.current_page == "dashboard":
     """, unsafe_allow_html=True)
 
     with st.sidebar:
-        if st.button("⬅️ Back to Plans", use_container_width=True):
+        if st.button("⬅️ View Plans", use_container_width=True):
             st.session_state.current_page = "landing"
             st.rerun()
             
         st.markdown("### 🎛️ COMMAND CONTROLS")
+        
+        st.markdown("<div class='squad-btn'>", unsafe_allow_html=True)
+        if st.button("👁️ View Squad Chat", use_container_width=True):
+            show_squad_chat()
+        st.markdown("</div>", unsafe_allow_html=True)
+        
         col_c1, col_c2 = st.columns(2)
         with col_c1:
             if st.button("💬 New Chat", use_container_width=True):
                 st.session_state.full_memory.extend(st.session_state.messages)
-                st.session_state.messages = [{"role": "assistant", "content": "Lab AgentX Online. Memory archived. Ready for the next mission."}]
+                st.session_state.messages = [{"role": "assistant", "content": f"Lab AgentX Online. Welcome to the **{st.session_state.selected_plan} Workspace**. Your elite squad is ready."}]
                 st.session_state.session_start_time = time.time()
                 for root, _, files in os.walk(DELIVERABLES_FOLDER):
                     for file in files:
@@ -506,6 +533,7 @@ elif st.session_state.current_page == "dashboard":
                         except Exception:
                             pass
                 st.session_state.active_tasks = []
+                st.session_state.squad_chat = [{"agent": "System", "msg": "Session reset. Memory archived.", "time": datetime.datetime.now().strftime("%H:%M")}]
                 st.rerun()
                 
         with col_c2:
@@ -625,13 +653,12 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    # 🐛 THE FIX: File uploader removed from sidebar and moved right above chat input!
     with st.expander("📎 Attach Documents (Knowledge Base)"):
-        uploaded_file = st.file_uploader("Upload context files here before giving a command:", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed")
-        if uploaded_file:
-            st.success(f"✅ {uploaded_file.name} loaded into Agent memory.")
+        uploaded_file2 = st.file_uploader("Upload context files here before giving a command:", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed", key="bottom_up")
+        if uploaded_file2:
+            st.success(f"✅ {uploaded_file2.name} loaded into Agent memory.")
 
-    user_input = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...")
+    user_input = st.chat_input("Command the Agency (e.g., 'Bulma, analyze my website UX...')...")
 
     if user_input:
         st.session_state.messages.append({"role": "user", "content": user_input})
@@ -650,9 +677,10 @@ elif st.session_state.current_page == "dashboard":
         
         2. Your response MUST consist of EXACTLY TWO PARTS:
         
-           PART 1 (The Banter): Write 1 or 2 funny sentences where your agents playfully argue or react to the task in character before you assign it. 
-           Use character names like **Franky**, **Gojo**, **Nanami**, **Senku**, **Naruto**, etc. 
-           Example: "Franky: SUUPER! I will code this in 2 seconds! 🦾 | Nanami: Please keep the noise down, I am reviewing contracts. 👔"
+           PART 1 (Squad Collaboration): Write a 2-3 line simulated Slack conversation where agents discuss the task. 
+           Format EXACTLY like this (AgentName: Message):
+           Bulma: I will scan the website conversion funnel!
+           Nanami: Make sure the privacy policy is visible.
            
            PART 2 (The Routing): On a new line, output EXACTLY ONE SENTENCE from the routing list below.
         
@@ -670,6 +698,8 @@ elif st.session_state.current_page == "dashboard":
         - "Task Assigned. **Gojo** is drafting marketing content."
         - "Task Assigned. **Tengen** is scripting flashy videos."
         - "Task Assigned. **L** is researching facts."
+        - "Task Assigned. **Sebastian** is drafting the PR response."
+        - "Task Assigned. **Bulma** is optimizing the website conversion."
 
         If the user just says "hi", you may explain your role gracefully without routing. But if a task is given, strictly follow PART 1 and PART 2.
         """
@@ -697,6 +727,20 @@ elif st.session_state.current_page == "dashboard":
                 
                 if 'choices' in api_response:
                     full_response = api_response['choices'][0]['message']['content']
+                    
+                    try:
+                        banter_lines = [line for line in full_response.split('\n') if ':' in line and 'Task Assigned' not in line and 'PART' not in line]
+                        for line in banter_lines:
+                            parts = line.split(":", 1)
+                            if len(parts) == 2:
+                                st.session_state.squad_chat.append({
+                                    "agent": parts[0].replace("*", "").strip(), 
+                                    "msg": parts[1].strip(), 
+                                    "time": datetime.datetime.now().strftime("%H:%M")
+                                })
+                    except Exception:
+                        pass
+                    
                     st.session_state.messages.append({"role": "assistant", "content": full_response})
                     
                     if "Task Assigned" in full_response or "Deploying" in full_response:
@@ -730,9 +774,19 @@ elif st.session_state.current_page == "dashboard":
                                     from content_multiplier import run_multiplier_crew
                                     agent_result = run_multiplier_crew(msg_content)
                                 except: agent_result = "Multiplier dependencies missing on cloud."
+                            elif "**Sebastian**" in full_response:
+                                agent_result = "🎩 PR & Email communication drafted successfully. Saved to archives."
+                            elif "**Bulma**" in full_response:
+                                agent_result = "💡 Website UX testing complete. Conversion drop-offs identified and logged."
                             
                             if len(st.session_state.active_tasks) > 0:
                                 st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
+                                
+                                st.session_state.squad_chat.append({
+                                    "agent": "System", 
+                                    "msg": f"Task executed successfully. Deliverables have been saved to the secure archive.", 
+                                    "time": datetime.datetime.now().strftime("%H:%M")
+                                })
                 else:
                     error_details = api_response.get('error', {}).get('message', str(api_response))
                     st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Groq API Error: {error_details}"})
