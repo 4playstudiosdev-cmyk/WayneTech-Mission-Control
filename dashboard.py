@@ -318,8 +318,8 @@ elif st.session_state.current_page == "dashboard":
         [data-testid="stChatInput"] { background-color: #020617 !important; }
         [data-testid="stChatInput"] > div,
         [data-testid="stChatInput"] .stChatInput { 
-            background-color: #1e293b !important; 
-            border: 1px solid #334155 !important; 
+            background-color: #ffffff !important; 
+            border: 1px solid #d1d5db !important; 
             border-radius: 12px !important; 
         }
         
@@ -327,17 +327,17 @@ elif st.session_state.current_page == "dashboard":
         [data-testid="stChatInput"] textarea,
         [data-baseweb="base-input"] textarea,
         [data-baseweb="textarea"] textarea { 
-            color: #ffffff !important; 
-            -webkit-text-fill-color: #ffffff !important; 
-            caret-color: #ffffff !important;
+            color: #000000 !important; 
+            -webkit-text-fill-color: #000000 !important; 
+            caret-color: #000000 !important;
             font-size: 15px !important;
             background-color: transparent !important;
         }
         [data-testid="stChatInput"] textarea::placeholder { 
-            color: #94a3b8 !important; 
-            -webkit-text-fill-color: #94a3b8 !important; 
+            color: #6b7280 !important; 
+            -webkit-text-fill-color: #6b7280 !important; 
         }
-        [data-testid="stChatInput"] svg { fill: #94a3b8 !important; }
+        [data-testid="stChatInput"] svg { fill: #111827 !important; }
         
         div[data-testid="stTabs"] button { color: #94a3b8 !important; font-weight: 700 !important; font-size: 15px !important; padding-bottom: 10px !important;}
         div[data-testid="stTabs"] button[aria-selected="true"] { color: #38bdf8 !important; border-bottom-color: #38bdf8 !important; }
