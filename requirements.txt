@@ -10,4 +10,4 @@ crewai-tools
 fpdf
 tweepy
 youtube-transcript-api
-duckduckgo-search
+duckduckgo-search>=5.3.1
