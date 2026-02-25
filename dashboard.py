@@ -247,12 +247,12 @@ elif st.session_state.current_page == "checkout":
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
-    # 🔥 THE ULTIMATE BULLETPROOF CSS FIX 🔥
+    # 🔥 THE ULTIMATE SAFE CSS FIX 🔥
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        /* 1. FORCE THE ENTIRE PAGE BLACK (Kills the white bottom bar) */
+        /* 1. FORCE THE ENTIRE PAGE BLACK */
         .stApp, .stAppViewContainer, .stAppScrollToBottomContainer, [data-testid="stBottom"], [data-testid="stBottom"] > div { 
             background-color: #020617 !important; 
             background-image: none !important;
@@ -294,54 +294,28 @@ elif st.session_state.current_page == "dashboard":
         .st-standby { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        /* 🔥 2. SAFE CHAT INPUT BOX DESIGN (WHITE BOX, BLACK TEXT) */
-        [data-testid="stChatInput"] { 
-            background-color: transparent !important; 
-        }
-        [data-testid="stChatInput"] > div, 
-        [data-testid="stChatInput"] .stChatInput { 
-            background-color: #ffffff !important; /* White Box */
+        /* 🔥 2. SAFE CHAT INPUT BOX DESIGN (WHITE BOX, BLACK TEXT) 🔥 */
+        div[data-baseweb="chat-input"] { 
+            background-color: #ffffff !important; /* Proper White Box */
             border: 1px solid #d1d5db !important; 
             border-radius: 12px !important; 
+            padding: 5px !important;
         }
-        [data-testid="stChatInput"] textarea, 
-        [data-baseweb="textarea"] textarea { 
-            color: #000000 !important; /* Black Text */
+        div[data-baseweb="chat-input"] textarea { 
+            color: #000000 !important; /* Proper Black Text */
             -webkit-text-fill-color: #000000 !important; 
-            caret-color: #000000 !important; /* Black Cursor */
+            caret-color: #000000 !important; 
             font-size: 15px !important; 
             background-color: transparent !important; 
         }
-        [data-testid="stChatInput"] textarea::placeholder { 
-            color: #6b7280 !important; /* Gray Placeholder */
+        div[data-baseweb="chat-input"] textarea::placeholder { 
+            color: #6b7280 !important; 
             -webkit-text-fill-color: #6b7280 !important; 
         }
-        [data-testid="stChatInput"] svg { 
-            fill: #111827 !important; /* Dark Icon */
-        }
-
-        /* UPLOADER BUTTON STYLING (Safely above chat) */
-        .upload-wrapper {
-            margin-bottom: -15px;
-            z-index: 999;
-            position: relative;
-        }
-        [data-testid="stPopover"] button {
-            background-color: #1e293b !important;
-            border: 1px solid #334155 !important;
-            border-radius: 20px !important;
-            padding: 5px 15px !important;
-            min-height: 0px !important;
-            transition: all 0.2s ease;
-        }
-        [data-testid="stPopover"] button * {
-            color: #f8fafc !important;
-            font-size: 13px !important;
-            font-weight: 600 !important;
-        }
-        [data-testid="stPopover"] button:hover {
-            border-color: #38bdf8 !important;
-            background-color: #0f172a !important;
+        /* Make Icons Dark so they show up on white */
+        div[data-baseweb="chat-input"] svg { 
+            fill: #111827 !important; 
+            color: #111827 !important;
         }
 
         /* Tabs */
@@ -550,29 +524,38 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    # 🔥 FIX: SAFE ATTACHMENT POPOVER (Positioned securely right above chat without breaking)
-    st.markdown("<div class='upload-wrapper'>", unsafe_allow_html=True)
-    with st.popover("📎 Attach File"):
-        uploaded_file2 = st.file_uploader("Drop context files here", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed")
-        if uploaded_file2: st.success(f"✅ {uploaded_file2.name} attached.")
-    st.markdown("</div>", unsafe_allow_html=True)
+    # 🔥 FIX 1: NATIVE STREAMLIT UPLOADER (THE PAPERCLIP INSIDE THE BOX)
+    # Yeh code dynamically text aur files ko safe tareeqe se extract karega, KeyError kabhi nahi aayega!
+    raw_chat_val = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...", accept_file="multiple")
+    user_input = ""
 
-    # Clean, Standard text input (No accept_file bug!)
-    user_input = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...")
-
-    if user_input:
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        st.session_state.active_tasks.append(user_input[:30] + "...") 
-        st.rerun()
+    if raw_chat_val:
+        # Safe extraction agar Streamlit object return kare (New versions)
+        if hasattr(raw_chat_val, "text"):
+            user_input = getattr(raw_chat_val, "text", "")
+            files = getattr(raw_chat_val, "files", [])
+            if files: st.success(f"✅ {len(files)} file(s) attached securely.")
+        # Safe extraction agar Dictionary ho
+        elif isinstance(raw_chat_val, dict) and "text" in raw_chat_val:
+            user_input = raw_chat_val.get("text", "")
+            if raw_chat_val.get("files"): st.success(f"✅ {len(raw_chat_val['files'])} file(s) attached securely.")
+        # Safe fallback agar normal string ho (Old versions)
+        else:
+            user_input = str(raw_chat_val)
+            
+        if user_input:
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            st.session_state.active_tasks.append(user_input[:30] + "...") 
+            st.rerun()
 
     if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
         last_msg = st.session_state.messages[-1]
         msg_content = last_msg["content"]
         
-        # 🔥 THE "HI" BUG FIX: Strict Prompt to prevent random routing 🔥
+        # 🔥 FIX 2: THE "HI" BUG FIX (Brain prompt upgraded to act human on greetings)
         system_prompt = """You are LAB AGENTX, the brilliant and charismatic Master CEO of an Anime-themed AI Agency.
 
-        CRITICAL RULE 1: If the user simply says a greeting (like "hi", "hello", "how are you"), or asks a general question, ONLY reply naturally as a friendly CEO. DO NOT assign tasks. DO NOT output "PART 1" or "PART 2". 
+        CRITICAL RULE 1: If the user simply says a greeting (like "hi", "hello", "how are you"), ONLY reply naturally as a friendly CEO. DO NOT assign tasks. DO NOT output "PART 1" or "PART 2". 
         
         CRITICAL RULE 2: ONLY IF the user gives a CLEAR TASK (e.g., "write a blog", "create an image", "code a game"), you MUST output EXACTLY this format:
 
@@ -602,7 +585,6 @@ elif st.session_state.current_page == "dashboard":
                     full_response = api_response['choices'][0]['message']['content']
                     st.session_state.tokens_used += len(full_response) * 3 
                     
-                    # Safe parsing for Squad Chat banter
                     try:
                         if "PART 2:" in full_response or "Task Assigned" in full_response:
                             for line in [line for line in full_response.split('\n') if ':' in line and 'Task Assigned' not in line and 'PART' not in line]:
@@ -612,7 +594,7 @@ elif st.session_state.current_page == "dashboard":
                     
                     st.session_state.messages.append({"role": "assistant", "content": full_response})
                     
-                    # Only execute code if it actually assigned a task
+                    # 🔥 Execute Task only if a real command was given
                     if "Task Assigned" in full_response and "PART 2" in full_response:
                         with st.spinner(f"Anime Agents are working... Please wait."):
                             agent_result = "⚠️ Module integrated but running in safe mode."
