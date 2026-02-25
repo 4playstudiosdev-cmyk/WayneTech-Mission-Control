@@ -322,7 +322,7 @@ elif st.session_state.current_page == "dashboard":
             box-shadow: 0 10px 25px rgba(0,0,0,0.5) !important;
         }
         div[data-testid="stChatInput"] textarea { 
-            color: #ffffff !important; 
+            color: #000000 !important; 
             -webkit-text-fill-color: #ffffff !important; 
             font-size: 15px !important;
             background-color: transparent !important;
