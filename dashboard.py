@@ -15,7 +15,7 @@ sys.path.append(agents_dir)
 for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 'OmniReader', 'Multiplier', 'Sales', 'ImageGen', 'DeepResearch']:
     sys.path.append(os.path.join(agents_dir, dept))
 
-# API Keys load karna
+# API keys load karo
 load_dotenv()
 INITIAL_GROQ_KEY = os.getenv("GROQ_API_KEY", "")
 
@@ -28,7 +28,7 @@ except ImportError:
 # Global Config
 st.set_page_config(page_title="Lab AgentX | AI Workforce", page_icon="⚡", layout="wide", initial_sidebar_state="expanded")
 
-# 🔥 FOLDER DEFINITIONS
+# 🔥 FOLDERS BANAO
 MEMORY_FOLDER = "memory_logs"
 UPLOAD_FOLDER = "uploads"
 DELIVERABLES_FOLDER = "Deliverables"
@@ -56,14 +56,14 @@ def generate_pdf_bytes(text_content):
         if os.path.exists(temp_pdf_path): os.remove(temp_pdf_path)
         return None
 
-# 🧠 PAGE ROUTING & MEMORY SYSTEM
+# 🧠 PAGE ROUTING ANE MEMORY SYSTEM
 if "current_page" not in st.session_state: st.session_state.current_page = "landing"
 if "selected_plan" not in st.session_state: st.session_state.selected_plan = None
 if "plan_price" not in st.session_state: st.session_state.plan_price = 0.0
 
 if "squad_chat" not in st.session_state:
     st.session_state.squad_chat = [
-        {"agent": "Lab AgentX", "msg": "Autonomous infrastructure online. Groq LPUs synced at max speed. Awaiting Commander's intent.", "time": datetime.datetime.now().strftime("%H:%M")}
+        {"agent": "Lab AgentX", "msg": "Autonomous infrastructure chalu chhe. Groq LPUs full speed par chhe. Commander na aadesh ni raah jovay chhe.", "time": datetime.datetime.now().strftime("%H:%M")}
     ]
 
 def go_to_checkout(plan_name, price):
@@ -75,18 +75,18 @@ def go_to_checkout(plan_name, price):
 def go_to_dashboard():
     st.session_state.current_page = "dashboard"
 
-# 💬 THE VIP SQUAD CHAT MODAL
+# 💬 VIP SQUAD CHAT MODAL
 @st.dialog("💬 Agent Comm-Link (Live)")
 def show_squad_chat():
-    st.markdown("<p style='color:#94a3b8; font-size:14px; margin-bottom:15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px;'>Intercepting live autonomous workflow communications.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#94a3b8; font-size:14px; margin-bottom:15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px;'>Live autonomous workflow ni vaat-chit jovo.</p>", unsafe_allow_html=True)
     
     st.markdown("""
         <div style='background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; display: flex; align-items: center; justify-content: space-between;'>
             <div>
-                <div style='color: #f8fafc; font-weight: 700; font-size: 14px;'>🎙️ Latest Standup Audio</div>
+                <div style='color: #f8fafc; font-weight: 700; font-size: 14px;'>🎙️ Navo Standup Audio</div>
                 <div style='color: #94a3b8; font-size: 12px;'>Synthesized AI Voices (Gojo, Franky, Nanami)</div>
             </div>
-            <button style='background: #38bdf8; color: #0f172a; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 800; cursor: pointer;'>▶ Play Audio</button>
+            <button style='background: #38bdf8; color: #0f172a; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 800; cursor: pointer;'>▶ Audio Vagaado</button>
         </div>
     """, unsafe_allow_html=True)
 
@@ -217,7 +217,7 @@ elif st.session_state.current_page == "checkout":
     """, unsafe_allow_html=True)
     
     if "final_price" not in st.session_state: st.session_state.final_price = st.session_state.plan_price
-    if st.button("← Return to Lab AgentX HQ", key="back_to_landing"): st.session_state.current_page = "landing"; st.rerun()
+    if st.button("← Pacha Jao (Back)", key="back_to_landing"): st.session_state.current_page = "landing"; st.rerun()
 
     col_left, col_space, col_right = st.columns([1, 0.2, 1.2])
     with col_left:
@@ -241,16 +241,16 @@ elif st.session_state.current_page == "checkout":
             with c_exp: st.text_input("Expiration date", placeholder="MM / YY")
             with c_cvc: st.text_input("Security code", placeholder="CVC", type="password")
             st.text_input("Name on card", placeholder="Bruce Wayne")
-            coupon = st.text_input("Add discount code (Use FUNDERVIP)", placeholder="Enter code...")
+            coupon = st.text_input("Add discount code (Use FUNDERVIP)", placeholder="Code ahiya nakho...")
             
             submit_label = "Complete VIP Setup" if st.session_state.final_price == 0.0 else "Subscribe now"
             if st.form_submit_button(submit_label):
                 if coupon.strip().upper() == "FUNDERVIP":
-                    st.success("🎉 VIP Code Applied! Activating your Agent Workspace...")
+                    st.success("🎉 VIP Code Laagi Gayu! Agent Workspace chalu thai rahyu chhe...")
                     time.sleep(1); st.session_state.final_price = 0.0; go_to_dashboard(); st.rerun()
                 elif st.session_state.final_price > 0:
-                    with st.spinner("Processing payment securely with Stripe..."):
-                        time.sleep(2); st.success("✅ Payment Successful! Redirecting to Workspace...")
+                    with st.spinner("Stripe thi payment thai rahyu chhe..."):
+                        time.sleep(2); st.success("✅ Payment Safal! Workspace taraf lai jai rahya chhiye...")
                         time.sleep(1); go_to_dashboard(); st.rerun()
 
 # ==========================================
@@ -258,23 +258,31 @@ elif st.session_state.current_page == "checkout":
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
+    # 🔥 SAFE CSS - NO POSITION FIXED HACKS ANYMORE 🔥
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        .stApp, .stAppViewContainer, .stAppScrollToBottomContainer { 
-            background-color: #020617 !important; background-image: none !important; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc;
+        /* App Background - 100% Dark */
+        .stApp, .stAppViewContainer { 
+            background-color: #020617 !important; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            color: #f8fafc;
         }
 
-        /* Force Bottom Area to be strictly Dark (Fixes the white bar bug) */
+        /* Niche no safed (white) kachro kadho */
         [data-testid="stBottom"], [data-testid="stBottom"] > div {
-            background-color: #020617 !important; background-image: none !important;
+            background-color: #020617 !important; 
+            background-image: none !important;
+            border: none !important;
         }
 
+        /* Sidebar Styling */
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
         .block-container { padding-top: 3rem !important; max-width: 1400px !important; }
         .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #f8fafc !important; }
         
+        /* Sidebar Buttons - White Text Fix */
         [data-testid="stSidebar"] button { background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 8px !important; }
         [data-testid="stSidebar"] button * { color: #ffffff !important; font-weight: 700 !important; }
         [data-testid="stSidebar"] button:hover { border-color: #38bdf8 !important; background-color: #0f172a !important; }
@@ -284,6 +292,7 @@ elif st.session_state.current_page == "dashboard":
         .squad-btn button * { color: #020617 !important; font-weight: 800 !important; }
         .squad-btn button:hover { background-color: #0ea5e9 !important; }
         
+        /* Stats & Cards */
         .top-stats { display: flex; justify-content: space-around; background: #0f172a; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; border: 1px solid #1e293b; flex-wrap: wrap; gap: 15px; }
         .stat-box { text-align: center; flex: 1; min-width: 120px;} 
         .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: #f8fafc !important; } 
@@ -305,70 +314,44 @@ elif st.session_state.current_page == "dashboard":
         .st-standby { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        /* 🔥 THE ULTIMATE SAFE CHAT INPUT UI (WHITE BOX, BLACK TEXT) 🔥 */
+        /* 🔥 CLEAN CHAT INPUT (Dark Mode ma Safed Text) */
         [data-testid="stChatInput"] { background-color: transparent !important; }
         [data-testid="stChatInput"] > div { 
-            background-color: #ffffff !important; /* Perfect White Box */
-            border: 1px solid #d1d5db !important; 
+            background-color: #1e293b !important; 
+            border: 1px solid #334155 !important; 
             border-radius: 12px !important; 
         }
-        
-        /* 🔥 Black Text and Padding to Make Space for the + Button 🔥 */
         [data-testid="stChatInput"] textarea { 
-            color: #000000 !important; 
-            -webkit-text-fill-color: #000000 !important; 
-            caret-color: #000000 !important; 
+            color: #ffffff !important; 
+            -webkit-text-fill-color: #ffffff !important; 
+            caret-color: #ffffff !important; 
             font-size: 15px !important; 
             background-color: transparent !important; 
-            padding-left: 45px !important; /* Extremely important: shifts text right so it doesn't overlap the + icon */
         }
-        [data-testid="stChatInput"] textarea::placeholder { color: #6b7280 !important; -webkit-text-fill-color: #6b7280 !important; }
-        [data-testid="stChatInput"] svg { fill: #111827 !important; color: #111827 !important; }
+        [data-testid="stChatInput"] textarea::placeholder { color: #94a3b8 !important; -webkit-text-fill-color: #94a3b8 !important; }
+        [data-testid="stChatInput"] svg { fill: #94a3b8 !important; }
 
-        /* 🔥 THE GOD-LEVEL CSS HACK TO PUT POPOVER INSIDE THE CHAT BOX 🔥 */
-        div[data-testid="stPopover"] {
-            position: fixed !important;
-            bottom: 39px !important; /* Perfectly aligns with the chat box vertical center */
-            margin-left: 10px !important; /* Positions it nicely on the left edge */
-            z-index: 999999 !important;
-            /* Note: No 'left' property! This automatically aligns it relative to the column, respecting sidebar changes! */
+        /* 🔥 SAFE ATTACH FILE BUTTON (Upar shanti thi besse) */
+        [data-testid="stPopover"] button {
+            background-color: #1e293b !important;
+            border: 1px dashed #38bdf8 !important;
+            border-radius: 8px !important;
+            color: #f8fafc !important;
+            padding: 5px 15px !important;
+            margin-bottom: 5px !important;
         }
-
-        div[data-testid="stPopover"] > button { 
-            background-color: transparent !important; 
-            border: none !important; 
-            box-shadow: none !important;
-            padding: 0 !important; 
-            min-height: 0px !important; 
-            width: 32px !important; 
-            height: 32px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            border-radius: 50% !important;
-            transition: all 0.2s ease; 
+        [data-testid="stPopoverBody"] {
+            background-color: #0f172a !important;
+            border: 1px solid #334155 !important;
+            border-radius: 12px !important;
+            padding: 15px !important;
         }
-        
-        /* Hides the "Attach File" text to make it just an icon */
-        div[data-testid="stPopover"] > button p { display: none !important; } 
-        
-        /* Replaces text with a cool Plus/Attachment icon */
-        div[data-testid="stPopover"] > button::before {
-            content: '➕' !important;
-            font-size: 20px !important;
-            color: #6b7280 !important;
-            font-family: sans-serif;
-        }
-
-        div[data-testid="stPopover"] > button:hover { background-color: #f3f4f6 !important; } /* Light grey hover on white background */
-        
-        div[data-testid="stPopoverBody"] { background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 12px !important; padding: 15px !important; }
 
         /* Tabs */
         div[data-testid="stTabs"] button { color: #94a3b8 !important; font-weight: 700 !important; font-size: 15px !important; padding-bottom: 10px !important;}
         div[data-testid="stTabs"] button[aria-selected="true"] { color: #38bdf8 !important; border-bottom-color: #38bdf8 !important; }
         
-        /* ORG CHART SPECIFIC CSS (MUDDY OS CLONE) */
+        /* ORG CHART */
         .org-tree-wrapper { padding: 40px 0; display: flex; flex-direction: column; align-items: center; }
         .org-node { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 15px 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); min-width: 280px; z-index: 2; position: relative;}
         .org-node.ceo { border-top: 4px solid #f59e0b; }
@@ -432,7 +415,7 @@ elif st.session_state.current_page == "dashboard":
     if "hidden_files" not in st.session_state: st.session_state.hidden_files = get_all_deliverables()
     if "session_start_time" not in st.session_state: st.session_state.session_start_time = time.time() - 5
     if "full_memory" not in st.session_state: st.session_state.full_memory = []
-    if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": f"Lab AgentX Online. Core team standing by."}]
+    if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": f"Lab AgentX Online. Core team taiyar chhe."}]
     if "active_tasks" not in st.session_state: st.session_state.active_tasks = []
     if "assigned_tasks" not in st.session_state: st.session_state.assigned_tasks = []
     if "review_tasks" not in st.session_state: st.session_state.review_tasks = []
@@ -470,7 +453,7 @@ elif st.session_state.current_page == "dashboard":
     <div class="top-stats">
         <div class="stat-box"><div class="stat-value">{len(st.session_state.assigned_tasks) + len(st.session_state.active_tasks)}</div><div class="stat-label">Active Workflows</div></div>
         <div class="stat-box"><div class="stat-value" style="color:#f59e0b !important;">⚡ 850 T/s</div><div class="stat-label">Groq LPU Speed</div></div>
-        <div class="stat-box"><div class="stat-value">{format(st.session_state.tokens_used, ',')}</div><div class="stat-label">Tokens Processed</div></div>
+        <div class="stat-box"><div class="stat-value">{format(st.session_state.tokens_used, ',')}</div><div class="stat-label">Tokens Vapraya</div></div>
         <div class="stat-box"><div class="stat-value" style="color:#4ade80 !important;">● ONLINE</div><div class="stat-label">Fleet Status</div></div>
     </div>
     """, unsafe_allow_html=True)
@@ -485,13 +468,13 @@ elif st.session_state.current_page == "dashboard":
         
         col_c1, col_c2 = st.columns(2)
         with col_c1:
-            if st.button("💬 New Chat", use_container_width=True):
+            if st.button("💬 Navi Chat", use_container_width=True):
                 st.session_state.full_memory.extend(st.session_state.messages)
-                st.session_state.messages = [{"role": "assistant", "content": f"Lab AgentX Online. Workspace reset."}]
+                st.session_state.messages = [{"role": "assistant", "content": f"Lab AgentX Online. Workspace reset thai gayu."}]
                 st.session_state.session_start_time = time.time()
                 st.session_state.active_tasks = []; st.session_state.squad_chat = [{"agent": "System", "msg": "Session reset.", "time": datetime.datetime.now().strftime("%H:%M")}]; st.rerun()
         with col_c2:
-            if st.button("🛑 Stop Process", use_container_width=True):
+            if st.button("🛑 Process Bandh Karo", use_container_width=True):
                 st.session_state.active_tasks = []; st.session_state.messages.append({"role": "assistant", "content": "🛑 **Process Terminated.**"})
                 st.rerun()
                 
@@ -534,19 +517,19 @@ elif st.session_state.current_page == "dashboard":
         except: pass
     else: st.warning("⚠️ Cloud Brain Offline! Add Groq API Key.")
 
-    tab1, tab2, tab3 = st.tabs(["⚡ Live Workspace", "🏢 Agency Map", "🌙 Auto-Logs"])
+    tab1, tab2, tab3 = st.tabs(["⚡ Live Kaam", "🏢 Agency Map", "🌙 Auto-Logs"])
     
     with tab1:
         col_kanban, col_feed = st.columns([2.5, 1.2])
         with col_kanban:
             k1, k2, k3, k4 = st.columns(4)
-            with k1: st.markdown(f"<div class='kanban-header k-assigned'>Assigned ({len(st.session_state.assigned_tasks)})</div>", unsafe_allow_html=True)
+            with k1: st.markdown(f"<div class='kanban-header k-assigned'>Sopelu ({len(st.session_state.assigned_tasks)})</div>", unsafe_allow_html=True)
             with k2:
-                st.markdown(f"<div class='kanban-header k-progress'>In Progress ({len(st.session_state.active_tasks)})</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='kanban-header k-progress'>Chalu Chhe ({len(st.session_state.active_tasks)})</div>", unsafe_allow_html=True)
                 for task in st.session_state.active_tasks: st.markdown(f"<div class='k-card' style='border-left: 4px solid #3b82f6;'><div class='k-title'>{task}</div><div class='k-agent'>🧪 Lab AgentX routing...</div></div>", unsafe_allow_html=True)
             with k3: st.markdown(f"<div class='kanban-header k-review'>Review ({len(st.session_state.review_tasks)})</div>", unsafe_allow_html=True)
             with k4:
-                st.markdown(f"<div class='kanban-header k-done'>Done ({len(done_tasks_list)})</div>", unsafe_allow_html=True)
+                st.markdown(f"<div class='kanban-header k-done'>Puru Thayu ({len(done_tasks_list)})</div>", unsafe_allow_html=True)
                 if done_tasks_list:
                     with st.container(height=400, border=False):
                         for task in done_tasks_list:
@@ -590,14 +573,13 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    # 🔥 THE MAGIC "INSIDE THE BOX" UPLOADER HACK (NO CRASHES, 100% RELIABLE) 🔥
-    with st.popover("attach_btn"):
-        st.caption("Upload documents for AI memory:")
-        uploaded_file2 = st.file_uploader("Drop context files here", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed")
-        if uploaded_file2: st.success(f"✅ {uploaded_file2.name} attached.")
+    # 🔥 SAFE, CRASH-FREE UPLOADER (No fixed positioning, safely resides above the chat) 🔥
+    with st.popover("📎 File Jodo (Upload)"):
+        st.caption("AI ni memory mate documents upload karo:")
+        uploaded_file2 = st.file_uploader("Files ahiya muko", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed")
+        if uploaded_file2: st.success(f"✅ {uploaded_file2.name} attach thai gayu.")
     
-    # The normal, simple text input that will NEVER crash
-    user_input = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...")
+    user_input = st.chat_input("Agency ne command aapo (dakhla tarike, 'Sai, cyberpunk city draw kar...')...")
 
     if user_input:
         st.session_state.messages.append({"role": "user", "content": user_input})
@@ -676,21 +658,21 @@ elif st.session_state.current_page == "dashboard":
                     if "AUTONOMOUS MODE ACTIVATED" in full_response:
                         status_ui = st.empty()
                         with status_ui.container():
-                            st.info("🧠 **L Lawliet** is scanning market trends and audience data...")
+                            st.info("🧠 **L Lawliet** market trends analyze kari rahyo chhe...")
                             time.sleep(2)
-                            st.warning("✨ **Tengen** is writing the hook and viral script...")
+                            st.warning("✨ **Tengen** hook ane script lakhi rahyo chhe...")
                             time.sleep(2)
-                            st.success("🦊 **Naruto** is queueing social media distribution...")
+                            st.success("🦊 **Naruto** social media distribution plan kari rahyo chhe...")
                             time.sleep(1)
                         
                         st.balloons()
-                        st.toast("✅ Autonomous Workflow Complete!", icon="🎉")
+                        st.toast("✅ Autonomous Workflow Puru Thayu!", icon="🎉")
                         st.session_state.messages.append({"role": "assistant", "content": "✅ **Autonomous Workflow Complete:** Strategy, Scripts, and Distribution plans have been successfully generated and chained. (Demo Mode)"})
                         
                     elif "Task Assigned" in full_response and "PART 2" in full_response:
                         st.toast("⚡ Groq LPU Engaged! Analyzing logic...", icon="🚀")
                         
-                        with st.spinner(f"🔥 Anime Agents executing at 850 T/s... Please wait."):
+                        with st.spinner(f"🔥 Anime Agents 850 T/s ni jhadap thi kaam kari rahya chhe..."):
                             agent_result = "⚠️ Module integrated but running in safe mode."
                             if "**Gojo**" in full_response: from marketing import run_marketing_crew; agent_result = run_marketing_crew(msg_content)
                             elif "**Sai**" in full_response: from sai_illustrator import run_image_generation; agent_result = run_image_generation(msg_content)
