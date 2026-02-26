@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 current_dir = os.path.dirname(os.path.abspath(__file__))
 agents_dir = os.path.join(current_dir, 'Agents')
 sys.path.append(agents_dir)
-for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 'OmniReader', 'Multiplier', 'sales', 'ImageGen', 'DeepResearch']:
+for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 'OmniReader', 'Multiplier', 'Sales', 'ImageGen', 'DeepResearch']:
     sys.path.append(os.path.join(agents_dir, dept))
 
 # API Keys load karna
@@ -26,7 +26,7 @@ except ImportError:
     HAS_FPDF = False
 
 # Global Config
-st.set_page_config(page_title="Lab AgentX | AI Agency", page_icon="🧪", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(page_title="Lab AgentX | AI Workforce", page_icon="⚡", layout="wide", initial_sidebar_state="expanded")
 
 # 🔥 FOLDER DEFINITIONS
 MEMORY_FOLDER = "memory_logs"
@@ -38,16 +38,13 @@ for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER, SAVED_FILES_FO
     if not os.path.exists(folder): os.makedirs(folder)
 
 # 🧠 PAGE ROUTING & MEMORY SYSTEM
-if "current_page" not in st.session_state:
-    st.session_state.current_page = "landing"
-if "selected_plan" not in st.session_state:
-    st.session_state.selected_plan = None
-if "plan_price" not in st.session_state:
-    st.session_state.plan_price = 0.0
+if "current_page" not in st.session_state: st.session_state.current_page = "landing"
+if "selected_plan" not in st.session_state: st.session_state.selected_plan = None
+if "plan_price" not in st.session_state: st.session_state.plan_price = 0.0
 
 if "squad_chat" not in st.session_state:
     st.session_state.squad_chat = [
-        {"agent": "Lab AgentX", "msg": "System initialized. All 16 agents are online and synced. Standing by for Commander's orders.", "time": datetime.datetime.now().strftime("%H:%M")}
+        {"agent": "Lab AgentX", "msg": "Autonomous infrastructure online. Groq LPUs synced at max speed. Awaiting Commander's intent.", "time": datetime.datetime.now().strftime("%H:%M")}
     ]
 
 def go_to_checkout(plan_name, price):
@@ -60,20 +57,10 @@ def go_to_dashboard():
     st.session_state.current_page = "dashboard"
 
 # 💬 THE VIP SQUAD CHAT MODAL
-@st.dialog("💬 Daily Standup & Squad Chat")
+@st.dialog("💬 Agent Comm-Link (Live)")
 def show_squad_chat():
-    st.markdown("<p style='color:#94a3b8; font-size:14px; margin-bottom:15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px;'>Secure channel. Monitoring live agent collaboration and task handoffs.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#94a3b8; font-size:14px; margin-bottom:15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px;'>Intercepting live autonomous workflow communications.</p>", unsafe_allow_html=True)
     
-    st.markdown("""
-        <div style='background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; display: flex; align-items: center; justify-content: space-between;'>
-            <div>
-                <div style='color: #f8fafc; font-weight: 700; font-size: 14px;'>🎙️ Latest Standup Audio</div>
-                <div style='color: #94a3b8; font-size: 12px;'>Synthesized AI Voices (Gojo, Franky, Nanami)</div>
-            </div>
-            <button style='background: #38bdf8; color: #0f172a; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 800; cursor: pointer;'>▶ Play Audio</button>
-        </div>
-    """, unsafe_allow_html=True)
-
     chat_html = "<div style='max-height: 350px; overflow-y: auto; padding-right: 10px;'>"
     for chat in st.session_state.squad_chat:
         agent_color = "#38bdf8" if chat['agent'] == "Lab AgentX" else "#10b981" if chat['agent'] == "System" else "#f59e0b"
@@ -90,7 +77,7 @@ def show_squad_chat():
     st.markdown(chat_html, unsafe_allow_html=True)
 
 # ==========================================
-# 🌟 VIP SAAS LANDING PAGE
+# 🌟 VIP SAAS LANDING PAGE (POSITIONING & MONETIZATION FIXED)
 # ==========================================
 if st.session_state.current_page == "landing":
     st.markdown("""
@@ -103,73 +90,69 @@ if st.session_state.current_page == "landing":
         .stApp { background-color: #020617; font-family: 'Plus Jakarta Sans', sans-serif; color: white; background-image: radial-gradient(circle at 50% -20%, #1e293b 0%, #020617 60%); }
         .custom-navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 0px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .nav-brand { font-size: 24px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 10px; }
+        .nav-brand span { color: #38bdf8; }
         .nav-links { font-size: 14px; font-weight: 600; color: #94a3b8; cursor: pointer; transition: 0.3s; }
         .nav-links:hover { color: #38bdf8; }
         .hero-section { text-align: center; padding: 5rem 1rem 3rem 1rem; }
         .badge { background: rgba(56, 189, 248, 0.1); color: #38bdf8; padding: 6px 16px; border-radius: 30px; font-size: 13px; font-weight: 700; letter-spacing: 1.5px; display: inline-block; margin-bottom: 25px; border: 1px solid rgba(56, 189, 248, 0.2); }
-        .hero-title { font-size: 4rem; font-weight: 800; color: #f8fafc; margin-bottom: 1.5rem; line-height: 1.15; letter-spacing: -1.5px; }
+        .hero-title { font-size: 4.5rem; font-weight: 800; color: #f8fafc; margin-bottom: 1.5rem; line-height: 1.1; letter-spacing: -1.5px; }
         .hero-title span { background: linear-gradient(135deg, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .hero-subtitle { font-size: 1.2rem; color: #94a3b8; max-width: 650px; margin: 0 auto 3rem auto; line-height: 1.7; }
+        .hero-subtitle { font-size: 1.25rem; color: #94a3b8; max-width: 700px; margin: 0 auto 3rem auto; line-height: 1.7; font-weight: 500;}
         .section-title { font-size: 2.2rem; font-weight: 800; text-align: center; margin: 5rem 0 2.5rem 0; color: #f8fafc; }
         .section-title span { color: #38bdf8; }
-        [data-testid="stVerticalBlockBorderWrapper"] { background: rgba(15, 23, 42, 0.6) !important; border-radius: 16px !important; border: 1px solid rgba(255,255,255,0.05) !important; padding: 1.5rem !important; transition: all 0.3s ease !important; backdrop-filter: blur(10px); height: 100%; }
+        [data-testid="stVerticalBlockBorderWrapper"] { background: rgba(15, 23, 42, 0.6) !important; border-radius: 16px !important; border: 1px solid rgba(255,255,255,0.05) !important; padding: 2rem !important; transition: all 0.3s ease !important; backdrop-filter: blur(10px); height: 100%; }
         [data-testid="stVerticalBlockBorderWrapper"]:hover { transform: translateY(-5px); border-color: rgba(56, 189, 248, 0.4) !important; box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4) !important; background: rgba(30, 41, 59, 0.8) !important; }
         div[data-testid="stButton"] > button { border-radius: 10px !important; padding: 0.6rem 0 !important; font-weight: 700 !important; background: linear-gradient(135deg, #38bdf8 0%, #2563eb 100%) !important; color: #ffffff !important; border: none !important; transition: all 0.3s ease !important; font-size: 15px !important; margin-top: 10px !important; box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2) !important; }
         div[data-testid="stButton"] > button:hover { transform: translateY(-2px) !important; box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4) !important; }
         .footer { text-align: center; padding: 3rem 0 2rem 0; border-top: 1px solid rgba(255,255,255,0.05); margin-top: 4rem; color: #64748b; font-size: 14px;}
-        @media (max-width: 768px) { .hero-title { font-size: 2.5rem; } .hero-section { padding-top: 3rem; } }
+        @media (max-width: 768px) { .hero-title { font-size: 2.8rem; } .hero-section { padding-top: 3rem; } }
     </style>
     
-    <div class="custom-navbar"><div class="nav-brand">🧪 Lab AgentX</div><div class="nav-links">Sign In →</div></div>
+    <div class="custom-navbar"><div class="nav-brand">Lab<span>AgentX</span></div><div class="nav-links">1-Click Demo ⚡</div></div>
     <div class="hero-section">
-        <div class="badge">🚀 VERSION 2.0 LIVE</div>
-        <div class="hero-title">Hire The Ultimate AI Squad.<br><span>Automate Everything.</span></div>
-        <div class="hero-subtitle">Stop relying on boring tools. Lab AgentX replaces your entire team. Access 16 super-intelligent anime agents for Marketing, Sales, Tech, and Research working 24/7.</div>
+        <div class="badge">⚡ POWERED BY GROQ LPU (850 T/s)</div>
+        <div class="hero-title">The Real-Time AI Workforce <br><span>For Creators & Agencies.</span></div>
+        <div class="hero-subtitle">Stop managing 10 different tools. Enter one intent ("Grow my YouTube"), and watch our autonomous agents research, script, and scale your audience in real-time.</div>
     </div>
     """, unsafe_allow_html=True)
 
     c1, c2, c3, c4 = st.columns(4)
-    with c1: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>16+</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Elite AI Agents</p>", unsafe_allow_html=True)
-    with c2: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>24/7</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Cron Jobs & Execution</p>", unsafe_allow_html=True)
-    with c3: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>10x</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Faster Delivery</p>", unsafe_allow_html=True)
-    with c4: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>0%</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Human Error</p>", unsafe_allow_html=True)
+    with c1: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>Autonomous</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Intent-Based Workflows</p>", unsafe_allow_html=True)
+    with c2: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>16</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Specialized Agents</p>", unsafe_allow_html=True)
+    with c3: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>850 T/s</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Groq Speed Delivery</p>", unsafe_allow_html=True)
+    with c4: st.markdown("<h2 style='text-align:center; color:#38bdf8; margin:0;'>0</h2><p style='text-align:center; color:#94a3b8; font-size: 14px;'>Human Intervention</p>", unsafe_allow_html=True)
 
-    st.markdown("<div class='section-title'>⚙️ How It <span>Works</span></div>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title'>🧠 How <span>Autonomous Mode</span> Works</div>", unsafe_allow_html=True)
     f1, f2, f3 = st.columns(3)
     with f1:
-        with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>01</h1><h3 style='margin-bottom:10px;'>Give Commands</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Just write your task. Lab AgentX automatically routes it to the correct department.</p>", unsafe_allow_html=True)
+        with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>01</h1><h3 style='margin-bottom:10px;'>Declare Intent</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Just say 'Get me leads' or 'Grow my channel'. No complex prompts needed.</p>", unsafe_allow_html=True)
     with f2:
-        with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>02</h1><h3 style='margin-bottom:10px;'>Squad Standups</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Agents hold internal audio standups to collaborate and execute flawlessly.</p>", unsafe_allow_html=True)
+        with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>02</h1><h3 style='margin-bottom:10px;'>Smart Chaining</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>System automatically clusters Research, Copywriting, and Outreach agents.</p>", unsafe_allow_html=True)
     with f3:
-        with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>03</h1><h3 style='margin-bottom:10px;'>Overnight Logs</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Wake up to finished work. Review automated tasks done while you slept.</p>", unsafe_allow_html=True)
+        with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>03</h1><h3 style='margin-bottom:10px;'>Instant Output</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Watch their live thinking stream and download the final campaign instantly.</p>", unsafe_allow_html=True)
 
-    st.markdown("<div class='section-title'>💎 Choose Your <span>Plan</span></div>", unsafe_allow_html=True)
-    p1, p2, p3, p4 = st.columns(4)
+    # 🔥 STEP 5: PRICING FIX (CREDIT BASED)
+    st.markdown("<div class='section-title'>💰 Simple, Scalable <span>Pricing</span></div>", unsafe_allow_html=True)
+    p1, p2, p3 = st.columns(3)
     with p1:
         with st.container(border=True):
             st.markdown("### Starter")
             st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$19<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
-            st.markdown("<div style='color:#cbd5e1; font-size:13px; line-height:2.2; min-height: 140px;'><span style='color:#38bdf8; font-weight:bold;'>✓</span> 5 AI Agents<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Content Multiplier<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Standard Dashboard</div>", unsafe_allow_html=True)
+            st.markdown("<div style='color:#cbd5e1; font-size:14px; line-height:2.2; min-height: 140px;'><span style='color:#38bdf8; font-weight:bold;'>✓</span> <b>50</b> AI Workflows / mo<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> 5 Core Front-line Agents<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Standard Speed</div>", unsafe_allow_html=True)
             if st.button("Start Free Trial", key="btn1", use_container_width=True): go_to_checkout("Starter", 19.99); st.rerun()
     with p2:
         with st.container(border=True):
-            st.markdown("### Growth")
-            st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$39<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
-            st.markdown("<div style='color:#cbd5e1; font-size:13px; line-height:2.2; min-height: 140px;'><span style='color:#38bdf8; font-weight:bold;'>✓</span> 10 AI Agents<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Sales Outreach<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> SEO Empire</div>", unsafe_allow_html=True)
-            if st.button("Get Growth", key="btn2", use_container_width=True): go_to_checkout("Growth", 39.99); st.rerun()
+            st.markdown("<div style='background:linear-gradient(135deg, #38bdf8, #818cf8); color:white; padding:4px 12px; border-radius:20px; font-size:11px; display:inline-block; font-weight:bold; margin-bottom:5px; letter-spacing:1px;'>MOST POPULAR</div>", unsafe_allow_html=True)
+            st.markdown("<h3 style='margin-bottom:0; color:#38bdf8;'>Pro Creator</h3>", unsafe_allow_html=True)
+            st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$49<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
+            st.markdown("<div style='color:#cbd5e1; font-size:14px; line-height:2.2; min-height: 140px;'><span style='color:#38bdf8; font-weight:bold;'>✓</span> <b>500</b> AI Workflows / mo<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> <b>Autonomous Mode Included</b><br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Full 16 Agent Roster</div>", unsafe_allow_html=True)
+            if st.button("Upgrade to Pro", key="btn3", use_container_width=True): go_to_checkout("Pro Creator", 49.99); st.rerun()
     with p3:
         with st.container(border=True):
-            st.markdown("<div style='background:linear-gradient(135deg, #38bdf8, #818cf8); color:white; padding:3px 10px; border-radius:20px; font-size:10px; display:inline-block; font-weight:bold; margin-bottom:5px;'>MOST POPULAR</div>", unsafe_allow_html=True)
-            st.markdown("<h3 style='margin-bottom:0; color:#38bdf8;'>Elite Agency</h3>")
-            st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$54<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
-            st.markdown("<div style='color:#cbd5e1; font-size:13px; line-height:2.2; min-height: 140px;'><span style='color:#38bdf8; font-weight:bold;'>✓</span> 16 Premium AI Agents<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Audio Standups<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Overnight Cron Jobs</div>", unsafe_allow_html=True)
-            if st.button("Get Elite Access", key="btn3", use_container_width=True): go_to_checkout("Elite Agency", 54.99); st.rerun()
-    with p4:
-        with st.container(border=True):
-            st.markdown("### Enterprise")
-            st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$89<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
-            st.markdown("<div style='color:#cbd5e1; font-size:13px; line-height:2.2; min-height: 140px;'><span style='color:#38bdf8; font-weight:bold;'>✓</span> 25+ Custom Bots<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Dedicated API Keys<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> White-label OS</div>", unsafe_allow_html=True)
-            if st.button("Contact Sales", key="btn4", use_container_width=True): go_to_checkout("Enterprise", 89.99); st.rerun()
+            st.markdown("### Agency")
+            st.markdown("<h1 style='font-size:2.8rem; margin:10px 0;'>$99<span style='font-size:1rem; color:#94a3b8;'>.99/mo</span></h1>", unsafe_allow_html=True)
+            st.markdown("<div style='color:#cbd5e1; font-size:14px; line-height:2.2; min-height: 140px;'><span style='color:#38bdf8; font-weight:bold;'>✓</span> <b>Custom</b> Volume Limits<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Dedicated API Keys<br><span style='color:#38bdf8; font-weight:bold;'>✓</span> Team Collaboration</div>", unsafe_allow_html=True)
+            if st.button("Contact Sales", key="btn4", use_container_width=True): go_to_checkout("Agency", 99.99); st.rerun()
 
     st.markdown("<div class='footer'>Backed by Groq Technology ⚡ • © 2026 Lab AgentX | Built for Scale</div>", unsafe_allow_html=True)
 
@@ -247,33 +230,27 @@ elif st.session_state.current_page == "checkout":
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
-    # 🔥 THE ULTIMATE SAFE CSS FIX 🔥
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        /* 1. FORCE THE ENTIRE PAGE BLACK */
         .stApp, .stAppViewContainer, .stAppScrollToBottomContainer, [data-testid="stBottom"], [data-testid="stBottom"] > div { 
-            background-color: #020617 !important; 
-            background-image: none !important;
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            color: #f8fafc;
+            background-color: #020617 !important; background-image: none !important; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc;
         }
 
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
         .block-container { padding-top: 3rem !important; max-width: 1400px !important; }
         .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #f8fafc !important; }
         
-        /* Sidebar Buttons - Guaranteed White Text */
         [data-testid="stSidebar"] button { background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 8px !important; }
         [data-testid="stSidebar"] button * { color: #ffffff !important; font-weight: 700 !important; }
         [data-testid="stSidebar"] button:hover { border-color: #38bdf8 !important; background-color: #0f172a !important; }
         [data-testid="stSidebar"] button:hover * { color: #38bdf8 !important; }
+        
         .squad-btn button { background-color: #38bdf8 !important; border: none !important; }
         .squad-btn button * { color: #020617 !important; font-weight: 800 !important; }
         .squad-btn button:hover { background-color: #0ea5e9 !important; }
         
-        /* Stats & Cards */
         .top-stats { display: flex; justify-content: space-around; background: #0f172a; padding: 20px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); margin-bottom: 15px; border: 1px solid #1e293b; flex-wrap: wrap; gap: 15px; }
         .stat-box { text-align: center; flex: 1; min-width: 120px;} 
         .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: #f8fafc !important; } 
@@ -284,9 +261,9 @@ elif st.session_state.current_page == "dashboard":
         .k-card:hover { border-color: #38bdf8; transform: translateY(-2px); }
         .k-title { font-size: 14px; font-weight: 700; margin-bottom: 8px; color: #f8fafc !important;} 
         .k-agent { font-size: 12px; color: #94a3b8 !important; display: flex; align-items: center; gap: 6px; font-weight: 600;} 
-        .agent-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 12px; margin-bottom: 10px; border-radius: 12px; background: #1e293b !important; border: 1px solid #334155; cursor: pointer;}
+        .agent-row { display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; border-radius: 10px; background: #1e293b !important; border: 1px solid #334155; cursor: pointer;}
         .agent-row:hover { border-color: #38bdf8; }
-        .agent-name-container { display: flex; flex-direction: column; gap: 4px; }
+        .agent-name-container { display: flex; flex-direction: column; gap: 2px; }
         .agent-name { font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 8px; color: #f8fafc !important; } 
         .agent-role { font-size: 10px; color: #94a3b8 !important; font-weight: 700; margin-left: 28px; text-transform: uppercase; letter-spacing: 0.5px;}
         .status-badge { font-size: 10px; padding: 4px 10px; border-radius: 20px; font-weight: 800; letter-spacing: 0.5px;}
@@ -294,96 +271,57 @@ elif st.session_state.current_page == "dashboard":
         .st-standby { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        /* 🔥 2. SAFE CHAT INPUT BOX DESIGN (WHITE BOX, BLACK TEXT) 🔥 */
-        div[data-baseweb="chat-input"] { 
-            background-color: #ffffff !important; /* Proper White Box */
-            border: 1px solid #d1d5db !important; 
-            border-radius: 12px !important; 
-            padding: 5px !important;
-        }
-        div[data-baseweb="chat-input"] textarea { 
-            color: #000000 !important; /* Proper Black Text */
-            -webkit-text-fill-color: #000000 !important; 
-            caret-color: #000000 !important; 
-            font-size: 15px !important; 
-            background-color: transparent !important; 
-        }
-        div[data-baseweb="chat-input"] textarea::placeholder { 
-            color: #6b7280 !important; 
-            -webkit-text-fill-color: #6b7280 !important; 
-        }
-        /* Make Icons Dark so they show up on white */
-        div[data-baseweb="chat-input"] svg { 
-            fill: #111827 !important; 
-            color: #111827 !important;
-        }
+        div[data-baseweb="chat-input"] { background-color: #ffffff !important; border: 1px solid #d1d5db !important; border-radius: 12px !important; padding: 5px !important; }
+        div[data-baseweb="chat-input"] textarea { color: #000000 !important; -webkit-text-fill-color: #000000 !important; caret-color: #000000 !important; font-size: 15px !important; background-color: transparent !important; }
+        div[data-baseweb="chat-input"] textarea::placeholder { color: #6b7280 !important; -webkit-text-fill-color: #6b7280 !important; }
+        div[data-baseweb="chat-input"] svg { fill: #111827 !important; color: #111827 !important; }
 
-        /* Tabs */
         div[data-testid="stTabs"] button { color: #94a3b8 !important; font-weight: 700 !important; font-size: 15px !important; padding-bottom: 10px !important;}
         div[data-testid="stTabs"] button[aria-selected="true"] { color: #38bdf8 !important; border-bottom-color: #38bdf8 !important; }
         
-        /* ORG CHART SPECIFIC CSS (MUDDY OS CLONE) */
-        .org-tree-wrapper { padding: 40px 0; display: flex; flex-direction: column; align-items: center; }
-        .org-node { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 15px 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); min-width: 280px; z-index: 2; position: relative;}
-        .org-node.ceo { border-top: 4px solid #f59e0b; }
-        .org-node.coo { border-top: 4px solid #10b981; margin-top: 30px; }
-        .org-node h3 { font-size: 16px; margin: 0 0 5px 0; color: #f8fafc; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .org-node p { font-size: 12px; color: #94a3b8; margin: 0; }
-        .line-vertical { width: 2px; height: 30px; background: #334155; }
-        .line-horizontal { width: 80%; height: 2px; background: #334155; margin-top: 30px; position: relative; display: flex; justify-content: space-between;}
-        .line-horizontal::before { content: ''; position: absolute; left: 0; top: 0; width: 2px; height: 30px; background: #334155; }
-        .line-horizontal::after { content: ''; position: absolute; right: 0; top: 0; width: 2px; height: 30px; background: #334155; }
-        .line-horizontal .mid-drop { position: absolute; left: 50%; top: 0; width: 2px; height: 30px; background: #334155; transform: translateX(-50%); }
-        .dept-container { display: flex; justify-content: space-between; width: 100%; gap: 20px; margin-top: 30px;}
-        .dept-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
-        .dept-head { background: #0f172a; border-radius: 12px; padding: 20px; border: 1px solid #334155; text-align: left;}
-        .dept-head.tech { border-left: 4px solid #3b82f6; }
-        .dept-head.mkt { border-left: 4px solid #f59e0b; }
-        .dept-head.rev { border-left: 4px solid #10b981; }
-        .dept-head h3 { font-size: 15px; margin: 0 0 5px 0; display: flex; justify-content: space-between; align-items: center;}
-        .dept-head p { font-size: 11px; color: #94a3b8; margin: 0; line-height: 1.4;}
-        .agent-box { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 15px; display: flex; flex-direction: column; gap: 10px;}
-        .agent-box-top { display: flex; justify-content: space-between; align-items: center;}
-        .agent-box-title { font-size: 14px; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 6px;}
-        .agent-box-role { font-size: 11px; color: #94a3b8; margin-bottom: 5px;}
-        .agent-tags { display: flex; gap: 8px; flex-wrap: wrap;}
-        .tag-active { background: rgba(34, 197, 94, 0.15); color: #4ade80; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; border: 1px solid #22c55e; }
-        .tag-model { background: #334155; color: #cbd5e1; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
-        .tag-special { background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; border: 1px solid #0ea5e9;}
+        .upload-wrapper { margin-bottom: -15px; z-index: 999; position: relative; }
+        [data-testid="stPopover"] button { background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 20px !important; padding: 5px 15px !important; min-height: 0px !important; transition: all 0.2s ease; }
+        [data-testid="stPopover"] button * { color: #f8fafc !important; font-size: 13px !important; font-weight: 600 !important; }
+        [data-testid="stPopover"] button:hover { border-color: #38bdf8 !important; background-color: #0f172a !important; }
+        
         #MainMenu {visibility: hidden;} footer {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
 
     AGENTS_INFO = {
         "Lab AgentX": {"name": "Lab AgentX", "role": "Squad Lead", "icon": "🧪", "desc": "The mastermind CEO.", "stat": "System Commander"},
+        "L": {"name": "L Lawliet", "role": "Customer Research", "icon": "🍰", "desc": "Deep web research.", "stat": "Intel"},
+        "Tengen": {"name": "Tengen Uzui", "role": "Video Producer", "icon": "✨", "desc": "Viral video scripts.", "stat": "Media"},
+        "Naruto": {"name": "Naruto Uzumaki", "role": "Content Writer", "icon": "🦊", "desc": "Generates content.", "stat": "Content"},
+        "Light": {"name": "Light Yagami", "role": "Outbound Scout", "icon": "📓", "desc": "Hunts leads and outreach.", "stat": "Sales"},
+        
         "Orihime": {"name": "Orihime Inoue", "role": "Retention Specialist", "icon": "🛡️", "desc": "Monitors churn.", "stat": "Support"},
         "Franky": {"name": "Franky", "role": "Developer Agent", "icon": "🦾", "desc": "Writes PRs and bug fixes.", "stat": "Tech"},
-        "L": {"name": "L Lawliet", "role": "Customer Research", "icon": "🍰", "desc": "Deep web research.", "stat": "Intel"},
-        "Light": {"name": "Light Yagami", "role": "Outbound Scout", "icon": "📓", "desc": "Hunts leads and outreach.", "stat": "Sales"},
-        "Naruto": {"name": "Naruto Uzumaki", "role": "Content Writer", "icon": "🦊", "desc": "Generates content.", "stat": "Content"},
         "Sebastian": {"name": "Sebastian", "role": "Email Marketing", "icon": "🎩", "desc": "Drafts cold email sequences.", "stat": "Communications"},
         "Senku": {"name": "Senku Ishigami", "role": "Data Agent", "icon": "🧫", "desc": "Analyzes big data.", "stat": "Knowledge"},
         "Bulma": {"name": "Bulma", "role": "Conversion Optimizer", "icon": "💡", "desc": "Tests website flows.", "stat": "UX/UI"},
         "Gojo": {"name": "Satoru Gojo", "role": "Marketing Head", "icon": "♾️", "desc": "Ad strategies.", "stat": "Ads"},
         "Itachi": {"name": "Itachi Uchiha", "role": "Web Scraper", "icon": "👁️", "desc": "Spies on competitors.", "stat": "Scraping"},
         "Akatsuki": {"name": "The Akatsuki", "role": "SEO Empire", "icon": "☁️", "desc": "Mass blogs generator.", "stat": "Blogger"},
-        "Tengen": {"name": "Tengen Uzui", "role": "Video Producer", "icon": "✨", "desc": "Viral video scripts.", "stat": "Media"},
         "Sai": {"name": "Sai", "role": "Chief Illustrator", "icon": "🖌️", "desc": "Draws images.", "stat": "Visuals"},
         "Nami": {"name": "Nami", "role": "Finance Analyst", "icon": "🍊", "desc": "Crunches VC data.", "stat": "Wall St"},
         "Nanami": {"name": "Kento Nanami", "role": "Legal Expert", "icon": "👔", "desc": "Reviews contracts.", "stat": "Lawyer"}
     }
 
+    # 🔥 STEP 2: REDUCED AGENT NOISE ON FRONTEND
+    FRONT_LINE_AGENTS = ["Lab AgentX", "L", "Tengen", "Naruto", "Light"]
+    BACKEND_AGENTS = [key for key in AGENTS_INFO.keys() if key not in FRONT_LINE_AGENTS]
+
     def get_all_deliverables():
         files = []
         for root, _, filenames in os.walk(DELIVERABLES_FOLDER):
-            for fname in filenames:
-                files.append(os.path.normpath(os.path.join(root, fname)))
+            for fname in filenames: files.append(os.path.normpath(os.path.join(root, fname)))
         return set(files)
 
     if "hidden_files" not in st.session_state: st.session_state.hidden_files = get_all_deliverables()
     if "session_start_time" not in st.session_state: st.session_state.session_start_time = time.time() - 5
     if "full_memory" not in st.session_state: st.session_state.full_memory = []
-    if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": f"Lab AgentX Online. Welcome to the **{st.session_state.selected_plan} Workspace**. Your elite squad is ready."}]
+    if "messages" not in st.session_state: st.session_state.messages = [{"role": "assistant", "content": f"Lab AgentX Online. Core team standing by."}]
     if "active_tasks" not in st.session_state: st.session_state.active_tasks = []
     if "assigned_tasks" not in st.session_state: st.session_state.assigned_tasks = []
     if "review_tasks" not in st.session_state: st.session_state.review_tasks = []
@@ -403,21 +341,26 @@ elif st.session_state.current_page == "dashboard":
 
     done_tasks_list = get_done_tasks()
     current_active_agent = "Lab AgentX"
-    agent_keywords_map = { "Sai": ["sai", "draw", "image"], "Naruto": ["naruto", "multiplier"], "Light": ["light", "leadbooker", "booking", "sales"], "Orihime": ["orihime", "retentionbot", "churn"], "Gojo": ["gojo", "marketing", "superman"], "Franky": ["franky", "coding", "html"], "Tengen": ["tengen", "video"], "L": ["l lawliet", "research", "manhunter"], "Itachi": ["itachi", "intelligence", "competitor", "oracle"], "Nami": ["nami", "finance", "financial", "lucius"], "Nanami": ["nanami", "legal", "daredevil"], "Senku": ["senku", "youtube", "brainiac"], "Akatsuki": ["akatsuki", "seo team", "blogs"], "Sebastian": ["sebastian", "email", "pr"], "Bulma": ["bulma", "website tester", "conversion"] }
-
+    
     for msg in reversed(st.session_state.messages):
         if msg["role"] == "assistant" and ("Task Assigned" in msg["content"] or "Deploying" in msg["content"]):
             msg_lower = msg["content"].lower()
-            for agent_name, keywords in agent_keywords_map.items():
-                if any(kw in msg_lower for kw in keywords): current_active_agent = agent_name; break
+            if "sai" in msg_lower: current_active_agent = "Sai"
+            elif "naruto" in msg_lower: current_active_agent = "Naruto"
+            elif "light" in msg_lower: current_active_agent = "Light"
+            elif "l lawliet" in msg_lower or "**l**" in msg_lower: current_active_agent = "L"
+            elif "franky" in msg_lower: current_active_agent = "Franky"
+            elif "tengen" in msg_lower: current_active_agent = "Tengen"
+            elif "autonomous" in msg_lower: current_active_agent = "System"
             if current_active_agent != "Lab AgentX": break
 
+    # 🔥 STEP 4: SPEED BRANDING IN TOP STATS
     st.markdown(f"""
     <div class="top-stats">
-        <div class="stat-box"><div class="stat-value">{len(AGENTS_INFO)}</div><div class="stat-label">Total Agents</div></div>
-        <div class="stat-box"><div class="stat-value">{len(st.session_state.assigned_tasks) + len(st.session_state.active_tasks)}</div><div class="stat-label">Active Processes</div></div>
-        <div class="stat-box"><div class="stat-value" style="color:#f59e0b !important;">{format(st.session_state.tokens_used, ',')}</div><div class="stat-label">Tokens Processed</div></div>
-        <div class="stat-box"><div class="stat-value" style="color:#4ade80 !important;">● SYNCED</div><div class="stat-label">Fleet Status</div></div>
+        <div class="stat-box"><div class="stat-value">{len(st.session_state.assigned_tasks) + len(st.session_state.active_tasks)}</div><div class="stat-label">Active Workflows</div></div>
+        <div class="stat-box"><div class="stat-value" style="color:#f59e0b !important;">⚡ 850 T/s</div><div class="stat-label">Groq LPU Speed</div></div>
+        <div class="stat-box"><div class="stat-value">{format(st.session_state.tokens_used, ',')}</div><div class="stat-label">Tokens Processed</div></div>
+        <div class="stat-box"><div class="stat-value" style="color:#4ade80 !important;">● ONLINE</div><div class="stat-label">Fleet Status</div></div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -426,37 +369,41 @@ elif st.session_state.current_page == "dashboard":
             
         st.markdown("### 🎛️ COMMAND CONTROLS")
         st.markdown("<div class='squad-btn'>", unsafe_allow_html=True)
-        if st.button("👁️ Daily Standup & Chat", use_container_width=True): show_squad_chat()
+        if st.button("👁️ Autonomous Comm-Link", use_container_width=True): show_squad_chat()
         st.markdown("</div>", unsafe_allow_html=True)
         
         col_c1, col_c2 = st.columns(2)
         with col_c1:
             if st.button("💬 New Chat", use_container_width=True):
                 st.session_state.full_memory.extend(st.session_state.messages)
-                st.session_state.messages = [{"role": "assistant", "content": f"Lab AgentX Online. Welcome to the **{st.session_state.selected_plan} Workspace**."}]
+                st.session_state.messages = [{"role": "assistant", "content": f"Lab AgentX Online. Workspace reset."}]
                 st.session_state.session_start_time = time.time()
-                for root, _, files in os.walk(DELIVERABLES_FOLDER):
-                    for file in files:
-                        src_path = os.path.join(root, file)
-                        dst_path = os.path.join(SAVED_FILES_FOLDER, f"{os.path.splitext(os.path.basename(src_path))[0]}_{int(time.time())}{os.path.splitext(src_path)[1]}")
-                        try: shutil.copy2(src_path, dst_path); os.remove(src_path)
-                        except: pass
-                st.session_state.active_tasks = []; st.session_state.squad_chat = [{"agent": "System", "msg": "Session reset. Memory archived.", "time": datetime.datetime.now().strftime("%H:%M")}]; st.rerun()
+                st.session_state.active_tasks = []; st.session_state.squad_chat = [{"agent": "System", "msg": "Session reset.", "time": datetime.datetime.now().strftime("%H:%M")}]; st.rerun()
         with col_c2:
-            if st.button("🛑 Cancel Task", use_container_width=True):
-                st.session_state.active_tasks = []; st.session_state.messages.append({"role": "assistant", "content": "🛑 **Task Cancelled.**"})
+            if st.button("🛑 Stop Process", use_container_width=True):
+                st.session_state.active_tasks = []; st.session_state.messages.append({"role": "assistant", "content": "🛑 **Process Terminated.**"})
                 st.rerun()
                 
+        # 🔥 STEP 2: FRONTEND SQUAD (Less noise)
         st.markdown("---")
-        st.markdown(f"### 🏢 SQUAD STATUS ({2 if current_active_agent != 'Lab AgentX' else 1} Active)")
-        agents_html = ""
-        for key, info in AGENTS_INFO.items():
-            is_working = (key == "Lab AgentX" or key == current_active_agent)
-            agents_html += f"<div class='agent-row'><div class='agent-name-container'><span class='agent-name'>{info['icon']} {key}</span><span class='agent-role'>{info['role']}</span></div><span class='status-badge {'st-working' if is_working else 'st-standby'}'>{'WORKING' if is_working else 'IDLE'}</span></div>"
-        st.markdown(agents_html, unsafe_allow_html=True)
+        st.markdown("### 🚀 FRONT-LINE SQUAD")
+        front_html = ""
+        for key in FRONT_LINE_AGENTS:
+            info = AGENTS_INFO[key]
+            is_working = (key == current_active_agent or (key == "Lab AgentX" and current_active_agent == "System"))
+            front_html += f"<div class='agent-row'><div class='agent-name-container'><span class='agent-name'>{info['icon']} {key}</span><span class='agent-role'>{info['role']}</span></div><span class='status-badge {'st-working' if is_working else 'st-standby'}'>{'WORKING' if is_working else 'IDLE'}</span></div>"
+        st.markdown(front_html, unsafe_allow_html=True)
+        
+        with st.expander("⚙️ Backend Infrastructure (11)"):
+            back_html = ""
+            for key in BACKEND_AGENTS:
+                info = AGENTS_INFO[key]
+                is_working = (key == current_active_agent)
+                back_html += f"<div class='agent-row'><div class='agent-name-container'><span class='agent-name'>{info['icon']} {key}</span><span class='agent-role'>{info['role']}</span></div><span class='status-badge {'st-working' if is_working else 'st-standby'}'>{'WORKING' if is_working else 'IDLE'}</span></div>"
+            st.markdown(back_html, unsafe_allow_html=True)
         
         st.markdown("---")
-        with st.expander("⚙️ Integrations & APIs", expanded=False):
+        with st.expander("🔑 API Integrations", expanded=False):
             live_groq_key = st.text_input("Groq API Key (Brain)", type="password", value=INITIAL_GROQ_KEY)
             tw_api = st.text_input("Twitter API Key", type="password")
 
@@ -477,7 +424,7 @@ elif st.session_state.current_page == "dashboard":
         except: pass
     else: st.warning("⚠️ Cloud Brain Offline! Add Groq API Key.")
 
-    tab1, tab2, tab3 = st.tabs(["⚡ Live Workspace", "🏢 Org Chart (Agents)", "🌙 Overnight Jobs"])
+    tab1, tab2, tab3 = st.tabs(["⚡ Live Workspace", "🏢 Agency Map", "🌙 Auto-Logs"])
     
     with tab1:
         col_kanban, col_feed = st.columns([2.5, 1.2])
@@ -495,9 +442,9 @@ elif st.session_state.current_page == "dashboard":
                         for task in done_tasks_list:
                             st.markdown(f"<div class='k-card' style='border-left: 4px solid #10b981;'><div class='k-title'>{task['name'][:25]}...</div><div class='k-agent'>✅ Completed</div></div>", unsafe_allow_html=True)
                             if task['path'].endswith('.jpg') or task['path'].endswith('.png'):
-                                with open(task['path'], "rb") as f: st.download_button(label="🖼️ Download Image", data=f, file_name=os.path.basename(task['path']), mime="image/jpeg", key=task['path']+"_img", use_container_width=True)
+                                with open(task['path'], "rb") as f: st.download_button(label="🖼️ Image", data=f, file_name=os.path.basename(task['path']), mime="image/jpeg", key=task['path']+"_img", use_container_width=True)
                             else:
-                                with open(task['path'], "r", encoding="utf-8", errors="ignore") as f: st.download_button(label="📄 Download Report", data=f.read(), file_name=task['name']+".txt", key=task['path']+"_txt", use_container_width=True)
+                                with open(task['path'], "r", encoding="utf-8", errors="ignore") as f: st.download_button(label="📄 Report", data=f.read(), file_name=task['name']+".txt", key=task['path']+"_txt", use_container_width=True)
 
         with col_feed:
             st.markdown("<div class='feed-header' style='font-size:16px; color:#f8fafc;'>🟢 LIVE FEED</div>", unsafe_allow_html=True)
@@ -511,7 +458,6 @@ elif st.session_state.current_page == "dashboard":
 
     with tab3:
         st.markdown("### 🌙 Automated Night Shift Logs")
-        st.caption("These tasks were executed autonomously by the fleet while you were away.")
         st.markdown("""
         <div style='background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1e293b;'>
             <p style='color: #4ade80; font-family: monospace;'>[03:00 AM] 👁️ Itachi: Scraped 250 competitor pricing pages.</p>
@@ -524,24 +470,18 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    # 🔥 FIX 1: NATIVE STREAMLIT UPLOADER (THE PAPERCLIP INSIDE THE BOX)
-    # Yeh code dynamically text aur files ko safe tareeqe se extract karega, KeyError kabhi nahi aayega!
-    raw_chat_val = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...", accept_file="multiple")
+    st.markdown("<div class='upload-wrapper'>", unsafe_allow_html=True)
+    with st.popover("📎 Attach File"):
+        uploaded_file2 = st.file_uploader("Drop context files here", type=["pdf", "png", "txt"], label_visibility="collapsed")
+        if uploaded_file2: st.success(f"✅ {uploaded_file2.name} attached.")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    raw_chat_val = st.chat_input("Enter command or say 'Grow my YouTube' for auto-chaining...")
     user_input = ""
 
     if raw_chat_val:
-        # Safe extraction agar Streamlit object return kare (New versions)
-        if hasattr(raw_chat_val, "text"):
-            user_input = getattr(raw_chat_val, "text", "")
-            files = getattr(raw_chat_val, "files", [])
-            if files: st.success(f"✅ {len(files)} file(s) attached securely.")
-        # Safe extraction agar Dictionary ho
-        elif isinstance(raw_chat_val, dict) and "text" in raw_chat_val:
-            user_input = raw_chat_val.get("text", "")
-            if raw_chat_val.get("files"): st.success(f"✅ {len(raw_chat_val['files'])} file(s) attached securely.")
-        # Safe fallback agar normal string ho (Old versions)
-        else:
-            user_input = str(raw_chat_val)
+        if isinstance(raw_chat_val, dict): user_input = raw_chat_val.get("text", "")
+        else: user_input = str(raw_chat_val)
             
         if user_input:
             st.session_state.messages.append({"role": "user", "content": user_input})
@@ -552,25 +492,29 @@ elif st.session_state.current_page == "dashboard":
         last_msg = st.session_state.messages[-1]
         msg_content = last_msg["content"]
         
-        # 🔥 FIX 2: THE "HI" BUG FIX (Brain prompt upgraded to act human on greetings)
-        system_prompt = """You are LAB AGENTX, the brilliant and charismatic Master CEO of an Anime-themed AI Agency.
+        # 🔥 STEP 3 & 7: THE AUTONOMOUS MODE INTENT ROUTER
+        system_prompt = """You are LAB AGENTX, the Master CEO of an Anime-themed AI Agency.
 
-        CRITICAL RULE 1: If the user simply says a greeting (like "hi", "hello", "how are you"), ONLY reply naturally as a friendly CEO. DO NOT assign tasks. DO NOT output "PART 1" or "PART 2". 
+        CRITICAL ROUTING RULES:
+        1. If user says a greeting (hi, hello): Reply naturally as CEO. Do NOT output "PART 1" or "PART 2".
         
-        CRITICAL RULE 2: ONLY IF the user gives a CLEAR TASK (e.g., "write a blog", "create an image", "code a game"), you MUST output EXACTLY this format:
-
-        PART 1:
-        [Agent 1]: [Funny comment]
-        [Agent 2]: [Funny comment]
-        
-        PART 2:
-        - "Task Assigned. **[Agent Name]** is [Action]."
-
-        Available Agents: Sai (images), Naruto (repurposing), Light (sales), Orihime (retention), Nanami (legal), Nami (finance), Itachi (web scraping), Akatsuki (SEO blogs), Franky (coding), Senku (YouTube extraction), Gojo (marketing), Tengen (video), L (deep research), Sebastian (PR/emails), Bulma (UX/UI).
+        2. If user gives a MACRO INTENT (e.g., "Grow my YouTube", "I want to start a marketing campaign", "Get me leads"):
+           You must trigger AUTONOMOUS MODE and chain multiple agents.
+           FORMAT:
+           AUTONOMOUS MODE ACTIVATED:
+           - "Task Assigned. **L** is deeply researching the niche and audience."
+           - "Task Assigned. **Tengen** is crafting a high-retention video script based on the research."
+           - "Task Assigned. **Naruto** is planning the omnichannel social media distribution."
+           
+        3. If user gives a SPECIFIC TASK (e.g., "Draw a cyberpunk city", "Write a python script"):
+           FORMAT:
+           PART 1: [Banter between agents]
+           PART 2:
+           - "Task Assigned. **[Agent Name]** is [Action]."
         """
         
         if not live_groq_key:
-            st.session_state.messages.append({"role": "assistant", "content": "⚠️ Groq Cloud API Key missing! Please add it in the sidebar integrations tab."})
+            st.session_state.messages.append({"role": "assistant", "content": "⚠️ Groq Cloud API Key missing!"})
             if st.session_state.active_tasks: st.session_state.active_tasks.pop()
             st.rerun()
         else:
@@ -594,22 +538,31 @@ elif st.session_state.current_page == "dashboard":
                     
                     st.session_state.messages.append({"role": "assistant", "content": full_response})
                     
-                    # 🔥 Execute Task only if a real command was given
-                    if "Task Assigned" in full_response and "PART 2" in full_response:
+                    # 🔥 STEP 4: LIVE CINEMATIC THINKING STREAM
+                    if "AUTONOMOUS MODE ACTIVATED" in full_response:
+                        status_ui = st.empty()
+                        with status_ui.container():
+                            st.info("🧠 **L Lawliet** is scanning market trends and audience data...")
+                            time.sleep(2)
+                            st.warning("✨ **Tengen** is writing the hook and viral script...")
+                            time.sleep(2)
+                            st.success("🦊 **Naruto** is queueing social media distribution...")
+                            time.sleep(1)
+                        st.session_state.messages.append({"role": "assistant", "content": "✅ **Autonomous Workflow Complete:** Strategy, Scripts, and Distribution plans have been successfully generated and chained. (Demo Mode)"})
+                        
+                    elif "Task Assigned" in full_response and "PART 2" in full_response:
                         with st.spinner(f"Anime Agents are working... Please wait."):
                             agent_result = "⚠️ Module integrated but running in safe mode."
                             if "**Gojo**" in full_response: from marketing import run_marketing_crew; agent_result = run_marketing_crew(msg_content)
                             elif "**Sai**" in full_response: from sai_illustrator import run_image_generation; agent_result = run_image_generation(msg_content)
                             elif "**Itachi**" in full_response: from oracle_intel import run_oracle_crew; agent_result = run_oracle_crew(msg_content)
-                            elif "**Nami**" in full_response: from Investment_Banker import run_finance_crew; agent_result = run_finance_crew(msg_content)
-                            elif "**Senku**" in full_response: from omni_reader import run_omnireader_crew; agent_result = run_omnireader_crew(msg_content)
-                            elif "**Franky**" in full_response: from tech import run_tech_crew; agent_result = run_tech_crew(msg_content)
-                            elif "**Akatsuki**" in full_response: from seo_empire import run_mass_seo_campaign; agent_result = run_mass_seo_campaign(msg_content.lower().replace("akatsuki,", "").strip())
                             elif "**L**" in full_response: from kimi_research import run_kimi_squad; agent_result = run_kimi_squad(msg_content)
+                            elif "**Franky**" in full_response: from tech import run_tech_crew; agent_result = run_tech_crew(msg_content)
+                            elif "**Light**" in full_response: from sales_dept import run_sales_crew; agent_result = run_sales_crew(msg_content)
                             
                             if len(st.session_state.active_tasks) > 0:
                                 st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
-                                st.session_state.squad_chat.append({"agent": "System", "msg": f"Task executed successfully. Files archived.", "time": datetime.datetime.now().strftime("%H:%M")})
+                                
                 else: st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Groq API Error: {api_response.get('error', {}).get('message', '')}"})
             except Exception as e: st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Error: {str(e)}"})
             
