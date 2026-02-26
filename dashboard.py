@@ -37,6 +37,26 @@ SAVED_FILES_FOLDER = "Saved_Files"
 for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER, SAVED_FILES_FOLDER]:
     if not os.path.exists(folder): os.makedirs(folder)
 
+# 📄 PDF GENERATOR ENGINE (NEW!)
+def generate_pdf_bytes(text_content):
+    if not HAS_FPDF: return None
+    temp_pdf_path = f"uploads/temp_dl_{int(time.time())}.pdf"
+    try:
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=11)
+        # Safe encoding to prevent crashes from emojis or special characters
+        safe_text = str(text_content).encode('latin-1', 'replace').decode('latin-1')
+        pdf.multi_cell(0, 6, txt=safe_text)
+        pdf.output(temp_pdf_path)
+        with open(temp_pdf_path, "rb") as pdf_file:
+            pdf_bytes = pdf_file.read()
+        if os.path.exists(temp_pdf_path): os.remove(temp_pdf_path)
+        return pdf_bytes
+    except Exception as e:
+        if os.path.exists(temp_pdf_path): os.remove(temp_pdf_path)
+        return None
+
 # 🧠 PAGE ROUTING & MEMORY SYSTEM
 if "current_page" not in st.session_state: st.session_state.current_page = "landing"
 if "selected_plan" not in st.session_state: st.session_state.selected_plan = None
@@ -61,6 +81,16 @@ def go_to_dashboard():
 def show_squad_chat():
     st.markdown("<p style='color:#94a3b8; font-size:14px; margin-bottom:15px; border-bottom: 1px solid #1e293b; padding-bottom: 10px;'>Intercepting live autonomous workflow communications.</p>", unsafe_allow_html=True)
     
+    st.markdown("""
+        <div style='background: #1e293b; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #334155; display: flex; align-items: center; justify-content: space-between;'>
+            <div>
+                <div style='color: #f8fafc; font-weight: 700; font-size: 14px;'>🎙️ Latest Standup Audio</div>
+                <div style='color: #94a3b8; font-size: 12px;'>Synthesized AI Voices (Gojo, Franky, Nanami)</div>
+            </div>
+            <button style='background: #38bdf8; color: #0f172a; border: none; padding: 8px 15px; border-radius: 8px; font-weight: 800; cursor: pointer;'>▶ Play Audio</button>
+        </div>
+    """, unsafe_allow_html=True)
+
     chat_html = "<div style='max-height: 350px; overflow-y: auto; padding-right: 10px;'>"
     for chat in st.session_state.squad_chat:
         agent_color = "#38bdf8" if chat['agent'] == "Lab AgentX" else "#10b981" if chat['agent'] == "System" else "#f59e0b"
@@ -308,7 +338,6 @@ elif st.session_state.current_page == "dashboard":
         "Nanami": {"name": "Kento Nanami", "role": "Legal Expert", "icon": "👔", "desc": "Reviews contracts.", "stat": "Lawyer"}
     }
 
-    # 🔥 STEP 2: REDUCED AGENT NOISE ON FRONTEND
     FRONT_LINE_AGENTS = ["Lab AgentX", "L", "Tengen", "Naruto", "Light"]
     BACKEND_AGENTS = [key for key in AGENTS_INFO.keys() if key not in FRONT_LINE_AGENTS]
 
@@ -351,10 +380,10 @@ elif st.session_state.current_page == "dashboard":
             elif "l lawliet" in msg_lower or "**l**" in msg_lower: current_active_agent = "L"
             elif "franky" in msg_lower: current_active_agent = "Franky"
             elif "tengen" in msg_lower: current_active_agent = "Tengen"
+            elif "itachi" in msg_lower: current_active_agent = "Itachi"
             elif "autonomous" in msg_lower: current_active_agent = "System"
             if current_active_agent != "Lab AgentX": break
 
-    # 🔥 STEP 4: SPEED BRANDING IN TOP STATS
     st.markdown(f"""
     <div class="top-stats">
         <div class="stat-box"><div class="stat-value">{len(st.session_state.assigned_tasks) + len(st.session_state.active_tasks)}</div><div class="stat-label">Active Workflows</div></div>
@@ -384,7 +413,6 @@ elif st.session_state.current_page == "dashboard":
                 st.session_state.active_tasks = []; st.session_state.messages.append({"role": "assistant", "content": "🛑 **Process Terminated.**"})
                 st.rerun()
                 
-        # 🔥 STEP 2: FRONTEND SQUAD (Less noise)
         st.markdown("---")
         st.markdown("### 🚀 FRONT-LINE SQUAD")
         front_html = ""
@@ -441,10 +469,21 @@ elif st.session_state.current_page == "dashboard":
                     with st.container(height=400, border=False):
                         for task in done_tasks_list:
                             st.markdown(f"<div class='k-card' style='border-left: 4px solid #10b981;'><div class='k-title'>{task['name'][:25]}...</div><div class='k-agent'>✅ Completed</div></div>", unsafe_allow_html=True)
+                            
+                            # 🔥 PDF DOWNLOAD LOGIC UPGRADE
                             if task['path'].endswith('.jpg') or task['path'].endswith('.png'):
-                                with open(task['path'], "rb") as f: st.download_button(label="🖼️ Image", data=f, file_name=os.path.basename(task['path']), mime="image/jpeg", key=task['path']+"_img", use_container_width=True)
+                                with open(task['path'], "rb") as f: st.download_button(label="🖼️ Download Image", data=f, file_name=os.path.basename(task['path']), mime="image/jpeg", key=task['path']+"_img", use_container_width=True)
                             else:
-                                with open(task['path'], "r", encoding="utf-8", errors="ignore") as f: st.download_button(label="📄 Report", data=f.read(), file_name=task['name']+".txt", key=task['path']+"_txt", use_container_width=True)
+                                with open(task['path'], "r", encoding="utf-8", errors="ignore") as f: 
+                                    file_content = f.read()
+                                
+                                # Try to convert to PDF
+                                pdf_data = generate_pdf_bytes(file_content)
+                                
+                                if pdf_data:
+                                    st.download_button(label="📄 Download PDF", data=pdf_data, file_name=task['name']+".pdf", mime="application/pdf", key=task['path']+"_pdf", use_container_width=True)
+                                else:
+                                    st.download_button(label="📄 Download Text", data=file_content.encode('utf-8'), file_name=task['name']+".txt", mime="text/plain", key=task['path']+"_txt", use_container_width=True)
 
         with col_feed:
             st.markdown("<div class='feed-header' style='font-size:16px; color:#f8fafc;'>🟢 LIVE FEED</div>", unsafe_allow_html=True)
@@ -458,6 +497,7 @@ elif st.session_state.current_page == "dashboard":
 
     with tab3:
         st.markdown("### 🌙 Automated Night Shift Logs")
+        st.caption("These tasks were executed autonomously by the fleet while you were away.")
         st.markdown("""
         <div style='background: #0f172a; padding: 20px; border-radius: 12px; border: 1px solid #1e293b;'>
             <p style='color: #4ade80; font-family: monospace;'>[03:00 AM] 👁️ Itachi: Scraped 250 competitor pricing pages.</p>
@@ -492,7 +532,6 @@ elif st.session_state.current_page == "dashboard":
         last_msg = st.session_state.messages[-1]
         msg_content = last_msg["content"]
         
-        # 🔥 STEP 3 & 7: THE AUTONOMOUS MODE INTENT ROUTER
         system_prompt = """You are LAB AGENTX, the Master CEO of an Anime-themed AI Agency.
 
         CRITICAL ROUTING RULES:
@@ -506,11 +545,31 @@ elif st.session_state.current_page == "dashboard":
            - "Task Assigned. **Tengen** is crafting a high-retention video script based on the research."
            - "Task Assigned. **Naruto** is planning the omnichannel social media distribution."
            
-        3. If user gives a SPECIFIC TASK (e.g., "Draw a cyberpunk city", "Write a python script"):
+        3. If the user includes a URL (http/https) OR asks to analyze a website/competitor:
+           You MUST route this to **Itachi** (Web Scraper & Competitor Intel). DO NOT route to Gojo unless they explicitly ask for Ads.
+           
+        4. If user gives a SPECIFIC TASK (e.g., "Draw a cyberpunk city", "Write a python script"):
            FORMAT:
            PART 1: [Banter between agents]
            PART 2:
            - "Task Assigned. **[Agent Name]** is [Action]."
+
+        Available Agents:
+        - Itachi (Web scraping, URLs, and competitor analysis)
+        - Gojo (Writing Ad Copy and Marketing Campaigns)
+        - Sai (Images)
+        - Naruto (Repurposing)
+        - Light (Sales)
+        - Orihime (Retention)
+        - Nanami (Legal)
+        - Nami (Finance)
+        - Akatsuki (SEO blogs)
+        - Franky (Coding)
+        - Senku (YouTube extraction)
+        - Tengen (Video)
+        - L (Deep research without URLs)
+        - Sebastian (PR/emails)
+        - Bulma (UX/UI)
         """
         
         if not live_groq_key:
@@ -538,7 +597,6 @@ elif st.session_state.current_page == "dashboard":
                     
                     st.session_state.messages.append({"role": "assistant", "content": full_response})
                     
-                    # 🔥 STEP 4: LIVE CINEMATIC THINKING STREAM
                     if "AUTONOMOUS MODE ACTIVATED" in full_response:
                         status_ui = st.empty()
                         with status_ui.container():
@@ -548,20 +606,36 @@ elif st.session_state.current_page == "dashboard":
                             time.sleep(2)
                             st.success("🦊 **Naruto** is queueing social media distribution...")
                             time.sleep(1)
+                        
+                        st.balloons()
+                        st.toast("✅ Autonomous Workflow Complete!", icon="🎉")
                         st.session_state.messages.append({"role": "assistant", "content": "✅ **Autonomous Workflow Complete:** Strategy, Scripts, and Distribution plans have been successfully generated and chained. (Demo Mode)"})
                         
                     elif "Task Assigned" in full_response and "PART 2" in full_response:
-                        with st.spinner(f"Anime Agents are working... Please wait."):
+                        # 🔥 WOW FACTOR: GROQ SPEED UI 🔥
+                        st.toast("⚡ Groq LPU Engaged! Analyzing logic...", icon="🚀")
+                        
+                        with st.spinner(f"🔥 Anime Agents executing at 850 T/s... Please wait."):
                             agent_result = "⚠️ Module integrated but running in safe mode."
                             if "**Gojo**" in full_response: from marketing import run_marketing_crew; agent_result = run_marketing_crew(msg_content)
                             elif "**Sai**" in full_response: from sai_illustrator import run_image_generation; agent_result = run_image_generation(msg_content)
                             elif "**Itachi**" in full_response: from oracle_intel import run_oracle_crew; agent_result = run_oracle_crew(msg_content)
-                            elif "**L**" in full_response: from kimi_research import run_kimi_squad; agent_result = run_kimi_squad(msg_content)
+                            elif "**Nami**" in full_response: from lucius_finance import run_finance_crew; agent_result = run_finance_crew(msg_content)
+                            elif "**Senku**" in full_response: from omni_reader import run_omnireader_crew; agent_result = run_omnireader_crew(msg_content)
                             elif "**Franky**" in full_response: from tech import run_tech_crew; agent_result = run_tech_crew(msg_content)
+                            elif "**Akatsuki**" in full_response: from seo_empire import run_mass_seo_campaign; agent_result = run_mass_seo_campaign(msg_content.lower().replace("akatsuki,", "").strip())
+                            elif "**L**" in full_response: from kimi_research import run_kimi_squad; agent_result = run_kimi_squad(msg_content)
                             elif "**Light**" in full_response: from sales_dept import run_sales_crew; agent_result = run_sales_crew(msg_content)
+                            elif "**Naruto**" in full_response: from content_multiplier import run_multiplier_crew; agent_result = run_multiplier_crew(msg_content)
+                            elif "**Nanami**" in full_response: from daredevil_legal import run_legal_crew; agent_result = run_legal_crew(msg_content)
+                            elif "**Tengen**" in full_response: from video import run_video_crew; agent_result = run_video_crew(msg_content)
                             
                             if len(st.session_state.active_tasks) > 0:
-                                st.session_state.messages.append({"role": "assistant", "content": f"✅ **Mission Complete:**\n\n{agent_result}"})
+                                # CELEBRATION!
+                                st.balloons()
+                                st.toast("✅ Mission Accomplished at Lightning Speed!", icon="⚡")
+                                
+                                st.session_state.messages.append({"role": "assistant", "content": f"### ⚡ MISSION ACCOMPLISHED!\n\n{agent_result}"})
                                 
                 else: st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Groq API Error: {api_response.get('error', {}).get('message', '')}"})
             except Exception as e: st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Error: {str(e)}"})
