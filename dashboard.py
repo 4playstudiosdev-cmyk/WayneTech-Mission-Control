@@ -37,7 +37,7 @@ SAVED_FILES_FOLDER = "Saved_Files"
 for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER, SAVED_FILES_FOLDER]:
     if not os.path.exists(folder): os.makedirs(folder)
 
-# 📄 PDF GENERATOR ENGINE (NEW!)
+# 📄 PDF GENERATOR ENGINE
 def generate_pdf_bytes(text_content):
     if not HAS_FPDF: return None
     temp_pdf_path = f"uploads/temp_dl_{int(time.time())}.pdf"
@@ -45,7 +45,6 @@ def generate_pdf_bytes(text_content):
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Arial", size=11)
-        # Safe encoding to prevent crashes from emojis or special characters
         safe_text = str(text_content).encode('latin-1', 'replace').decode('latin-1')
         pdf.multi_cell(0, 6, txt=safe_text)
         pdf.output(temp_pdf_path)
@@ -107,7 +106,7 @@ def show_squad_chat():
     st.markdown(chat_html, unsafe_allow_html=True)
 
 # ==========================================
-# 🌟 VIP SAAS LANDING PAGE (POSITIONING & MONETIZATION FIXED)
+# 🌟 VIP SAAS LANDING PAGE 
 # ==========================================
 if st.session_state.current_page == "landing":
     st.markdown("""
@@ -161,7 +160,6 @@ if st.session_state.current_page == "landing":
     with f3:
         with st.container(border=True): st.markdown("<h1 style='color:#38bdf8; margin-top:0;'>03</h1><h3 style='margin-bottom:10px;'>Instant Output</h3><p style='color:#94a3b8; font-size:14px; line-height:1.6;'>Watch their live thinking stream and download the final campaign instantly.</p>", unsafe_allow_html=True)
 
-    # 🔥 STEP 5: PRICING FIX (CREDIT BASED)
     st.markdown("<div class='section-title'>💰 Simple, Scalable <span>Pricing</span></div>", unsafe_allow_html=True)
     p1, p2, p3 = st.columns(3)
     with p1:
@@ -264,8 +262,13 @@ elif st.session_state.current_page == "dashboard":
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
-        .stApp, .stAppViewContainer, .stAppScrollToBottomContainer, [data-testid="stBottom"], [data-testid="stBottom"] > div { 
+        .stApp, .stAppViewContainer, .stAppScrollToBottomContainer { 
             background-color: #020617 !important; background-image: none !important; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc;
+        }
+
+        /* Force Bottom Area to be strictly Dark (Fixes the white bar bug) */
+        [data-testid="stBottom"], [data-testid="stBottom"] > div {
+            background-color: #020617 !important; background-image: none !important;
         }
 
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
@@ -285,6 +288,7 @@ elif st.session_state.current_page == "dashboard":
         .stat-box { text-align: center; flex: 1; min-width: 120px;} 
         .stat-value { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; color: #f8fafc !important; } 
         .stat-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; margin-top: 4px; color: #94a3b8 !important; }
+        
         .kanban-header { font-size: 13px; font-weight: 800; color: #94a3b8 !important; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 3px solid #1e293b; text-transform: uppercase; letter-spacing: 1px; }
         .k-assigned { border-bottom-color: #f59e0b; } .k-progress { border-bottom-color: #3b82f6; } .k-review { border-bottom-color: #8b5cf6; } .k-done { border-bottom-color: #10b981; }
         .k-card { background: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 16px; margin-bottom: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s ease; word-wrap: break-word; }
@@ -301,19 +305,97 @@ elif st.session_state.current_page == "dashboard":
         .st-standby { background: rgba(148, 163, 184, 0.1) !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
         .stChatMessage { background-color: #0f172a !important; border: 1px solid #1e293b; border-radius: 12px; padding: 15px; margin-bottom: 10px; }
         
-        div[data-baseweb="chat-input"] { background-color: #ffffff !important; border: 1px solid #d1d5db !important; border-radius: 12px !important; padding: 5px !important; }
-        div[data-baseweb="chat-input"] textarea { color: #000000 !important; -webkit-text-fill-color: #000000 !important; caret-color: #000000 !important; font-size: 15px !important; background-color: transparent !important; }
-        div[data-baseweb="chat-input"] textarea::placeholder { color: #6b7280 !important; -webkit-text-fill-color: #6b7280 !important; }
-        div[data-baseweb="chat-input"] svg { fill: #111827 !important; color: #111827 !important; }
+        /* 🔥 THE ULTIMATE SAFE CHAT INPUT UI (WHITE BOX, BLACK TEXT) 🔥 */
+        [data-testid="stChatInput"] { background-color: transparent !important; }
+        [data-testid="stChatInput"] > div { 
+            background-color: #ffffff !important; /* Perfect White Box */
+            border: 1px solid #d1d5db !important; 
+            border-radius: 12px !important; 
+        }
+        
+        /* 🔥 Black Text and Padding to Make Space for the + Button 🔥 */
+        [data-testid="stChatInput"] textarea { 
+            color: #000000 !important; 
+            -webkit-text-fill-color: #000000 !important; 
+            caret-color: #000000 !important; 
+            font-size: 15px !important; 
+            background-color: transparent !important; 
+            padding-left: 45px !important; /* Extremely important: shifts text right so it doesn't overlap the + icon */
+        }
+        [data-testid="stChatInput"] textarea::placeholder { color: #6b7280 !important; -webkit-text-fill-color: #6b7280 !important; }
+        [data-testid="stChatInput"] svg { fill: #111827 !important; color: #111827 !important; }
 
+        /* 🔥 THE GOD-LEVEL CSS HACK TO PUT POPOVER INSIDE THE CHAT BOX 🔥 */
+        div[data-testid="stPopover"] {
+            position: fixed !important;
+            bottom: 39px !important; /* Perfectly aligns with the chat box vertical center */
+            margin-left: 10px !important; /* Positions it nicely on the left edge */
+            z-index: 999999 !important;
+            /* Note: No 'left' property! This automatically aligns it relative to the column, respecting sidebar changes! */
+        }
+
+        div[data-testid="stPopover"] > button { 
+            background-color: transparent !important; 
+            border: none !important; 
+            box-shadow: none !important;
+            padding: 0 !important; 
+            min-height: 0px !important; 
+            width: 32px !important; 
+            height: 32px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 50% !important;
+            transition: all 0.2s ease; 
+        }
+        
+        /* Hides the "Attach File" text to make it just an icon */
+        div[data-testid="stPopover"] > button p { display: none !important; } 
+        
+        /* Replaces text with a cool Plus/Attachment icon */
+        div[data-testid="stPopover"] > button::before {
+            content: '➕' !important;
+            font-size: 20px !important;
+            color: #6b7280 !important;
+            font-family: sans-serif;
+        }
+
+        div[data-testid="stPopover"] > button:hover { background-color: #f3f4f6 !important; } /* Light grey hover on white background */
+        
+        div[data-testid="stPopoverBody"] { background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 12px !important; padding: 15px !important; }
+
+        /* Tabs */
         div[data-testid="stTabs"] button { color: #94a3b8 !important; font-weight: 700 !important; font-size: 15px !important; padding-bottom: 10px !important;}
         div[data-testid="stTabs"] button[aria-selected="true"] { color: #38bdf8 !important; border-bottom-color: #38bdf8 !important; }
         
-        .upload-wrapper { margin-bottom: -15px; z-index: 999; position: relative; }
-        [data-testid="stPopover"] button { background-color: #1e293b !important; border: 1px solid #334155 !important; border-radius: 20px !important; padding: 5px 15px !important; min-height: 0px !important; transition: all 0.2s ease; }
-        [data-testid="stPopover"] button * { color: #f8fafc !important; font-size: 13px !important; font-weight: 600 !important; }
-        [data-testid="stPopover"] button:hover { border-color: #38bdf8 !important; background-color: #0f172a !important; }
-        
+        /* ORG CHART SPECIFIC CSS (MUDDY OS CLONE) */
+        .org-tree-wrapper { padding: 40px 0; display: flex; flex-direction: column; align-items: center; }
+        .org-node { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 15px 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.3); min-width: 280px; z-index: 2; position: relative;}
+        .org-node.ceo { border-top: 4px solid #f59e0b; }
+        .org-node.coo { border-top: 4px solid #10b981; margin-top: 30px; }
+        .org-node h3 { font-size: 16px; margin: 0 0 5px 0; color: #f8fafc; display: flex; align-items: center; justify-content: center; gap: 8px;}
+        .org-node p { font-size: 12px; color: #94a3b8; margin: 0; }
+        .line-vertical { width: 2px; height: 30px; background: #334155; }
+        .line-horizontal { width: 80%; height: 2px; background: #334155; margin-top: 30px; position: relative; display: flex; justify-content: space-between;}
+        .line-horizontal::before { content: ''; position: absolute; left: 0; top: 0; width: 2px; height: 30px; background: #334155; }
+        .line-horizontal::after { content: ''; position: absolute; right: 0; top: 0; width: 2px; height: 30px; background: #334155; }
+        .line-horizontal .mid-drop { position: absolute; left: 50%; top: 0; width: 2px; height: 30px; background: #334155; transform: translateX(-50%); }
+        .dept-container { display: flex; justify-content: space-between; width: 100%; gap: 20px; margin-top: 30px;}
+        .dept-col { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+        .dept-head { background: #0f172a; border-radius: 12px; padding: 20px; border: 1px solid #334155; text-align: left;}
+        .dept-head.tech { border-left: 4px solid #3b82f6; }
+        .dept-head.mkt { border-left: 4px solid #f59e0b; }
+        .dept-head.rev { border-left: 4px solid #10b981; }
+        .dept-head h3 { font-size: 15px; margin: 0 0 5px 0; display: flex; justify-content: space-between; align-items: center;}
+        .dept-head p { font-size: 11px; color: #94a3b8; margin: 0; line-height: 1.4;}
+        .agent-box { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 15px; display: flex; flex-direction: column; gap: 10px;}
+        .agent-box-top { display: flex; justify-content: space-between; align-items: center;}
+        .agent-box-title { font-size: 14px; font-weight: 700; color: #f8fafc; display: flex; align-items: center; gap: 6px;}
+        .agent-box-role { font-size: 11px; color: #94a3b8; margin-bottom: 5px;}
+        .agent-tags { display: flex; gap: 8px; flex-wrap: wrap;}
+        .tag-active { background: rgba(34, 197, 94, 0.15); color: #4ade80; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; border: 1px solid #22c55e; }
+        .tag-model { background: #334155; color: #cbd5e1; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+        .tag-special { background: rgba(56, 189, 248, 0.15); color: #38bdf8; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; border: 1px solid #0ea5e9;}
         #MainMenu {visibility: hidden;} footer {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
@@ -470,14 +552,12 @@ elif st.session_state.current_page == "dashboard":
                         for task in done_tasks_list:
                             st.markdown(f"<div class='k-card' style='border-left: 4px solid #10b981;'><div class='k-title'>{task['name'][:25]}...</div><div class='k-agent'>✅ Completed</div></div>", unsafe_allow_html=True)
                             
-                            # 🔥 PDF DOWNLOAD LOGIC UPGRADE
                             if task['path'].endswith('.jpg') or task['path'].endswith('.png'):
                                 with open(task['path'], "rb") as f: st.download_button(label="🖼️ Download Image", data=f, file_name=os.path.basename(task['path']), mime="image/jpeg", key=task['path']+"_img", use_container_width=True)
                             else:
                                 with open(task['path'], "r", encoding="utf-8", errors="ignore") as f: 
                                     file_content = f.read()
                                 
-                                # Try to convert to PDF
                                 pdf_data = generate_pdf_bytes(file_content)
                                 
                                 if pdf_data:
@@ -510,23 +590,19 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    st.markdown("<div class='upload-wrapper'>", unsafe_allow_html=True)
-    with st.popover("📎 Attach File"):
-        uploaded_file2 = st.file_uploader("Drop context files here", type=["pdf", "png", "txt"], label_visibility="collapsed")
+    # 🔥 THE MAGIC "INSIDE THE BOX" UPLOADER HACK (NO CRASHES, 100% RELIABLE) 🔥
+    with st.popover("attach_btn"):
+        st.caption("Upload documents for AI memory:")
+        uploaded_file2 = st.file_uploader("Drop context files here", type=["pdf", "png", "txt", "csv"], label_visibility="collapsed")
         if uploaded_file2: st.success(f"✅ {uploaded_file2.name} attached.")
-    st.markdown("</div>", unsafe_allow_html=True)
+    
+    # The normal, simple text input that will NEVER crash
+    user_input = st.chat_input("Command the Agency (e.g., 'Sai, draw a cyberpunk city...')...")
 
-    raw_chat_val = st.chat_input("Enter command or say 'Grow my YouTube' for auto-chaining...")
-    user_input = ""
-
-    if raw_chat_val:
-        if isinstance(raw_chat_val, dict): user_input = raw_chat_val.get("text", "")
-        else: user_input = str(raw_chat_val)
-            
-        if user_input:
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            st.session_state.active_tasks.append(user_input[:30] + "...") 
-            st.rerun()
+    if user_input:
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        st.session_state.active_tasks.append(user_input[:30] + "...") 
+        st.rerun()
 
     if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
         last_msg = st.session_state.messages[-1]
@@ -612,7 +688,6 @@ elif st.session_state.current_page == "dashboard":
                         st.session_state.messages.append({"role": "assistant", "content": "✅ **Autonomous Workflow Complete:** Strategy, Scripts, and Distribution plans have been successfully generated and chained. (Demo Mode)"})
                         
                     elif "Task Assigned" in full_response and "PART 2" in full_response:
-                        # 🔥 WOW FACTOR: GROQ SPEED UI 🔥
                         st.toast("⚡ Groq LPU Engaged! Analyzing logic...", icon="🚀")
                         
                         with st.spinner(f"🔥 Anime Agents executing at 850 T/s... Please wait."):
@@ -631,10 +706,8 @@ elif st.session_state.current_page == "dashboard":
                             elif "**Tengen**" in full_response: from video import run_video_crew; agent_result = run_video_crew(msg_content)
                             
                             if len(st.session_state.active_tasks) > 0:
-                                # CELEBRATION!
                                 st.balloons()
                                 st.toast("✅ Mission Accomplished at Lightning Speed!", icon="⚡")
-                                
                                 st.session_state.messages.append({"role": "assistant", "content": f"### ⚡ MISSION ACCOMPLISHED!\n\n{agent_result}"})
                                 
                 else: st.session_state.messages.append({"role": "assistant", "content": f"⚠️ Groq API Error: {api_response.get('error', {}).get('message', '')}"})
