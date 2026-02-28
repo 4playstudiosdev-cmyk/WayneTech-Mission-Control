@@ -271,40 +271,20 @@ with st.sidebar:
         live_api_key = st.text_input("Google Gemini API Key", type="password")
         
     st.session_state.live_api_key = live_api_key
-    
+
     st.markdown("---")
     
-    # --- WORKFLOW DIRECTORY ---
-    st.markdown("### ⚡ Available Workflows")
-    st.markdown("""
-    <div class='wf-card'>
-        <div class='wf-title'>🕵️ Competitor Takedown</div>
-        <div class='wf-desc'>Target URL dijiye aur Itachi agent se deep strategic flaws aur attack plan lijiye.</div>
-    </div>
-    <div class='wf-card'>
-        <div class='wf-title'>💻 Closed-Loop Dev</div>
-        <div class='wf-desc'>Finn agent code likhega aur automatically khud ko debug karega.</div>
-    </div>
-    <div class='wf-card'>
-        <div class='wf-title'>📧 Cold Outreach Engine</div>
-        <div class='wf-desc'>Luke agent leads dhoondega aur directly Gmail se cold email fire karega.</div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    # Action Buttons
-    col1, col2 = st.columns(2)
-    with col1:
-        if st.button("🔄 Reset System", use_container_width=True):
-            st.session_state.messages = [{"role": "assistant", "content": "System rebooted. Awaiting fresh instructions."}]
-            log_event("System", "User manually reset the chat context.")
-            st.rerun()
-    with col2:
-        if st.button("🛑 Halt Execution", use_container_width=True, type="primary"):
-            st.session_state.active_tasks = []
-            st.session_state.messages.append({"role": "assistant", "content": "🛑 Execution forcefully halted by Commander."})
-            log_event("System", "Execution halted by user.")
-            st.rerun()
+    # 🔥 NAYA UPDATE: EMAIL CONFIGURATION UI MEIN 🔥
+    with st.expander("📧 Email Engine Setup", expanded=False):
+        st.markdown("<p style='font-size: 11px; color: #94a3b8;'>Sales workflow (Luke) se live cold emails bhejne ke liye apne credentials dalein.</p>", unsafe_allow_html=True)
+        sender_email = st.text_input("Aapka Gmail Address", placeholder="you@gmail.com")
+        sender_app_password = st.text_input("Gmail App Password", type="password", help="Google Account -> Security -> App Passwords se 16 letter ka code yahan dalein.")
+        
+        if sender_email and sender_app_password:
+            # Backend environment variables set kar rahe hain dynamically UI se
+            os.environ["SENDER_EMAIL"] = sender_email
+            os.environ["SENDER_PASSWORD"] = sender_app_password
+            st.success("✅ Email Engine Configured!")
 
 # ==========================================
 # 🧠 6. INITIALIZE AI ENGINE
