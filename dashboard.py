@@ -12,7 +12,6 @@ from dotenv import load_dotenv
 # ==========================================
 # ⚙️ 1. CORE SYSTEM CONFIGURATION
 # ==========================================
-# Page config sabse pehle aani chahiye taake UI engine set ho jaye
 st.set_page_config(
     page_title="Lab AgentX | Enterprise AI Orchestrator", 
     page_icon="🏢", 
@@ -20,20 +19,17 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- Path Setup (Agents ko link karne ke liye) ---
+# --- Path Setup ---
 current_dir = os.path.dirname(os.path.abspath(__file__))
 agents_dir = os.path.join(current_dir, 'Agents')
 sys.path.append(agents_dir)
-# Saare sub-folders link kar rahe hain
 for dept in ['Marketing', 'Tech', 'Video', 'Oracle', 'SEO', 'Legal', 'Finance', 'OmniReader', 'Multiplier', 'Sales', 'sales', 'ImageGen', 'DeepResearch']:
     sys.path.append(os.path.join(agents_dir, dept))
 
-# --- Environment Variables ---
 load_dotenv()
 INITIAL_GROQ_KEY = os.getenv("GROQ_API_KEY", "")
 
 # --- Folder Infrastructure ---
-# Agar ye folders nahi honge toh NameError aayega (Jo aapko pehle aaya tha)
 MEMORY_FOLDER = "memory_logs"
 UPLOAD_FOLDER = "uploads"
 DELIVERABLES_FOLDER = "Deliverables"
@@ -44,7 +40,6 @@ for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER, SAVED_FILES_FO
     if not os.path.exists(folder): 
         os.makedirs(folder)
 
-# --- PDF Engine Verification ---
 try:
     from fpdf import FPDF
     HAS_FPDF = True
@@ -54,7 +49,6 @@ except ImportError:
 # ==========================================
 # 🧠 2. ADVANCED STATE MANAGEMENT
 # ==========================================
-# Ye system ki memory hai. Agar ye sahi nahi hogi toh UI glitch karegi.
 if "current_page" not in st.session_state: 
     st.session_state.current_page = "dashboard"
 if "squad_chat" not in st.session_state:
@@ -66,7 +60,7 @@ if "active_tasks" not in st.session_state:
 if "tokens_used" not in st.session_state: 
     st.session_state.tokens_used = 124500
 if "cost_saved" not in st.session_state:
-    st.session_state.cost_saved = 450.00 # Simulated cost saved in dollars
+    st.session_state.cost_saved = 450.00
 if "workflows_run" not in st.session_state:
     st.session_state.workflows_run = 42
 if "system_logs" not in st.session_state:
@@ -77,20 +71,15 @@ if "session_start_time" not in st.session_state:
 # ==========================================
 # 🛠️ 3. HELPER FUNCTIONS & DIALOGS
 # ==========================================
-
 def log_event(event_type, message):
-    """System ki har harkat ko log karne ke liye professional tracker"""
     timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     log_entry = f"[{timestamp}] [{event_type.upper()}] {message}"
     st.session_state.system_logs.insert(0, log_entry)
-    
-    # Text file mein bhi save karein (Persistence ke liye)
     today_date = datetime.datetime.now().strftime('%Y-%m-%d')
     with open(f"{SYSTEM_LOGS_FOLDER}/log_{today_date}.txt", "a", encoding="utf-8") as f:
         f.write(log_entry + "\n")
 
 def generate_pdf_bytes(text_content):
-    """Professional PDF Generator"""
     if not HAS_FPDF: return None
     temp_pdf_path = f"uploads/temp_dl_{int(time.time())}.pdf"
     try:
@@ -109,7 +98,6 @@ def generate_pdf_bytes(text_content):
         return None
 
 def get_done_tasks():
-    """Disk se deliverable files uthane ka function"""
     tasks = []
     for root, _, filenames in os.walk(DELIVERABLES_FOLDER):
         for fname in filenames:
@@ -125,26 +113,24 @@ def get_done_tasks():
             except: pass
     return sorted(tasks, key=lambda x: x['time'], reverse=True)[:50]
 
-# Execution Logs Dialog
+# Execution Logs Dialog (Raw HTML Bug Fixed)
 @st.dialog("📊 Workflow Execution Logs")
 def show_squad_chat():
     st.markdown("<p style='color:#94a3b8; font-size:14px; margin-bottom:15px;'>Live monitoring of multi-agent collaboration and system verification.</p>", unsafe_allow_html=True)
     chat_html = "<div style='max-height: 350px; overflow-y: auto; padding-right: 10px;'>"
     for chat in st.session_state.squad_chat:
         agent_color = "#10b981" if chat['agent'] == "System" else "#38bdf8"
-        chat_html += f"""
-        <div style='background: #0f172a; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid {agent_color};'>
-            <div style='display: flex; justify-content: space-between; margin-bottom: 4px;'>
-                <span style='color: {agent_color}; font-weight: 700; font-size: 12px; text-transform: uppercase;'>{chat['agent']}</span>
-                <span style='color: #64748b; font-size: 10px; font-weight: 600;'>{chat['time']}</span>
-            </div>
-            <div style='color: #e2e8f0; font-size: 13px; line-height: 1.5;'>{chat['msg']}</div>
-        </div>
-        """
+        chat_html += f"<div style='background: #0f172a; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid {agent_color};'>\n"
+        chat_html += f"<div style='display: flex; justify-content: space-between; margin-bottom: 4px;'>\n"
+        chat_html += f"<span style='color: {agent_color}; font-weight: 700; font-size: 12px; text-transform: uppercase;'>{chat['agent']}</span>\n"
+        chat_html += f"<span style='color: #64748b; font-size: 10px; font-weight: 600;'>{chat['time']}</span>\n"
+        chat_html += f"</div>\n"
+        chat_html += f"<div style='color: #e2e8f0; font-size: 13px; line-height: 1.5;'>{chat['msg']}</div>\n"
+        chat_html += f"</div>\n"
     chat_html += "</div>"
     st.markdown(chat_html, unsafe_allow_html=True)
 
-# 🔥 NAYA DIALOG: Show All Agents 🔥
+# Dialog: Show All Agents
 @st.dialog("👥 Enterprise Agents Roster")
 def show_all_agents():
     st.markdown("System mein available saare specialized AI agents ki list:")
@@ -167,7 +153,6 @@ def show_all_agents():
         ("⚖️ Noah", "Legal Counsel")
     ]
     
-    # 2 columns mein grid layout banaya hai
     c1, c2 = st.columns(2)
     for i, (name, role) in enumerate(agents_list):
         col = c1 if i % 2 == 0 else c2
@@ -185,22 +170,15 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
     
-    /* Base typography */
-    html, body, [class*="css"]  {
-        font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    
-    /* Clean Top Header */
+    html, body, [class*="css"]  { font-family: 'Plus Jakarta Sans', sans-serif; }
     header[data-testid="stHeader"] { visibility: hidden; }
     
-    /* Professional Metrics styling */
     div[data-testid="stMetricValue"] {
         font-size: 1.8rem !important;
         font-weight: 800 !important;
         color: #38bdf8 !important;
     }
     
-    /* Workflow Cards in Sidebar */
     .wf-card {
         background-color: #1e293b;
         border: 1px solid #334155;
@@ -209,22 +187,10 @@ st.markdown("""
         margin-bottom: 12px;
         transition: 0.3s;
     }
-    .wf-card:hover {
-        border-color: #38bdf8;
-    }
-    .wf-title {
-        font-size: 14px;
-        font-weight: 700;
-        color: #f8fafc;
-        margin-bottom: 5px;
-    }
-    .wf-desc {
-        font-size: 12px;
-        color: #94a3b8;
-        line-height: 1.4;
-    }
+    .wf-card:hover { border-color: #38bdf8; }
+    .wf-title { font-size: 14px; font-weight: 700; color: #f8fafc; margin-bottom: 5px; }
+    .wf-desc { font-size: 12px; color: #94a3b8; line-height: 1.4; }
     
-    /* Status Badge */
     .status-badge {
         display: inline-block;
         padding: 4px 10px;
@@ -239,16 +205,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ==========================================
-# 🎛️ 5. SIDEBAR CONFIGURATION (MISSION CONTROL)
+# 🎛️ 5. SIDEBAR CONFIGURATION
 # ==========================================
 with st.sidebar:
     st.markdown("## 🏢 Lab AgentX HQ")
     st.markdown("<div class='status-badge'>● SYSTEM ONLINE</div>", unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # --- MULTI-MODEL BYOK (Bring Your Own Key) ---
     st.markdown("### 🧠 AI Core Engine")
-    st.caption("Aapka apna AI model. 100% Data Privacy. Zero Markup.")
+    st.caption("Aapka apna AI model. 100% Data Privacy.")
     
     selected_brain = st.selectbox(
         "Select Architecture", 
@@ -262,29 +227,59 @@ with st.sidebar:
     st.session_state.selected_brain = selected_brain
     
     if "Groq" in selected_brain:
-        live_api_key = st.text_input("Groq API Key", type="password", value=INITIAL_GROQ_KEY, help="Get this from console.groq.com")
+        live_api_key = st.text_input("Groq API Key", type="password", value=INITIAL_GROQ_KEY)
     elif "OpenAI" in selected_brain:
         live_api_key = st.text_input("OpenAI API Key (sk-...)", type="password")
     elif "Anthropic" in selected_brain:
-        live_api_key = st.text_input("Anthropic API Key (sk-ant-...)", type="password")
+        live_api_key = st.text_input("Anthropic API Key", type="password")
     elif "Gemini" in selected_brain:
         live_api_key = st.text_input("Google Gemini API Key", type="password")
         
     st.session_state.live_api_key = live_api_key
-
+    
     st.markdown("---")
     
-    # 🔥 NAYA UPDATE: EMAIL CONFIGURATION UI MEIN 🔥
+    # Email Setup directly in Sidebar
     with st.expander("📧 Email Engine Setup", expanded=False):
         st.markdown("<p style='font-size: 11px; color: #94a3b8;'>Sales workflow (Luke) se live cold emails bhejne ke liye apne credentials dalein.</p>", unsafe_allow_html=True)
         sender_email = st.text_input("Aapka Gmail Address", placeholder="you@gmail.com")
-        sender_app_password = st.text_input("Gmail App Password", type="password", help="Google Account -> Security -> App Passwords se 16 letter ka code yahan dalein.")
+        sender_app_password = st.text_input("Gmail App Password", type="password", help="Google Account -> Security -> App Passwords")
         
         if sender_email and sender_app_password:
-            # Backend environment variables set kar rahe hain dynamically UI se
             os.environ["SENDER_EMAIL"] = sender_email
             os.environ["SENDER_PASSWORD"] = sender_app_password
             st.success("✅ Email Engine Configured!")
+
+    st.markdown("---")
+    st.markdown("### ⚡ Available Workflows")
+    st.markdown("""
+    <div class='wf-card'>
+        <div class='wf-title'>🕵️ Competitor Takedown</div>
+        <div class='wf-desc'>Deep scans URLs and generates business attack plans.</div>
+    </div>
+    <div class='wf-card'>
+        <div class='wf-title'>💻 Closed-Loop Dev</div>
+        <div class='wf-desc'>Generates Python/Web code and audits it internally.</div>
+    </div>
+    <div class='wf-card'>
+        <div class='wf-title'>📧 Cold Outreach Engine</div>
+        <div class='wf-desc'>Finds leads and ACTUALLY SENDS cold emails via Gmail.</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.markdown("---")
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("🔄 Reset System", use_container_width=True):
+            st.session_state.messages = [{"role": "assistant", "content": "System rebooted. Awaiting fresh instructions."}]
+            log_event("System", "User manually reset the chat context.")
+            st.rerun()
+    with col2:
+        if st.button("🛑 Halt Execution", use_container_width=True, type="primary"):
+            st.session_state.active_tasks = []
+            st.session_state.messages.append({"role": "assistant", "content": "🛑 Execution forcefully halted by Commander."})
+            log_event("System", "Execution halted by user.")
+            st.rerun()
 
 # ==========================================
 # 🧠 6. INITIALIZE AI ENGINE
@@ -322,17 +317,14 @@ else:
 # ==========================================
 # 📊 7. MAIN DASHBOARD CONTENT (TABS)
 # ==========================================
-
-# 🔥 TOP HEADER WITH "CHECK ALL AGENTS" BUTTON 🔥
 head_col1, head_col2 = st.columns([0.85, 0.15])
 with head_col1:
     st.markdown("## 📈 Enterprise Operations Console")
 with head_col2:
-    st.markdown("<br>", unsafe_allow_html=True) # Alignment fix
+    st.markdown("<br>", unsafe_allow_html=True)
     if st.button("👥 Check All Agents", use_container_width=True):
         show_all_agents()
 
-# --- Top Level Metrics ---
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 kpi1.metric(label="Active Agent Workflows", value=f"{st.session_state.workflows_run}", delta="+2 this hour")
 kpi2.metric(label="Tokens Processed", value=f"{st.session_state.tokens_used:,}", delta="Efficient")
@@ -341,7 +333,6 @@ kpi4.metric(label="System Architecture", value=st.session_state.selected_brain.s
 
 st.markdown("<hr style='margin-top: 5px; margin-bottom: 20px; border-color: #1e293b;'>", unsafe_allow_html=True)
 
-# --- Professional Tabs Array ---
 tab_chat, tab_deliverables, tab_logs = st.tabs(["💬 Command Interface", "📂 Output Hub", "🛠️ Audit Logs"])
 
 with tab_chat:
@@ -401,7 +392,6 @@ with tab_logs:
 # ==========================================
 # ✉️ 11. FILE UPLOAD & CHAT INPUT (BOTTOM)
 # ==========================================
-# 🔥 FILE UPLOADER BUTTON MOVED TO BOTTOM (Just above chat input) 🔥
 with st.popover("📎 Attach Files"):
     st.caption("AI engine ke liye documents (PDF, TXT) yahan upload karein.")
     uploaded_files = st.file_uploader("Drop files here", accept_multiple_files=True, label_visibility="collapsed")
