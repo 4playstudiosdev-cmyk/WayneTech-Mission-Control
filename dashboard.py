@@ -75,7 +75,7 @@ if "session_start_time" not in st.session_state:
     st.session_state.session_start_time = time.time()
 
 # ==========================================
-# 🛠️ 3. HELPER FUNCTIONS
+# 🛠️ 3. HELPER FUNCTIONS & DIALOGS
 # ==========================================
 
 def log_event(event_type, message):
@@ -125,10 +125,62 @@ def get_done_tasks():
             except: pass
     return sorted(tasks, key=lambda x: x['time'], reverse=True)[:50]
 
+# Execution Logs Dialog
+@st.dialog("📊 Workflow Execution Logs")
+def show_squad_chat():
+    st.markdown("<p style='color:#94a3b8; font-size:14px; margin-bottom:15px;'>Live monitoring of multi-agent collaboration and system verification.</p>", unsafe_allow_html=True)
+    chat_html = "<div style='max-height: 350px; overflow-y: auto; padding-right: 10px;'>"
+    for chat in st.session_state.squad_chat:
+        agent_color = "#10b981" if chat['agent'] == "System" else "#38bdf8"
+        chat_html += f"""
+        <div style='background: #0f172a; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid {agent_color};'>
+            <div style='display: flex; justify-content: space-between; margin-bottom: 4px;'>
+                <span style='color: {agent_color}; font-weight: 700; font-size: 12px; text-transform: uppercase;'>{chat['agent']}</span>
+                <span style='color: #64748b; font-size: 10px; font-weight: 600;'>{chat['time']}</span>
+            </div>
+            <div style='color: #e2e8f0; font-size: 13px; line-height: 1.5;'>{chat['msg']}</div>
+        </div>
+        """
+    chat_html += "</div>"
+    st.markdown(chat_html, unsafe_allow_html=True)
+
+# 🔥 NAYA DIALOG: Show All Agents 🔥
+@st.dialog("👥 Enterprise Agents Roster")
+def show_all_agents():
+    st.markdown("System mein available saare specialized AI agents ki list:")
+    agents_list = [
+        ("🏢 Lab AgentX", "System Orchestrator"),
+        ("🔍 Leo", "Research Analyst"),
+        ("📹 Troy", "Video Producer"),
+        ("✍️ Nate", "Content Strategist"),
+        ("🎯 Luke", "Outbound Sales"),
+        ("🛡️ Mia", "Retention Manager"),
+        ("💻 Finn", "Lead Developer"),
+        ("📧 Sam", "PR & Email Marketing"),
+        ("📊 Seth", "Data Scientist"),
+        ("⚡ Zoe", "UX/UI Designer"),
+        ("📈 Gabe", "Head of Marketing"),
+        ("🕸️ Ian", "Intelligence Scout"),
+        ("🚀 Ava", "SEO Specialist"),
+        ("🎨 Sean", "Art Director"),
+        ("💰 Nora", "Financial Analyst"),
+        ("⚖️ Noah", "Legal Counsel")
+    ]
+    
+    # 2 columns mein grid layout banaya hai
+    c1, c2 = st.columns(2)
+    for i, (name, role) in enumerate(agents_list):
+        col = c1 if i % 2 == 0 else c2
+        col.markdown(f"""
+        <div style='background-color: #1e293b; padding: 10px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 10px;'>
+            <div style='font-weight: 700; color: #f8fafc; font-size: 14px;'>{name}</div>
+            <div style='color: #94a3b8; font-size: 12px;'>{role}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
 # ==========================================
 # 🎨 4. SAFE & CLEAN CSS STYLING
 # ==========================================
-# Yahan se maine saare khatarnak CSS hacks nikal diye hain jo UI tod rahe the.
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -138,7 +190,7 @@ st.markdown("""
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
     
-    /* Clean Top Header (Hiding default streamlit header) */
+    /* Clean Top Header */
     header[data-testid="stHeader"] { visibility: hidden; }
     
     /* Professional Metrics styling */
@@ -186,7 +238,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
 # ==========================================
 # 🎛️ 5. SIDEBAR CONFIGURATION (MISSION CONTROL)
 # ==========================================
@@ -199,7 +250,6 @@ with st.sidebar:
     st.markdown("### 🧠 AI Core Engine")
     st.caption("Aapka apna AI model. 100% Data Privacy. Zero Markup.")
     
-    # 4 Models wapas add kar diye gaye hain
     selected_brain = st.selectbox(
         "Select Architecture", 
         [
@@ -211,7 +261,6 @@ with st.sidebar:
     )
     st.session_state.selected_brain = selected_brain
     
-    # Dynamic Key Input based on selection
     if "Groq" in selected_brain:
         live_api_key = st.text_input("Groq API Key", type="password", value=INITIAL_GROQ_KEY, help="Get this from console.groq.com")
     elif "OpenAI" in selected_brain:
@@ -223,15 +272,6 @@ with st.sidebar:
         
     st.session_state.live_api_key = live_api_key
     
-    st.markdown("---")
-    
-    # --- CONTEXT UPLOADER (Safe placement) ---
-    st.markdown("### 📎 Context Engine")
-    uploaded_files = st.file_uploader("Agency files yahan upload karein (PDF, TXT, CSV)", accept_multiple_files=True)
-    if uploaded_files:
-        st.success(f"✅ {len(uploaded_files)} files loaded into agent memory.")
-        log_event("User", f"Uploaded {len(uploaded_files)} context files.")
-
     st.markdown("---")
     
     # --- WORKFLOW DIRECTORY ---
@@ -266,54 +306,53 @@ with st.sidebar:
             log_event("System", "Execution halted by user.")
             st.rerun()
 
-
 # ==========================================
 # 🧠 6. INITIALIZE AI ENGINE
 # ==========================================
 chat_brain = None
 if st.session_state.get("live_api_key"):
     live_key = st.session_state.live_api_key
-    
-    # Setting Environment Variables so external scripts (Agents) can use them
     os.environ["OPENAI_API_KEY"] = live_key
     
     try:
-        # LangChain logic ko map karna based on user selection
         if "Groq" in st.session_state.selected_brain:
             os.environ["OPENAI_API_BASE"] = "https://api.groq.com/openai/v1"
             os.environ["GROQ_API_KEY"] = live_key
             from langchain_openai import ChatOpenAI
             chat_brain = ChatOpenAI(model="llama-3.3-70b-versatile", base_url="https://api.groq.com/openai/v1", api_key=live_key)
-            log_event("Engine", "Groq LPU Engine booted successfully.")
             
         elif "OpenAI" in st.session_state.selected_brain:
             os.environ["OPENAI_API_BASE"] = "https://api.openai.com/v1"
             from langchain_openai import ChatOpenAI
             chat_brain = ChatOpenAI(model="gpt-4o", api_key=live_key)
-            log_event("Engine", "OpenAI GPT-4o Engine booted successfully.")
             
         elif "Anthropic" in st.session_state.selected_brain:
             from langchain_anthropic import ChatAnthropic
             chat_brain = ChatAnthropic(model_name="claude-3-5-sonnet-20240620", anthropic_api_key=live_key)
-            log_event("Engine", "Anthropic Claude 3.5 Engine booted successfully.")
             
         elif "Gemini" in st.session_state.selected_brain:
             from langchain_google_genai import ChatGoogleGenerativeAI
             chat_brain = ChatGoogleGenerativeAI(model="gemini-1.5-pro", google_api_key=live_key)
-            log_event("Engine", "Google Gemini 1.5 Pro Engine booted successfully.")
             
     except Exception as e:
-        st.sidebar.error(f"⚠️ Engine Load Error: Install required packages (langchain-anthropic / langchain-google-genai). Details: {str(e)}")
+        st.sidebar.error(f"⚠️ Engine Load Error: {str(e)}")
 else:
     st.sidebar.warning("⚠️ Enter API Key to activate the intelligence engine.")
-
 
 # ==========================================
 # 📊 7. MAIN DASHBOARD CONTENT (TABS)
 # ==========================================
-st.markdown("## 📈 Enterprise Operations Console")
 
-# --- Top Level Metrics (Professional KPI Tracking) ---
+# 🔥 TOP HEADER WITH "CHECK ALL AGENTS" BUTTON 🔥
+head_col1, head_col2 = st.columns([0.85, 0.15])
+with head_col1:
+    st.markdown("## 📈 Enterprise Operations Console")
+with head_col2:
+    st.markdown("<br>", unsafe_allow_html=True) # Alignment fix
+    if st.button("👥 Check All Agents", use_container_width=True):
+        show_all_agents()
+
+# --- Top Level Metrics ---
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
 kpi1.metric(label="Active Agent Workflows", value=f"{st.session_state.workflows_run}", delta="+2 this hour")
 kpi2.metric(label="Tokens Processed", value=f"{st.session_state.tokens_used:,}", delta="Efficient")
@@ -326,17 +365,13 @@ st.markdown("<hr style='margin-top: 5px; margin-bottom: 20px; border-color: #1e2
 tab_chat, tab_deliverables, tab_logs = st.tabs(["💬 Command Interface", "📂 Output Hub", "🛠️ Audit Logs"])
 
 with tab_chat:
-    # 8. THE CHAT INTERFACE (SAFE & NATIVE)
-    # Humein chat UI ko explicitly ek container mein rakhna hai taake wo page structure ke andar rahe
-    
-    chat_container = st.container(height=500, border=True)
+    chat_container = st.container(height=450, border=True)
     with chat_container:
         for message in st.session_state.messages:
             avatar_icon = "🏢" if message["role"] == "assistant" else "🧑‍💼"
             with st.chat_message(message["role"], avatar=avatar_icon):
                 st.markdown(message["content"])
                 
-    # Loading / Action Indicator (Chalta hua processing state)
     if len(st.session_state.active_tasks) > 0:
         with st.status("Agent framework is processing your request...", expanded=True) as status:
             st.write("🔍 Analyzing Intent...")
@@ -344,33 +379,24 @@ with tab_chat:
             st.write("🧠 Engaging Selected AI Model...")
             status.update(label="Executing Workflow...", state="running")
 
-
 with tab_deliverables:
-    # 9. DELIVERABLES & FILE MANAGEMENT
     st.markdown("### 📥 Completed Artifacts")
     st.write("All documents, code, and reports generated by the agents are securely stored here.")
-    
     done_tasks_list = get_done_tasks()
-    
     if done_tasks_list:
-        # File viewer grid layout
         file_cols = st.columns(3)
-        
         for index, task in enumerate(done_tasks_list):
             col_idx = index % 3
             with file_cols[col_idx]:
                 with st.container(border=True):
                     st.markdown(f"**{task['name'][:25]}...**")
                     st.caption(f"Generated: {datetime.datetime.fromtimestamp(task['time']).strftime('%Y-%m-%d %H:%M')}")
-                    
-                    # File type based button logic
                     if task['path'].endswith('.jpg') or task['path'].endswith('.png'):
                         with open(task['path'], "rb") as f: 
                             st.download_button("🖼️ Download Image", data=f, file_name=os.path.basename(task['path']), mime="image/jpeg", use_container_width=True, key=f"dl_{index}")
                     else:
                         with open(task['path'], "r", encoding="utf-8", errors="ignore") as f: 
                             file_content = f.read()
-                        
                         pdf_data = generate_pdf_bytes(file_content)
                         if pdf_data: 
                             st.download_button("📄 Download PDF", data=pdf_data, file_name=task['name']+".pdf", mime="application/pdf", use_container_width=True, key=f"dl_pdf_{index}")
@@ -380,10 +406,8 @@ with tab_deliverables:
         st.info("No deliverables generated yet. Run a workflow to see outputs here.")
 
 with tab_logs:
-    # 10. SYSTEM AUDIT LOGS (For Transparency and Debugging)
     st.markdown("### 🔍 System Action Logs")
     st.caption("Live tracking of API calls, agent handoffs, and system states.")
-    
     log_container = st.container(height=400, border=True)
     with log_container:
         for log in st.session_state.system_logs:
@@ -394,11 +418,17 @@ with tab_logs:
             else:
                 st.text(log)
 
+# ==========================================
+# ✉️ 11. FILE UPLOAD & CHAT INPUT (BOTTOM)
+# ==========================================
+# 🔥 FILE UPLOADER BUTTON MOVED TO BOTTOM (Just above chat input) 🔥
+with st.popover("📎 Attach Files"):
+    st.caption("AI engine ke liye documents (PDF, TXT) yahan upload karein.")
+    uploaded_files = st.file_uploader("Drop files here", accept_multiple_files=True, label_visibility="collapsed")
+    if uploaded_files:
+        st.success(f"✅ {len(uploaded_files)} files ready.")
+        log_event("User", f"Uploaded {len(uploaded_files)} context files.")
 
-# ==========================================
-# ✉️ 11. NATIVE CHAT INPUT HANDLING
-# ==========================================
-# Ye Streamlit ka asli chat input hai, bina kisi jali CSS ke. Ye screen ke bottom pe safely chipka rahega.
 user_input = st.chat_input("Enter command (e.g., 'Email client@example.com offering AI services', 'Write a python script')...")
 
 if user_input:
@@ -407,7 +437,6 @@ if user_input:
     st.session_state.active_tasks.append(user_input[:30] + "...") 
     st.rerun()
 
-# Processing the latest user input
 if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
     last_msg = st.session_state.messages[-1]
     msg_content = last_msg["content"]
@@ -418,7 +447,6 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
         log_event("Error", "Workflow failed. Missing API Key.")
         st.rerun()
     else:
-        # 🔥 THE MASTER ROUTER PROMPT (English Only) 🔥
         system_prompt = """You are the Lab AgentX Enterprise Orchestrator.
 
         CRITICAL DIRECTIVE: ALWAYS RESPOND IN 100% PROFESSIONAL ENGLISH. NEVER USE HINDI OR URDU IN YOUR RESPONSES.
@@ -458,12 +486,9 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
         """
         
         try:
-            # Invoking the selected Langchain Model safely
             from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-            
             api_messages = [SystemMessage(content=system_prompt)]
             
-            # Send last few messages for context memory
             for m in (st.session_state.messages)[-6:]:
                 if m["role"] == "user": 
                     api_messages.append(HumanMessage(content=m["content"][:800]))
@@ -472,26 +497,20 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
 
             log_event("System", f"Routing request via {st.session_state.selected_brain}...")
             
-            # API Call
             response = chat_brain.invoke(api_messages)
             full_response = response.content
             
-            # Simulated token counting (since langchain unified interface abstract exact tokens sometimes)
             simulated_tokens = len(str(api_messages)) // 4 + len(full_response) // 4
             st.session_state.tokens_used += simulated_tokens
             
-            # Display Orchestrator's initial reply
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             
-            # Check if a workflow was actually triggered
             if "[WORKFLOW TRIGGERED]" in full_response:
                 st.toast("⚡ Enterprise Module Engaged...", icon="🚀")
                 log_event("System", "Workflow triggered successfully.")
                 
-                # Execute the actual backend python scripts based on the chosen agent
                 with st.spinner(f"Executing Backend Agent Workflow... Please wait."):
                     agent_result = "⚠️ Module placeholder triggered (Logic not fully connected in this environment)."
-                    
                     try:
                         if "**Ian**" in full_response: 
                             from oracle_intel import run_oracle_crew
@@ -522,7 +541,6 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
                         agent_result = f"Module Execution Python Error: {str(module_err)}"
                         log_event("Error", f"Agent execution crashed: {str(module_err)}")
                     
-                    # Display final output from the agent
                     st.toast("✅ Workflow Executed Successfully!", icon="🏢")
                     st.session_state.messages.append({"role": "assistant", "content": f"### 🏢 EXECUTION REPORT\n\n{agent_result}"})
                         
@@ -531,9 +549,7 @@ if st.session_state.messages and st.session_state.messages[-1]["role"] == "user"
             st.session_state.messages.append({"role": "assistant", "content": error_msg})
             log_event("Error", error_msg)
     
-    # Cleanup task queue
     if len(st.session_state.active_tasks) > 0: 
         st.session_state.active_tasks.pop()
     
-    # Refresh to show new messages
     st.rerun()
