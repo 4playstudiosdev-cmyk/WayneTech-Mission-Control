@@ -1,10 +1,41 @@
 import os
 import datetime
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from crewai import Agent, Task, Crew, Process
 from langchain_openai import ChatOpenAI
+from langchain.tools import tool
 
 # ☁️ CLOUD READY
 llm = ChatOpenAI(model="llama-3.3-70b-versatile")
+
+# 🔥 THE INVESTOR PROOF: REAL EMAIL SENDING TOOL 🔥
+@tool("Send Real Cold Email")
+def send_email_tool(to_email: str, subject: str, body: str) -> str:
+    """Use this tool to ACTUALLY SEND a real email to the prospect's email address."""
+    # ⚠️ User Needs to set these in their .env file
+    SENDER_EMAIL = os.getenv("SENDER_EMAIL", "") 
+    SENDER_PASSWORD = os.getenv("SENDER_PASSWORD", "") # Note: Use Gmail App Password, not normal password
+    
+    if not SENDER_EMAIL or not SENDER_PASSWORD:
+        return "⚠️ SKIPPED: Asli Email bhejne ke liye .env file mein SENDER_EMAIL aur SENDER_PASSWORD configure karein."
+
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = SENDER_EMAIL
+        msg['To'] = to_email
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain'))
+
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(SENDER_EMAIL, SENDER_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        return f"✅ SUCCESS: Email sent successfully to {to_email} with subject '{subject}'!"
+    except Exception as e:
+        return f"❌ FAILED: Email sending failed. Error: {str(e)}"
 
 def save_leads(task_name, content):
     folder = "Deliverables/Sales_Leads"
@@ -16,76 +47,48 @@ def save_leads(task_name, content):
     return filename
 
 def run_sales_crew(product_or_niche):
-    print(f"\n💰 SALES DEPARTMENT ACTIVATED FOR NICHE: {product_or_niche}\n")
+    print(f"\n💰 AUTONOMOUS SALES DEPARTMENT ACTIVATED: {product_or_niche}\n")
 
     reddit_discord_scout = Agent(
-        role='Community Lead Hunter (Reddit/Discord)',
-        goal='Identify users asking questions or having problems related to the product.',
-        backstory='You monitor subreddits and Discord servers. You find people who are desperate for a solution.',
+        role='Community Lead Hunter',
+        goal='Identify target audience and potential contact methods.',
+        backstory='You find people who are desperate for a solution.',
         allow_delegation=False,
         llm=llm
     )
 
-    twitter_scout = Agent(
-        role='Twitter (X) Signal Finder',
-        goal='Find tweets where people are complaining about competitors or asking for recommendations.',
-        backstory='You use advanced search operators to find high-intent buyers on X.',
-        allow_delegation=False,
-        llm=llm
-    )
-    
-    meta_scout = Agent(
-        role='Facebook/Insta Group Analyst',
-        goal='Identify target audiences and relevant Facebook Groups for outreach.',
-        backstory='You know exactly which Facebook groups contain wealthy, ready-to-buy customers.',
-        allow_delegation=False,
-        llm=llm
-    )
-
-    dm_specialist = Agent(
-        role='Direct Message (DM) Copywriter',
-        goal='Write highly personalized, non-spammy DMs that get a 50%+ reply rate.',
-        backstory='You understand human psychology. You never sound like a bot. Your DMs feel like a message from a friend.',
-        allow_delegation=False,
-        llm=llm
-    )
-
+    # 🚀 This Agent has the power to take ACTION
     email_closer = Agent(
-        role='Cold Email Strategist (Gmail)',
-        goal='Write irresistible cold email sequences with high open rates.',
-        backstory='You write subject lines that get opened and copy that converts cold leads into booked calls.',
+        role='Cold Email Executioner',
+        goal='Write irresistible cold emails and ACTUALLY SEND THEM using your tools if an email is provided.',
+        backstory='You are a high-ticket closer. You don\'t just write drafts, you execute outreach automatically.',
+        tools=[send_email_tool], # 🔥 Giving the agent the power to send email
         allow_delegation=False,
         llm=llm
     )
 
     task_scout = Task(
-        description=f"Analyze the niche: '{product_or_niche}'. Where do these customers hang out? Give specific examples of subreddits, Discord server types, Twitter keywords, and Facebook group names to target.",
+        description=f"Analyze the request: '{product_or_niche}'. Find target audience angles.",
         agent=reddit_discord_scout,
-        expected_output="A list of specific platforms, groups, and keywords to scrape."
-    )
-
-    task_dm = Task(
-        description="Based on the target audience identified, write 3 variations of an initial Outreach DM (for Insta/Twitter/Reddit). The DM MUST NOT sound salesy. It must ask a relevant question to start a conversation.",
-        agent=dm_specialist,
-        expected_output="3 highly personalized DM templates."
+        expected_output="Target audience breakdown."
     )
 
     task_email = Task(
-        description="Write a 3-step Cold Email sequence (Initial, Follow-up 1, Follow-up 2) for these leads. Include subject lines.",
+        description=f"Based on the request: '{product_or_niche}'. \n1. If an email address is provided in the prompt, WRITE a compelling cold email and USE THE 'Send Real Cold Email' TOOL to send it to them immediately! \n2. If no email is provided, just write a 3-step sequence draft.",
         agent=email_closer,
-        expected_output="3-step cold email sequence."
+        expected_output="Log of emails sent or draft sequences."
     )
 
     crew = Crew(
-        agents=[reddit_discord_scout, twitter_scout, meta_scout, dm_specialist, email_closer],
-        tasks=[task_scout, task_dm, task_email],
+        agents=[reddit_discord_scout, email_closer],
+        tasks=[task_scout, task_email],
         verbose=True,
         process=Process.sequential 
     )
 
     try:
         result = crew.kickoff()
-        saved_path = save_leads(product_or_niche, str(result))
-        return f"💰 **SALES OUTREACH PLAN READY**\n\n✅ Target Groups Identified & Custom DMs/Emails Written.\n📂 **Check Deliverables:** {saved_path}"
+        saved_path = save_leads("Sales_Execution", str(result))
+        return f"💰 **SALES OUTREACH EXECUTED**\n\n✅ Live actions taken. \n📂 **Check Logs:** {saved_path}"
     except Exception as e:
         return f"⚠️ **Sales Crew Error:** {str(e)}"

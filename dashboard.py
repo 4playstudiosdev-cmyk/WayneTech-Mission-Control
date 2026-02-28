@@ -19,16 +19,16 @@ INITIAL_GROQ_KEY = os.getenv("GROQ_API_KEY", "")
 
 # FPDF library check (PDF generate karne ke liye)
 try:
-    from fpdf import FPDF
-    HAS_FPDF = True
-except ImportError:
-    HAS_FPDF = False
-
-# --- GLOBAL CONFIG ---
+# Global Config
 st.set_page_config(page_title="Lab AgentX | Enterprise AI Orchestrator", page_icon="🏢", layout="wide", initial_sidebar_state="expanded")
 
-# Folder creation agar wo pehle se exist nahi karte
-for folder in ["memory_logs", "uploads", "Deliverables", "Saved_Files"]:
+# 🔥 BUG FIXED: Folder variables properly defined
+MEMORY_FOLDER = "memory_logs"
+UPLOAD_FOLDER = "uploads"
+DELIVERABLES_FOLDER = "Deliverables"
+SAVED_FILES_FOLDER = "Saved_Files"
+
+for folder in [MEMORY_FOLDER, UPLOAD_FOLDER, DELIVERABLES_FOLDER, SAVED_FILES_FOLDER]:
     if not os.path.exists(folder): os.makedirs(folder)
 
 # --- PDF GENERATOR ENGINE ---
@@ -233,12 +233,13 @@ elif st.session_state.current_page == "checkout":
 # ==========================================
 elif st.session_state.current_page == "dashboard":
 
-    # 🔥 STRICTLY CLEAN UI CSS - SAFE, NO HACKS 🔥
+    # 🔥 STRICTLY CLEAN UI CSS - COMPLETELY SAFE 🔥
     st.markdown("""
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
-        .stApp, .stAppViewContainer, .stAppScrollToBottomContainer { background-color: #020617 !important; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc; }
-        [data-testid="stBottom"], [data-testid="stBottom"] > div { background-color: #020617 !important; background-image: none !important; border: none !important; }
+        .stApp, .stAppViewContainer { background-color: #020617 !important; font-family: 'Plus Jakarta Sans', sans-serif; color: #f8fafc; }
+        
+        /* Removing hacky overrides to keep standard Streamlit layout stable */
         section[data-testid="stSidebar"] { display: block !important; background-color: #0f172a !important; border-right: 1px solid #1e293b !important; }
         .block-container { padding-top: 2.5rem !important; max-width: 1400px !important; }
         .stMarkdown, .stText, p, span, h1, h2, h3, h4, h5, h6, label { color: #f8fafc !important; }
@@ -254,12 +255,6 @@ elif st.session_state.current_page == "dashboard":
         .stat-box:last-child { border-right: none; padding-right: 0; }
         .stat-value { font-size: 22px; font-weight: 700; color: #f8fafc !important; } 
         .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8 !important; margin-top: 2px;}
-        
-        /* 🔥 SAFE CHAT INPUT UI: White Box, Black Text 🔥 */
-        [data-testid="stChatInput"] { background-color: transparent !important; }
-        [data-testid="stChatInput"] > div { background-color: #ffffff !important; border: 1px solid #cbd5e1 !important; border-radius: 8px !important; box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;}
-        [data-testid="stChatInput"] textarea { color: #0f172a !important; -webkit-text-fill-color: #0f172a !important; caret-color: #0f172a !important; font-size: 15px !important; }
-        [data-testid="stChatInput"] textarea::placeholder { color: #64748b !important; -webkit-text-fill-color: #64748b !important; }
         
         /* Workflow Cards */
         .workflow-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; margin-bottom: 10px; border-left: 4px solid #38bdf8;}
@@ -356,8 +351,16 @@ elif st.session_state.current_page == "dashboard":
         <div class='workflow-card' style='border-color: #f59e0b;'><div class='w-title'>Competitor Takedown</div><div class='w-desc'>Deep scans URLs and generates business attack plans.</div></div>
         <div class='workflow-card' style='border-color: #8b5cf6;'><div class='w-title'>Closed-Loop Tech</div><div class='w-desc'>Generates Python/Web code and audits it internally.</div></div>
         <div class='workflow-card' style='border-color: #10b981;'><div class='w-title'>Content Empire</div><div class='w-desc'>Repurposes YouTube URLs into Omni-channel content.</div></div>
+        <div class='workflow-card' style='border-color: #ef4444;'><div class='w-title'>Autonomous Sales</div><div class='w-desc'>Finds leads and ACTUALLY SENDS cold emails via Gmail.</div></div>
         """, unsafe_allow_html=True)
         
+        st.markdown("---")
+        # 🔥 SAFELY MOVED ATTACHMENT TO SIDEBAR TO PREVENT UI BUGS 🔥
+        with st.expander("📎 Attach Documents", expanded=False):
+            st.caption("AI Engine ke liye files upload karein")
+            uploaded_files = st.file_uploader("Drop context files here", type=["pdf", "png", "txt", "csv"], accept_multiple_files=True)
+            if uploaded_files: st.success(f"✅ {len(uploaded_files)} file(s) ready.")
+
         st.markdown("---")
         # BYOK SELECTION
         with st.expander("🔑 BYOK (Bring Your Own Key)", expanded=True):
@@ -436,27 +439,13 @@ elif st.session_state.current_page == "dashboard":
 
     st.markdown("---")
     
-    # 🔥 SAFE NATIVE STREAMLIT INPUT WITH ATTACHMENT 🔥
-    chat_val = None
-    try: 
-        chat_val = st.chat_input("Enter outcome requirement (e.g., 'Analyze https://tesla.com and create an attack plan')...", accept_file="multiple")
-    except Exception:
-        # Fallback if old Streamlit
-        chat_val = st.chat_input("Enter outcome requirement...")
-        with st.sidebar.expander("📎 Attach Documents"): st.file_uploader("Upload constraints", type=["pdf", "png", "txt", "csv"], accept_multiple_files=True)
+    # 🔥 COMPLETELY NATIVE CHAT INPUT (No overlapping, no crashes) 🔥
+    user_input = st.chat_input("Enter outcome requirement (e.g., 'Email test@example.com offering AI services')...")
 
-    user_input = ""
-    # Safe data extraction from input
-    if chat_val:
-        if isinstance(chat_val, str): user_input = chat_val
-        elif isinstance(chat_val, dict): user_input = chat_val.get("text", "")
-        else:
-            if hasattr(chat_val, "text") and getattr(chat_val, "text"): user_input = getattr(chat_val, "text")
-
-        if user_input:
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            st.session_state.active_tasks.append(user_input[:30] + "...") 
-            st.rerun()
+    if user_input:
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        st.session_state.active_tasks.append(user_input[:30] + "...") 
+        st.rerun()
 
     if st.session_state.messages and st.session_state.messages[-1]["role"] == "user":
         last_msg = st.session_state.messages[-1]
